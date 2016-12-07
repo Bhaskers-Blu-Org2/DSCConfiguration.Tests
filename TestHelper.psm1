@@ -75,12 +75,12 @@ function Invoke-AzureSPNLogin {
     $Credential = New-Object -typename System.Management.Automation.PSCredential -argumentlist $env:AppID, $(convertto-securestring -String $env:AppPass -AsPlainText -Force)
     
     # Suppress request to share usage information
-    $path = "$Home\AppData\Roaming\Windows Azure Powershell\"
+    $Path = "$Home\AppData\Roaming\Windows Azure Powershell\"
     if (!(Test-Path -Path $Path))
     {
         $AzPSProfile = New-Item -Path $Path -ItemType Directory
     }
-    $AzProfileContent = Set-Content -Value '{"enableAzureDataCollection":true}' -Path $Path
+    $AzProfileContent = Set-Content -Value '{"enableAzureDataCollection":true}' -Path (Join-Path $Path 'AzureDataCollectionProfile.json') 
 
     # Handle Login
     if (Add-AzureRmAccount -Credential $Credential -ServicePrincipal -TenantId $env:TenantId -ErrorAction SilentlyContinue)
