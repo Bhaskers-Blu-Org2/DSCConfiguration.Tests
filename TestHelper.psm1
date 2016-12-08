@@ -72,7 +72,7 @@ function Invoke-AzureSPNLogin {
         [string]$TenantID = $env:TenantID
     )
     # TODO - is there a better way to pass secure strings from AppVeyor
-    $Credential = New-Object -typename System.Management.Automation.PSCredential -argumentlist $env:AppID, $(convertto-securestring -String $env:AppPass -AsPlainText -Force)
+    $Credential = New-Object -typename System.Management.Automation.PSCredential -argumentlist $env:ApplicationID, $(convertto-securestring -String $env:ApplicationPassword -AsPlainText -Force)
     
     # Suppress request to share usage information
     $Path = "$Home\AppData\Roaming\Windows Azure Powershell\"
