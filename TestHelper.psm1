@@ -110,10 +110,10 @@ function Invoke-ConfigurationPrep {
     # Create a unique script for each configuration, with a name that matches the configuration
     foreach ($Configuration in ($Configurations | ForEach-Object -Process {$_.Name}))
     {
-        if ($Config = (Get-Command $confName).ScriptBlock)
+        if ($Config = (Get-Command $Configuration).ScriptBlock)
         {
-            $Configuration.Location = "$Path\$confName.ps1"
-            "Configuration $confName`n{" | Out-File $Configuration.Location
+            $Configuration.Location = "$Path\$Configuration.ps1"
+            "Configuration $Configuration`n{" | Out-File $Configuration.Location
             $Config | Out-File $Configuration.Location -Append
             "}`n" | Out-File $Configuration.Location -Append
         }
