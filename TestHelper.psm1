@@ -72,7 +72,7 @@ function Invoke-AzureSPNLogin {
         [string]$TenantID = $env:TenantID
     )
     # TODO - is there a better way to pass secure strings from AppVeyor
-    $Credential = New-Object -typename System.Management.Automation.PSCredential -argumentlist $env:ApplicationID, $(convertto-securestring -String $env:ApplicationPassword -AsPlainText -Force)
+    $Credential = New-Object -typename System.Management.Automation.PSCredential -argumentlist $ApplicationID, $(convertto-securestring -String $ApplicationPassword -AsPlainText -Force)
     
     # Suppress request to share usage information
     $Path = "$Home\AppData\Roaming\Windows Azure Powershell\"
@@ -83,7 +83,7 @@ function Invoke-AzureSPNLogin {
     $AzProfileContent = Set-Content -Value '{"enableAzureDataCollection":true}' -Path (Join-Path $Path 'AzureDataCollectionProfile.json') 
 
     # Handle Login
-    if (Add-AzureRmAccount -Credential $Credential -ServicePrincipal -TenantId $env:TenantId -ErrorAction SilentlyContinue)
+    if (Add-AzureRmAccount -Credential $Credential -ServicePrincipal -TenantId $TenantId -ErrorAction SilentlyContinue)
     {
         return $true
     }
