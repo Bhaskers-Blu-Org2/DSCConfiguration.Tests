@@ -108,7 +108,7 @@ function Invoke-ConfigurationPrep {
     New-Item -Path $Path -ItemType Directory -Force | Out-Null
     
     # Create a unique script for each configuration, with a name that matches the configuration
-    foreach ($Configuration in ($Configurations | ForEach-Object -Process {$_.Name}))
+    foreach ($Configuration in $Configurations)
     {
         if ($Config = (Get-Command $Configuration).ScriptBlock)
         {
