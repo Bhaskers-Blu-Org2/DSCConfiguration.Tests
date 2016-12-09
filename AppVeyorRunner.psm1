@@ -7,7 +7,7 @@ function New-ResourceGroupforTests {
     param(
         [string]$ApplicationID = $env:ApplicationID,
         [string]$ApplicationPassword = $env:ApplicationPassword,
-        [string]$TenantIT = $env:TenantID,
+        [string]$TenantID = $env:TenantID,
         [string]$Location = 'EastUS2'
     )
     if (Invoke-AzureSPNLogin -ApplicationID $ApplicationID -ApplicationPassword $ApplicationPassword -TenantID $TenantID)
