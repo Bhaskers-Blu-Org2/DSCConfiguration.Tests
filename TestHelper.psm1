@@ -83,7 +83,7 @@ function Invoke-AzureSPNLogin {
     $AzProfileContent = Set-Content -Value '{"enableAzureDataCollection":true}' -Path (Join-Path $Path 'AzureDataCollectionProfile.json') 
 
     # Handle Login
-    if (Add-AzureRmAccount -Credential $Credential -ServicePrincipal -TenantId $TenantId -ErrorAction SilentlyContinue)
+    if (Add-AzureRmAccount -Credential $Credential -ServicePrincipal -TenantID $TenantID -ErrorAction SilentlyContinue)
     {
         return $true
     }

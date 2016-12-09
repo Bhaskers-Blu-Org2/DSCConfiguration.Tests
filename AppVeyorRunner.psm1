@@ -5,19 +5,13 @@ Comments
 <##>
 function New-ResourceGroupforTests {
     param(
-        [string]$ApplicationID = $env:ApplicationID,
-        [string]$ApplicationPassword = $env:ApplicationPassword,
-        [string]$TenantID = $env:TenantID,
         [string]$Location = 'EastUS2'
     )
-    if (Invoke-AzureSPNLogin -ApplicationID $ApplicationID -ApplicationPassword $ApplicationPassword -TenantID $TenantID)
-    {
-        # Create Resource Group
-        $ResourceGroup = New-AzureRmResourceGroup -Name $env:APPVEYOR_BUILD_ID -Location $Location -Force
+    # Create Resource Group
+    $ResourceGroup = New-AzureRmResourceGroup -Name $env:APPVEYOR_BUILD_ID -Location $Location -Force
 
-        # Create Azure Automation account
-        $AutomationAccount = New-AzureRMAutomationAccount -ResourceGroupName $env:APPVEYOR_BUILD_ID -Name $env:APPVEYOR_PROJECT_NAME -Location $Location
-    }
+    # Create Azure Automation account
+    $AutomationAccount = New-AzureRMAutomationAccount -ResourceGroupName $env:APPVEYOR_BUILD_ID -Name $env:APPVEYOR_PROJECT_NAME -Location $Location
 }
 
 <##>
