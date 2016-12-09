@@ -67,9 +67,9 @@ function Get-RequiredGalleryModules {
 <##>
 function Invoke-AzureSPNLogin {
     param(
-        [string]$ApplicationID = $env:ApplicationID,
-        [string]$ApplicationPassword = $env:ApplicationPassword,
-        [string]$TenantID = $env:TenantID
+        [string]$ApplicationID,
+        [string]$ApplicationPassword,
+        [string]$TenantID
     )
     # TODO - is there a better way to pass secure strings from AppVeyor
     $Credential = New-Object -typename System.Management.Automation.PSCredential -argumentlist $ApplicationID, $(convertto-securestring -String $ApplicationPassword -AsPlainText -Force)
