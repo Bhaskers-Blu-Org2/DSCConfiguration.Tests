@@ -2,8 +2,8 @@
 Comments
 #>
 
-$env:ResourceGroupName = 'TestAutomation'+$env:APPVEYOR_PULL_REQUEST_NUMBER
-$env:AutomationAccountName = 'DSCValidation'+$env:APPVEYOR_PULL_REQUEST_NUMBER
+$env:ResourceGroupName = 'TestAutomation'+$env:APPVEYOR_BUILD_ID
+$env:AutomationAccountName = 'DSCValidation'+$env:APPVEYOR_BUILD_ID
 
 <##>
 function New-ResourceGroupforTests {
