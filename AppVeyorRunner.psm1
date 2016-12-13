@@ -79,7 +79,7 @@ function Wait-ModuleExtraction {
         # The resource modules must finish the "Creating" stage before the configuration will compile successfully
         foreach ($ImportedModule in $ImportedModules) {
             while ((Get-AzureRMAutomationModule -ResourceGroupName $ResourceGroupName -AutomationAccountName $AutomationAccountName -Name $ImportedModule.Name).ProvisioningState -ne 'Succeeded') {
-            Start-Sleep -Seconds 15
+                Start-Sleep -Seconds 15
             }
         }
         return $true
@@ -117,7 +117,7 @@ function Import-ConfigurationToAzureAutomation {
         $Compile = Start-AzureRmAutomationDscCompilationJob @CompileParams
         while ((Get-AzureRmAutomationDscCompilationJob -ResourceGroupName $ResourceGroupName -AutomationAccountName $AutomationAccountName -Name $Configuration.Name).Status -ne 'Completed') {
             Start-Sleep -Seconds 15
-            }
+        }
         return $true
     }
     catch [System.Exception] {
