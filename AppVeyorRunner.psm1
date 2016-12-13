@@ -44,7 +44,9 @@ function Remove-AzureTestResources {
     }
 }
 
-<##>
+<#
+TODO the timer should catch issues with import and return to build log
+#>
 function Import-ModulesToAzureAutomation {
     param(
         [array]$Modules,
@@ -63,14 +65,17 @@ function Import-ModulesToAzureAutomation {
             while ((Get-AzureRMAutomationModule -ResourceGroupName $ResourceGroupName -AutomationAccountName $AutomationAccountName -Name $ImportedModule.Name).ProvisioningState -ne 'Succeeded') {
             Start-Sleep -Seconds 15
             }
-        }   
+        }
+        return $true
     }
     catch [System.Exception] {
         throw "An error occured while importing the modules to Azure Automation`n$error"
     }
 }
 
-<##>
+<#
+TODO - the timer should catch issues with compilation and return to build log
+#>
 function Import-ConfigurationToAzureAutomation {
     param(
         [psobject]$Configuration,
@@ -94,6 +99,10 @@ function Import-ConfigurationToAzureAutomation {
             ConfigurationData     = $ConfigurationData
         }
         $Compile = Start-AzureRmAutomationDscCompilationJob @CompileParams
+        while ((Get-AzureRMDscCompilationJob -ResourceGroupName $ResourceGroupName -AutomationAccountName $AutomationAccountName -Name $Configuration.Name).Status -ne 'Completed') {
+            Start-Sleep -Seconds 15
+            }
+        return $true
     }
     catch [System.Exception] {
         throw "An error occured while importing or compiling the configurations using Azure Automation`n$error"        
