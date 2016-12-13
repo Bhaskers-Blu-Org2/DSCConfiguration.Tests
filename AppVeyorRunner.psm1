@@ -27,7 +27,7 @@ function New-ResourceGroupforTests {
         }
     }
     catch [System.Exception] {
-        throw "A failure occured while creating the Resource Group or Auatomation Account`n$error"
+        throw "A failure occured while creating the Resource Group $ResourceGroupName or Automation Account $AutomationAccountName`n$error"
     }
 }
 
@@ -40,58 +40,49 @@ function Remove-AzureTestResources {
         $Remove = Remove-AzureRmResourceGroup -Name $ResourceGroupName -Force
     }
     catch [System.Exception] {
-        throw "An error occured while removing the Resource Group or Auatomation Account`n$error"
+        throw "An error occured while removing the Resource Group $ResourceGroupName`n$error"
     }
 }
 
 <#
 TODO should catch issues with import and return to build log
 #>
-function Import-ModulesToAzureAutomation {
+function Import-ModuleToAzureAutomation {
     param(
-        [array]$Modules,
+        [array]$Module,
         [string]$ResourceGroupName = $env:ResourceGroupName,
         [string]$AutomationAccountName = $env:AutomationAccountName
     )
     try {
-        # Upload required DSC resources (required modules)
-        $ImportedModules = @()
-        foreach($AutomationModule in $Modules) {
-            $ImportedModules += New-AzureRMAutomationModule -ResourceGroupName $ResourceGroupName -AutomationAccountName $AutomationAccountName -Name $AutomationModule.Name -ContentLink $AutomationModule.URI
-        }
-        return $true
+        # Import module from custom object
+        $ImportedModule = New-AzureRMAutomationModule -ResourceGroupName $ResourceGroupName -AutomationAccountName $AutomationAccountName -Name $Module.Name -ContentLink $Module.URI
     }
     catch [System.Exception] {
-        throw "An error occured while importing the modules to Azure Automation`n$error"
+        throw "An error occured while importing the module $($Module.Name) to Azure Automation`n$error"
     }
 }
 
 <#
-TODO should have max time
+TODO need timeout based on real expectations
 #>
 function Wait-ModuleExtraction {
     param(
-        [array]$Modules,
+        [array]$Module,
         [string]$ResourceGroupName = $env:ResourceGroupName,
         [string]$AutomationAccountName = $env:AutomationAccountName
     )
     try {
         # The resource modules must finish the "Creating" stage before the configuration will compile successfully
-        foreach ($ImportedModule in $ImportedModules) {
-            while ((Get-AzureRMAutomationModule -ResourceGroupName $ResourceGroupName -AutomationAccountName $AutomationAccountName -Name $ImportedModule.Name).ProvisioningState -ne 'Succeeded') {
+        while ((Get-AzureRMAutomationModule -ResourceGroupName $ResourceGroupName -AutomationAccountName $AutomationAccountName -Name $Module.Name).ProvisioningState -ne 'Succeeded') {
                 Start-Sleep -Seconds 15
-            }
         }
-        return $true
     }
     catch [System.Exception] {
-        throw "An error occured while waiting for module activities to extract in Azure Automation`n$error"        
+        throw "An error occured while waiting for module $($Module.Name) activities to extract in Azure Automation`n$error"        
     }
 }    
 
-<#
-TODO - the timer should catch issues with compilation and return to build log
-#>
+<##>
 function Import-ConfigurationToAzureAutomation {
     param(
         [psobject]$Configuration,
@@ -115,12 +106,27 @@ function Import-ConfigurationToAzureAutomation {
             ConfigurationData     = $ConfigurationData
         }
         $Compile = Start-AzureRmAutomationDscCompilationJob @CompileParams
-        while ((Get-AzureRmAutomationDscCompilationJob -ResourceGroupName $ResourceGroupName -AutomationAccountName $AutomationAccountName -Name $Configuration.Name).Status -ne 'Completed') {
-            Start-Sleep -Seconds 15
-        }
-        return $true
     }
     catch [System.Exception] {
-        throw "An error occured while importing or compiling the configurations using Azure Automation`n$error"        
+        throw "An error occured while importing the configuration $($Configuration.Name) using Azure Automation`n$error"        
+    }
+}
+
+<#
+TODO need timeout based on real expectations
+#>
+function Wait-ConfigurationCompilation {
+    param(
+        [psobject]$Configuration,
+        [string]$ResourceGroupName = $env:ResourceGroupName,
+        [string]$AutomationAccountName = $env:AutomationAccountName
+    )
+    try {
+        while ((Get-AzureRmAutomationDscCompilationJob -ResourceGroupName $ResourceGroupName -AutomationAccountName $AutomationAccountName -Name $Configuration.Name).Status -ne 'Completed') {
+            Start-Sleep -Seconds 15
+        }   
+    }
+    catch [System.Exception] {
+        throw "An error occured while waiting for configuration $($Configuration.Name) to compile in Azure Automation`n$error"        
     }
 }
