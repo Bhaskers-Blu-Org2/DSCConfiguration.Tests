@@ -11,7 +11,7 @@ function New-ResourceGroupforTests {
     $ResourceGroup = New-AzureRmResourceGroup -Name "TestAutomation$env:APPVEYOR_PULL_REQUEST_NUMBER" -Location $Location -Force
 
     # Create Azure Automation account
-    $AutomationAccount = New-AzureRMAutomationAccount -ResourceGroupName "TestAutomation$env:APPVEYOR_PULL_REQUEST_NUMBER" -Name "DSCValidation-$env:APPVEYOR_PULL_REQUEST_NUMBER" -Location $Location
+    $AutomationAccount = New-AzureRMAutomationAccount -ResourceGroupName "TestAutomation$env:APPVEYOR_PULL_REQUEST_NUMBER" -Name "DSCValidation$env:APPVEYOR_PULL_REQUEST_NUMBER" -Location $Location
 }
 
 <##>
