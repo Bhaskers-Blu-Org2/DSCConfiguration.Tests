@@ -45,7 +45,7 @@ function Remove-AzureTestResources {
 }
 
 <#
-TODO the timer should catch issues with import and return to build log
+TODO should catch issues with import and return to build log
 #>
 function Import-ModulesToAzureAutomation {
     param(
@@ -59,19 +59,35 @@ function Import-ModulesToAzureAutomation {
         foreach($AutomationModule in $Modules) {
             $ImportedModules += New-AzureRMAutomationModule -ResourceGroupName $ResourceGroupName -AutomationAccountName $AutomationAccountName -Name $AutomationModule.Name -ContentLink $AutomationModule.URI
         }
-
-        # The resource modules must finish the "Creating" stage before the configuration will compile successfully
-        foreach ($ImportedModule in $ImportedModules) {
-            while ((Get-AzureRMAutomationModule -ResourceGroupName $ResourceGroupName -AutomationAccountName $AutomationAccountName -Name $ImportedModule.Name).ProvisioningState -ne 'Succeeded') {
-            Start-Sleep -Seconds 15
-            }
-        }
         return $true
     }
     catch [System.Exception] {
         throw "An error occured while importing the modules to Azure Automation`n$error"
     }
 }
+
+<#
+TODO should have max time
+#>
+function Wait-ModuleExtraction {
+    param(
+        [array]$Modules,
+        [string]$ResourceGroupName = $env:ResourceGroupName,
+        [string]$AutomationAccountName = $env:AutomationAccountName
+    )
+    try {
+        # The resource modules must finish the "Creating" stage before the configuration will compile successfully
+        foreach ($ImportedModule in $ImportedModules) {
+            while ((Get-AzureRMAutomationModule -ResourceGroupName $ResourceGroupName -AutomationAccountName $AutomationAccountName -Name $ImportedModule.Name).ProvisioningState -ne 'Succeeded') {
+                Start-Sleep -Seconds 15
+            }
+        }
+        return $true
+    }
+    catch [System.Exception] {
+        throw "An error occured while waiting for module activities to extract in Azure Automation`n$error"        
+    }
+}    
 
 <#
 TODO - the timer should catch issues with compilation and return to build log
@@ -99,9 +115,9 @@ function Import-ConfigurationToAzureAutomation {
             ConfigurationData     = $ConfigurationData
         }
         $Compile = Start-AzureRmAutomationDscCompilationJob @CompileParams
-        while ((Get-AzureRMDscCompilationJob -ResourceGroupName $ResourceGroupName -AutomationAccountName $AutomationAccountName -Name $Configuration.Name).Status -ne 'Completed') {
+        while ((Get-AzureRmAutomationDscCompilationJob -ResourceGroupName $ResourceGroupName -AutomationAccountName $AutomationAccountName -Name $Configuration.Name).Status -ne 'Completed') {
             Start-Sleep -Seconds 15
-            }
+        }
         return $true
     }
     catch [System.Exception] {
