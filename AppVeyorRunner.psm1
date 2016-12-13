@@ -17,6 +17,14 @@ function New-ResourceGroupforTests {
 }
 
 <##>
+Remove-AzureTestResources {
+    param(
+        [string]$ResourceGroupName = "TestAutomation$env:APPVEYOR_PULL_REQUEST_NUMBER"
+    )
+    Remove-AzureRmResourceGroup -Name $ResourceGroupName -Force
+}
+
+<##>
 function Import-ModulesToAzureAutomation {
     param(
         [array]$Modules,
