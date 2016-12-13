@@ -6,8 +6,8 @@ Comments
 function New-ResourceGroupforTests {
     param(
         [string]$Location = 'EastUS2',
-        [string]$ResourceGroupName = "TestAutomation$env:APPVEYOR_PULL_REQUEST_NUMBER",
-        [string]$AutomationAccountName = "DSCValidation$env:APPVEYOR_PULL_REQUEST_NUMBER"
+        [string]$ResourceGroupName = 'TestAutomation'+$env:APPVEYOR_PULL_REQUEST_NUMBER,
+        [string]$AutomationAccountName = 'DSCValidation'+$env:APPVEYOR_PULL_REQUEST_NUMBER
     )
     try {
         # Create Resource Group
@@ -24,20 +24,20 @@ function New-ResourceGroupforTests {
         }
     }
     catch [System.Exception] {
-        throw "A failure occured while creating the Resource Group or Auatomation Account;`n$error"
+        throw "A failure occured while creating the Resource Group or Auatomation Account`n$error"
     }
 }
 
 <##>
 function Remove-AzureTestResources {
     param(
-        [string]$ResourceGroupName = "TestAutomation$env:APPVEYOR_PULL_REQUEST_NUMBER"
+        [string]$ResourceGroupName = 'TestAutomation'+$env:APPVEYOR_PULL_REQUEST_NUMBER
     )
     try {
         $Remove = Remove-AzureRmResourceGroup -Name $ResourceGroupName -Force
     }
     catch [System.Exception] {
-        throw "A failure occured while removing the Resource Group or Auatomation Account;`n$error"
+        throw "A failure occured while removing the Resource Group or Auatomation Account`n$error"
     }
 }
 
