@@ -5,18 +5,23 @@ Comments
 <##>
 function New-ResourceGroupforTests {
     param(
-        [string]$Location = 'EastUS2'
+        [string]$Location = 'EastUS2',
+        [string]$ResourceGroupName = "TestAutomation$env:APPVEYOR_PULL_REQUEST_NUMBER",
+        [string]$AutomationAccountName = "DSCValidation$env:APPVEYOR_PULL_REQUEST_NUMBER"
     )
     # Create Resource Group
-    $ResourceGroup = New-AzureRmResourceGroup -Name "TestAutomation$env:APPVEYOR_PULL_REQUEST_NUMBER" -Location $Location -Force
+    $ResourceGroup = New-AzureRmResourceGroup -Name $ResourceGroupName -Location $Location -Force
 
     # Create Azure Automation account
-    $AutomationAccount = New-AzureRMAutomationAccount -ResourceGroupName "TestAutomation$env:APPVEYOR_PULL_REQUEST_NUMBER" -Name "DSCValidation$env:APPVEYOR_PULL_REQUEST_NUMBER" -Location $Location
+    $AutomationAccount = New-AzureRMAutomationAccount -ResourceGroupName $ResourceGroupName -Name $AutomationAccountName -Location $Location
 }
 
 <##>
 function Remove-AzureTestResources {
-    Remove-AzureRmResourceGroup -Name "TestAutomation$env:APPVEYOR_PULL_REQUEST_NUMBER" -Force
+    param(
+        [string]$ResourceGroupName = "TestAutomation$env:APPVEYOR_PULL_REQUEST_NUMBER"
+    )
+    $Remove = Remove-AzureRmResourceGroup -Name $ResourceGroupName -Force
 }
 
 <##>
