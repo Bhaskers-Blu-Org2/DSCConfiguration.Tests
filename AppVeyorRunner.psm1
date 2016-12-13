@@ -9,11 +9,23 @@ function New-ResourceGroupforTests {
         [string]$ResourceGroupName = "TestAutomation$env:APPVEYOR_PULL_REQUEST_NUMBER",
         [string]$AutomationAccountName = "DSCValidation$env:APPVEYOR_PULL_REQUEST_NUMBER"
     )
-    # Create Resource Group
-    $ResourceGroup = New-AzureRmResourceGroup -Name $ResourceGroupName -Location $Location -Force
+    try {
+        # Create Resource Group
+        $ResourceGroup = New-AzureRmResourceGroup -Name $ResourceGroupName -Location $Location -Force
 
-    # Create Azure Automation account
-    $AutomationAccount = New-AzureRMAutomationAccount -ResourceGroupName $ResourceGroupName -Name $AutomationAccountName -Location $Location
+        # Create Azure Automation account
+        $AutomationAccount = New-AzureRMAutomationAccount -ResourceGroupName $ResourceGroupName -Name $AutomationAccountName -Location $Location
+
+        if ($Account = Get-AzureRmAutomationAccount -ResourceGroupName $ResourceGroupName -Name $AutomationAccountName) {
+            return $true
+        }
+        else {
+            return $false
+        }
+    }
+    catch [System.Exception] {
+        throw "A failure occured while creating the Resource Group or Auatomation Account;`n$error"
+    }
 }
 
 <##>
@@ -21,7 +33,12 @@ function Remove-AzureTestResources {
     param(
         [string]$ResourceGroupName = "TestAutomation$env:APPVEYOR_PULL_REQUEST_NUMBER"
     )
-    $Remove = Remove-AzureRmResourceGroup -Name $ResourceGroupName -Force
+    try {
+        $Remove = Remove-AzureRmResourceGroup -Name $ResourceGroupName -Force
+    }
+    catch [System.Exception] {
+        throw "A failure occured while removing the Resource Group or Auatomation Account;`n$error"
+    }
 }
 
 <##>
@@ -38,10 +55,8 @@ function Import-ModulesToAzureAutomation {
     }
 
     # The resource modules must finish the "Creating" stage before the configuration will compile successfully
-    foreach ($ImportedModule in $ImportedModules)
-    {
-        while ((Get-AzureRMAutomationModule -ResourceGroupName $ResourceGroupName -AutomationAccountName $AutomationAccountName -Name $ImportedModule.Name).ProvisioningState -ne 'Succeeded')
-        { 
+    foreach ($ImportedModule in $ImportedModules) {
+        while ((Get-AzureRMAutomationModule -ResourceGroupName $ResourceGroupName -AutomationAccountName $AutomationAccountName -Name $ImportedModule.Name).ProvisioningState -ne 'Succeeded') {
         Start-Sleep -Seconds 15
         }
     }
@@ -58,8 +73,7 @@ function Import-ConfigurationToAzureAutomation {
     $ConfigurationImport = Import-AzureRmAutomationDscConfiguration -ResourceGroupName $ResourceGroupName -AutomationAccountName $AutomationAccountName -SourcePath $Configuration.Location -Published -Force
 
     # Load configdata if it exists
-    if (Test-Path ".\ConfigurationData\$($Configuration.Name).ConfigData.psd1")
-    {
+    if (Test-Path ".\ConfigurationData\$($Configuration.Name).ConfigData.psd1") {
         $ConfigurationData = Import-PowerShellDataFile ".\ConfigurationData\$($Configuration.Name).ConfigData.psd1"
     }
 
