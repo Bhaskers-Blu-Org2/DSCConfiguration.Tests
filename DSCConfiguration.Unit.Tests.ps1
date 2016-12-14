@@ -1,16 +1,14 @@
 <#
 #>
-pushd
-cd $env:APPVEYOR_BUILD_FOLDER
-
 Describe 'Universal configuration tests' {
     Context 'Module properties' {
+        $Name = Get-Item -Path .\ | ForEach-Object -Process {$_.Name}
         $Files = Get-ChildItem
         It 'Contains a module file' {
-            $Files.Name.Contains("$env:APPVEYOR_PROJECT_NAME.psm1") | Should Be True
+            $Files.Name.Contains("$Name.psm1") | Should Be True
         }
         It 'Contains a module manifest' {
-            $Files.Name.Contains("$env:APPVEYOR_PROJECT_NAME.psd1") | Should Be True
+            $Files.Name.Contains("$Name.psd1") | Should Be True
         }
         It 'Contains a readme' {
             $Files.Name.Contains('README.md') | Should Be True
@@ -40,4 +38,3 @@ Describe 'Universal configuration tests' {
 # configurations should be in AADSC
 
 # configurations should show as compiled
-popd
