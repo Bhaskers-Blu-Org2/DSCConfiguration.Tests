@@ -1,6 +1,6 @@
 <#
 #>
-
+pushd
 cd $env:APPVEYOR_BUILD_FOLDER
 
 Describe 'Universal configuration tests' {
@@ -40,3 +40,4 @@ Describe 'Universal configuration tests' {
 # configurations should be in AADSC
 
 # configurations should show as compiled
+popd
