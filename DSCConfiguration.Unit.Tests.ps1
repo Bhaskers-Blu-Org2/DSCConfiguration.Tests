@@ -1,6 +1,8 @@
 <#
 #>
 
+cd $env:APPVEYOR_BUILD_FOLDER
+
 Describe 'Universal configuration tests' {
     Context 'Module properties' {
         $Files = Get-ChildItem
