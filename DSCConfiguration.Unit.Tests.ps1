@@ -8,7 +8,7 @@ Describe 'Universal configuration tests' {
             $Files.Name.Contains("$Name.psm1") | Should Be True
         }
         It 'Contains a module manifest that aligns to the folder and module names' {
-            $Files.Name.Contains("$Name.psd1") | Should Be True
+            $Files.Name.Contains(".\$Name.psd1") | Should Be True
         }
         It 'Contains a readme' {
             $Files.Name.Contains('README.md') | Should Be True
