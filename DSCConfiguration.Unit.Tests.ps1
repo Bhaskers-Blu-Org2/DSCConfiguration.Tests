@@ -15,7 +15,7 @@ Describe 'Universal configuration tests' {
         }
         It 'Mainfest should import as a data file' {
             write-host ".\$Name.psd1"
-            $Manifest = Import-PowerShellDataFile -Path "c:\projects\$env:APPVEYOR_PROJECT_NAME\$Name.psd1" | Should Not Throw
+            $Manifest = Import-PowerShellDataFile -Path "$env:APPVEYOR_BUILD_FOLDER\$Name.psd1" | Should Not Throw
         }
         It 'Should point to the root module in the manifest' {
             $Manifest.RootModule | Should Be ".\$Name.psm1"
