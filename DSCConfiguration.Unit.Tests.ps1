@@ -23,6 +23,9 @@ Describe 'Universal configuration tests' {
         It 'Should have a GUID in the manifest' {
             $Manifest.GUID | Should Match '[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}'
         }
+        It 'Should list requirements in the manifest' {
+            $Manifest.RequiredModules | Should Not Be Null
+        }
     }
 }
 
