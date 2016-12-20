@@ -1,6 +1,7 @@
 <#
 #>
 Describe 'Universal configuration tests' {
+    Set-Location $env:APPVEYOR_BUILD_FOLDER
     $Name = Get-Item -Path .\ | ForEach-Object -Process {$_.Name}
     $Files = Get-ChildItem
     Context "$Name Module properties" {
