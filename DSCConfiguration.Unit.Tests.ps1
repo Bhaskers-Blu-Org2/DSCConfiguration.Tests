@@ -25,8 +25,6 @@ Describe 'Universal configuration tests' {
     }
 }
 
-# psd1 should import
-
 # manifest should have name, id, root mod
 
 # requirements should be found in gallery
