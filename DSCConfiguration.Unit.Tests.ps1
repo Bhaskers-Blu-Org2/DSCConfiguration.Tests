@@ -1,24 +1,24 @@
 <#
 #>
 Describe 'Universal configuration tests' {
-    Context 'Module properties' {
-        $Name = Get-Item -Path .\ | ForEach-Object -Process {$_.Name}
-        $Files = Get-ChildItem
+    $Name = Get-Item -Path ..\ | ForEach-Object -Process {$_.Name}
+    $Files = Get-ChildItem
+    Context "$Name Module properties" {
         It 'Contains a module file that aligns to the folder name' {
-            $Files.Name.Contains("$Name.psm1") | Should Be True
+            $Files.Name.Contains("..\$Name.psm1") | Should Be True
         }
         It 'Contains a module manifest that aligns to the folder and module names' {
-            $Files.Name.Contains("$Name.psd1") | Should Be True
+            $Files.Name.Contains("..\$Name.psd1") | Should Be True
         }
         It 'Contains a readme' {
             $Files.Name.Contains('README.md') | Should Be True
         }
         It 'Mainfest should import as a data file' {
             write-host ".\$Name.psd1"
-            $Manifest = Import-PowerShellDataFile -Path "$env:APPVEYOR_BUILD_FOLDER\$Name.psd1" | Should Not Throw
+            $Manifest = Import-PowerShellDataFile -Path "..\$Name.psd1" | Should Not Throw
         }
         It 'Should point to the root module in the manifest' {
-            $Manifest.RootModule | Should Be ".\$Name.psm1"
+            $Manifest.RootModule | Should Be "..\$Name.psm1"
         }
         It 'Should have a GUID in the manifest' {
             $Mainfest.GUID | Should Match '[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}'
