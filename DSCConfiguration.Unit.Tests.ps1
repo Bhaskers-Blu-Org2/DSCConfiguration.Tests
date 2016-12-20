@@ -3,7 +3,7 @@
 Describe 'Universal configuration tests' {
     $Name = Get-Item -Path $env:APPVEYOR_BUILD_FOLDER | ForEach-Object -Process {$_.Name}
     $Files = Get-ChildItem -Path $env:APPVEYOR_BUILD_FOLDER
-    Write-Host $Files.Name
+    $Manifest = Import-PowerShellDataFile -Path "$env:APPVEYOR_BUILD_FOLDER\$Name.psd1"
     Context "$Name Module properties" {
         It 'Contains a module file that aligns to the folder name' {
             $Files.Name.Contains("$Name.psm1") | Should Be True
@@ -15,8 +15,7 @@ Describe 'Universal configuration tests' {
             $Files.Name.Contains("README.md") | Should Be True
         }
         It "Manifest $env:APPVEYOR_BUILD_FOLDER\$Name.psd1 should import as a data file" {
-            $Manifest = Import-PowerShellDataFile -Path "$env:APPVEYOR_BUILD_FOLDER\$Name.psd1"
-            $Manifest | Should Exist
+            $Manifest | Should Be 'System.Collections.Hashtable'
         }
         It 'Should point to the root module in the manifest' {
             $Manifest.RootModule | Should Be ".\$Name.psm1"
