@@ -15,7 +15,8 @@ Describe 'Universal configuration tests' {
             $Files.Name.Contains("README.md") | Should Be True
         }
         It "Manifest $env:APPVEYOR_BUILD_FOLDER\$Name.psd1 should import as a data file" {
-            $Manifest = Import-PowerShellDataFile -Path "$env:APPVEYOR_BUILD_FOLDER\$Name.psd1" | Should Not Throw
+            $Manifest = Import-PowerShellDataFile -Path "$env:APPVEYOR_BUILD_FOLDER\$Name.psd1"
+            $Manifest | Should Exist
         }
         It 'Should point to the root module in the manifest' {
             $Manifest.RootModule | Should Be ".\$Name.psm1"
