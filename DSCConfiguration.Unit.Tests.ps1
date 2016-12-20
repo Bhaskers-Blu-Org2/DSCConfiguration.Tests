@@ -1,9 +1,9 @@
 <#
 #>
 Describe 'Universal configuration tests' {
-    Set-Location $env:APPVEYOR_BUILD_FOLDER
-    $Name = Get-Item -Path .\ | ForEach-Object -Process {$_.Name}
-    $Files = Get-ChildItem
+    $Name = Get-Item -Path $env:APPVEYOR_BUILD_FOLDER | ForEach-Object -Process {$_.Name}
+    $Files = Get-ChildItem -Path $env:APPVEYOR_BUILD_FOLDER
+    Write-Host $Files.Name
     Context "$Name Module properties" {
         It 'Contains a module file that aligns to the folder name' {
             $Files.Name.Contains("$env:APPVEYOR_BUILD_FOLDER\$Name.psm1") | Should Be True
