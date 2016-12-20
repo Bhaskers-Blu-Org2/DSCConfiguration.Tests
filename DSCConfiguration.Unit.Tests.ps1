@@ -26,6 +26,9 @@ Describe 'Universal configuration tests' {
         It 'Should list requirements in the manifest' {
             $Manifest.RequiredModules | Should Not Be Null
         }
+        It 'Should give a module version in the manifest' {
+            $Manifest.ModuleVersion | Should Be Greater Than 0.0.0.0
+        }
     }
 }
 
