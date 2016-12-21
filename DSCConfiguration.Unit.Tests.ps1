@@ -4,7 +4,7 @@ Describe 'Universal configuration tests' {
     $Name = Get-Item -Path $env:APPVEYOR_BUILD_FOLDER | ForEach-Object -Process {$_.Name}
     $Files = Get-ChildItem -Path $env:APPVEYOR_BUILD_FOLDER
     $Manifest = Import-PowerShellDataFile -Path "$env:APPVEYOR_BUILD_FOLDER\$Name.psd1"
-    Context "$Name Module properties" {
+    Context "$Name module manifest properties" {
         It 'Contains a module file that aligns to the folder name' {
             $Files.Name.Contains("$Name.psm1") | Should Be True
         }
@@ -49,6 +49,13 @@ Describe 'Universal configuration tests' {
         }
         It 'Should include a project URI in the manifest' {
             $Manifest.PrivateData.PSData.ProjectURI | Should Not Be Null
+        }
+    }
+    Context "$Name required modules" {
+        ForEach ($RequiredModule in $Manifest.RequiredModules) {
+            It 'Should be found in the gallery' {
+                Find-Module -Name $RequiredModule | Should Not Be Null
+            }
         }
     }
 }
