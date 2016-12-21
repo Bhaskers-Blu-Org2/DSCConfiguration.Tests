@@ -63,10 +63,10 @@ Describe 'Universal configuration tests' {
             }
             else {
                 It "$RequiredModule should be found in the PowerShell public gallery" {
-                    Find-Module -Name $RequiredModule -ErrorAction SilentlyContinue | Should Not Be Null
+                    {Find-Module -Name $RequiredModule} | Should Not Be Null
                 }
                 It "$RequiredModule should install locally without error" {
-                    Install-Module -Name $RequiredModule -Force | Should Not Throw
+                    {Install-Module -Name $RequiredModule -Force} | Should Not Throw
                 }
             }
         }
