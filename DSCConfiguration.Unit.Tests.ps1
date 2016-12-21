@@ -53,8 +53,15 @@ Describe 'Universal configuration tests' {
     }
     Context "$Name required modules" {
         ForEach ($RequiredModule in $Manifest.RequiredModules) {
-            It 'Should be found in the gallery' {
-                Find-Module -Name $RequiredModule | Should Not Be Null
+            if ($RequiredModule.GetType() -eq 'String') {
+                It 'Should be found in the gallery' {
+                    Find-Module -Name $RequiredModule | Should Not Be Null
+                }
+            }
+            if ($RequiredModule.GetType() -eq 'Hashtable') {
+                It 'Should be found in the gallery' {
+                    Find-Module -ModuleName $RequiredModule.ModuleName -RequiredVersion $RequiredModule.ModuleVersion | Should Not Be Null
+                }
             }
         }
     }
