@@ -55,7 +55,7 @@ Describe 'Universal configuration tests' {
         ForEach ($RequiredModule in $Manifest.RequiredModules) {
             if ($RequiredModule.GetType().Name -eq 'Hashtable') {
                 It "$($RequiredModule.ModuleName) of type $($RequiredModule.GetType().Name) should be found in the PowerShell public gallery" {
-                    Find-Module -ModuleName $RequiredModule.ModuleName -RequiredVersion $RequiredModule.ModuleVersion | Should Not Throw
+                    Find-Module -Name $RequiredModule.ModuleName -RequiredVersion $RequiredModule.ModuleVersion | Should Not Throw
                 }
             }
             else {
