@@ -3,7 +3,6 @@
 Describe 'Universal configuration tests' {
     $Name = Get-Item -Path $env:APPVEYOR_BUILD_FOLDER | ForEach-Object -Process {$_.Name}
     $Files = Get-ChildItem -Path $env:APPVEYOR_BUILD_FOLDER
-    $Manifest = Import-PowerShellDataFile -Path "$env:APPVEYOR_BUILD_FOLDER\$Name.psd1"
     Context "$Name module manifest properties" {
         It 'Contains a module file that aligns to the folder name' {
             $Files.Name.Contains("$Name.psm1") | Should Be True
@@ -15,7 +14,7 @@ Describe 'Universal configuration tests' {
             $Files.Name.Contains("README.md") | Should Be True
         }
         It "Manifest $env:APPVEYOR_BUILD_FOLDER\$Name.psd1 should import as a data file" {
-            $Manifest | Should Be 'System.Collections.Hashtable'
+            {$Manifest = Import-PowerShellDataFile -Path "$env:APPVEYOR_BUILD_FOLDER\$Name.psd1"} | Should Not Throw
         }
         It 'Should point to the root module in the manifest' {
             $Manifest.RootModule | Should Be ".\$Name.psm1"
@@ -71,13 +70,27 @@ Describe 'Universal configuration tests' {
             }
         }
     }
+    Context "$Name configurations" {
+        It "$Name contents should copy to modules path without conflict" {
+            {Copy-Item -Path $env:APPVEYOR_BUILD_FOLDER -Destination $env:ProgramFiles\WindowsPowerShell\Modules\ -Recurse} | Should Not Throw
+        }
+        It "$Name imports as a module" {
+            {Import-Module -Name $Name} | Should Not Throw
+        }
+        It "$Name should provide configurations" {
+            $Configurations = Get-Command -Type Configurations -Module $Name
+            $Configurations | Should Not Be Null
+        }
+        ForEach ($Configuration in $Configurations) {
+            It "$($Configuration.Name) should compile without error" {
+                Invoke-Expression "$($Configuration.Name) -OutPath c:\dsc\$($Configuration.Name)" | Should Not Throw
+            }
+            It "$($Configuration.Name) should produce a mof file" {
+                Get-ChildItem -Path "c:\dsc\$($Configuration.Name)\*.mof" | Should Not Be Null
+            }
+        }
+    }
 }
-
-# at least the requirements for each configuration should be listed in the manifest
-
-# each configuration should compile locally
-
-# each configuration should produce a mof
 
 # after:
 # technically are these unit or integration?
