@@ -53,11 +53,11 @@ Describe 'Universal configuration tests' {
     }
 }
 
-# manifest should have name, id, root mod
-
 # requirements should be found in gallery
 
 # requirements should install locally
+
+# at least the requirements for each configuration should be listed in the manifest
 
 # each configuration should compile locally
 
