@@ -76,7 +76,7 @@ Describe 'Universal configuration tests' {
             {Import-Module -Name $Name} | Should Not Throw
         }
         It "$Name should provide configurations" {
-            $Configurations = Get-Command -Type Configurations -Module $Name
+            $Configurations = Get-Command -Type Configuration -Module $Name
             $Configurations | Should Not Be Null
         }
         ForEach ($Configuration in $Configurations) {
