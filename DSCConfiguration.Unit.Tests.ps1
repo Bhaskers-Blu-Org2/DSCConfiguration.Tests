@@ -55,10 +55,10 @@ Describe 'Universal configuration tests' {
         ForEach ($RequiredModule in $Manifest.RequiredModules[0]) {
             if ($RequiredModule.GetType().Name -eq 'Hashtable') {
                 It "$($RequiredModule.ModuleName) version $($RequiredModule.ModuleVersion) should be found in the PowerShell public gallery" {
-                    Find-Module -Name $RequiredModule.ModuleName -RequiredVersion $RequiredModule.ModuleVersion -ErrorAction SilentlyContinue | Should Not Be Null
+                    {Find-Module -Name $RequiredModule.ModuleName -RequiredVersion $RequiredModule.ModuleVersion} | Should Not Be Null
                 }
                 It "$($RequiredModule.ModuleName) version $($RequiredModule.ModuleVersion) should install locally without error" {
-                    Install-Module -Name $RequiredModule.ModuleName -RequiredVersion $RequiredModule.ModuleVersion -Force | Should Not Throw
+                    {Install-Module -Name $RequiredModule.ModuleName -RequiredVersion $RequiredModule.ModuleVersion -Force} | Should Not Throw
                 } 
             }
             else {
