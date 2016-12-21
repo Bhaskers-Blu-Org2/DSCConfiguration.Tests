@@ -55,12 +55,12 @@ Describe 'Universal configuration tests' {
         ForEach ($RequiredModule in $Manifest.RequiredModules) {
             if ($RequiredModule.GetType().Name -eq 'Hashtable') {
                 It "$($RequiredModule.ModuleName) of type $($RequiredModule.GetType().Name) should be found in the PowerShell public gallery" {
-                    Find-Module -Name $RequiredModule.ModuleName -RequiredVersion $RequiredModule.ModuleVersion | Should Not Throw
+                    Find-Module -Name $RequiredModule.ModuleName -RequiredVersion $RequiredModule.ModuleVersion -ErrorAction SilentlyContinue | Should Not Be Null
                 }
             }
             else {
                 It "$RequiredModule of type $($RequiredModule.GetType().Name) should be found in the PowerShell public gallery" {
-                    Find-Module -Name $RequiredModule | Should Not Be Null
+                    Find-Module -Name $RequiredModule -ErrorAction SilentlyContinue | Should Not Be Null
                 }
             }
         }
