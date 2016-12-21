@@ -26,8 +26,29 @@ Describe 'Universal configuration tests' {
         It 'Should list requirements in the manifest' {
             $Manifest.RequiredModules | Should Not Be Null
         }
-        It 'Should give a module version in the manifest' {
+        It 'Should list a module version in the manifest' {
             $Manifest.ModuleVersion | Should BeGreaterThan 0.0.0.0
+        }
+        It 'Should list an author in the manifest' {
+            $Manifest.Author | Should Not Be Null
+        }
+        It 'Should provide a description in the manifest' {
+            $Manifest.Description | Should Not Be Null
+        }
+        It 'Should require PowerShell version 4 or later in the manifest' {
+            $Manifest.PowerShellVersion | Should BeGreatherThan 4.0
+        }
+        It 'Should require CLR version 4 or later in the manifest' {
+            $Manifest.CLRVersion | Should BeGreatherThan 4.0
+        }
+        It 'Should export functions in the manifest' {
+            $Manifest.FunctionsToExport | Should Not Be Null
+        }
+        It 'Should include tags in the manifest' {
+            $Manifest.PrivateData.PSData.Tags | Should Not Be Null
+        }
+        It 'Should include a project URI in the manifest' {
+            $Manifest.PrivateData.PSData.ProjectURI | Should Not Be Null
         }
     }
 }
