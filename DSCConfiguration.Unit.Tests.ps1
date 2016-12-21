@@ -81,7 +81,7 @@ Describe 'Universal configuration tests' {
         }
         ForEach ($Configuration in $Configurations) {
             It "$($Configuration.Name) should compile without error" {
-                Invoke-Expression "$($Configuration.Name) -OutPath c:\dsc\$($Configuration.Name)" | Should Not Throw
+                Invoke-Expression "$($Configuration.Name) -Out c:\dsc\$($Configuration.Name)" | Should Not Throw
             }
             It "$($Configuration.Name) should produce a mof file" {
                 Get-ChildItem -Path "c:\dsc\$($Configuration.Name)\*.mof" | Should Not Be Null
