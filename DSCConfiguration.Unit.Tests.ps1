@@ -53,7 +53,7 @@ Describe 'Universal configuration tests' {
     }
     Context "$Name required modules" {
         ForEach ($RequiredModule in $Manifest.RequiredModules) {
-            if ($RequiredModule.GetType().Name -eq 'Hashtable') {
+            if ($RequiredModule -eq 'System.Collections.Hashtable') {
                 It "$($RequiredModule.ModuleName) version $($RequiredModule.ModuleVersion) should be found in the PowerShell public gallery" {
                     Find-Module -Name $RequiredModule.ModuleName -RequiredVersion $RequiredModule.ModuleVersion -ErrorAction SilentlyContinue | Should Not Be Null
                 }
