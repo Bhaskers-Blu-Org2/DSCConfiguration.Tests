@@ -57,19 +57,21 @@ Describe 'Universal configuration tests' {
                 It "$($RequiredModule.ModuleName) version $($RequiredModule.ModuleVersion) should be found in the PowerShell public gallery" {
                     Find-Module -Name $RequiredModule.ModuleName -RequiredVersion $RequiredModule.ModuleVersion -ErrorAction SilentlyContinue | Should Not Be Null
                 }
+                It "$($RequiredModule.ModuleName) version $($RequiredModule.ModuleVersion) should install locally without error" {
+                    Install-Module -Name $RequiredModule.ModuleName -RequiredVersion $RequiredModule.ModuleVersion -Force | Should Not Throw
+                } 
             }
             else {
                 It "$RequiredModule should be found in the PowerShell public gallery" {
                     Find-Module -Name $RequiredModule -ErrorAction SilentlyContinue | Should Not Be Null
                 }
+                It "$RequiredModule should install locally without error" {
+                    Install-Module -Name $RequiredModule -Force | Should Not Throw
+                }
             }
         }
     }
 }
-
-# requirements should be found in gallery
-
-# requirements should install locally
 
 # at least the requirements for each configuration should be listed in the manifest
 
