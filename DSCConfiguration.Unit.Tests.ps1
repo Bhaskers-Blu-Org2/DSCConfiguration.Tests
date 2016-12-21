@@ -36,10 +36,10 @@ Describe 'Universal configuration tests' {
             $Manifest.Description | Should Not Be Null
         }
         It 'Should require PowerShell version 4 or later in the manifest' {
-            $Manifest.PowerShellVersion | Should BeGreatherThan 4.0
+            $Manifest.PowerShellVersion | Should BeGreaterThan 4.0
         }
         It 'Should require CLR version 4 or later in the manifest' {
-            $Manifest.CLRVersion | Should BeGreatherThan 4.0
+            $Manifest.CLRVersion | Should BeGreaterThan 4.0
         }
         It 'Should export functions in the manifest' {
             $Manifest.FunctionsToExport | Should Not Be Null
