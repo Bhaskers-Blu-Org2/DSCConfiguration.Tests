@@ -21,16 +21,20 @@
 param(
     $ApplicationID = (property ApplicationID),
     $ApplicationPassword = (property ApplicationPassword),
-    $TenantID = (property TenantID)
+    $TenantID = (property TenantID),
+    $BuildFolder = (property BuildFolder),
+    $ProjectName = (property ProjectName),
+    $ProjectID = (property ProjectID),
+    $BuildID = (property BuildID)
 )
 
 # Synopsis: Baseline the environment
 task Install {
     exec { try {
-          Set-Location $env:APPVEYOR_BUILD_FOLDER
+          Set-Location $BuildFolder
 
           # Load modules from test repo
-          Import-Module -Name $env:APPVEYOR_BUILD_FOLDER\DscConfiguration.Tests\TestHelper.psm1 -Force
+          Import-Module -Name $BuildFolder\DscConfiguration.Tests\TestHelper.psm1 -Force
           
           # Install supporting environment modules from PSGallery
           $EnvironmentModules = @(
@@ -45,12 +49,12 @@ task Install {
           Invoke-UniquePSModulePath
           
           # Discover required modules from Configuration manifest (TestHelper)
-          $Modules = Get-RequiredGalleryModules -ManifestData (Import-PowerShellDataFile -Path "$env:APPVEYOR_BUILD_FOLDER\$env:APPVEYOR_PROJECT_NAME.psd1") -Install
+          $Modules = Get-RequiredGalleryModules -ManifestData (Import-PowerShellDataFile -Path "$BuildFolder\$ProjectName.psd1") -Install
           Write-Host "Downloaded modules:`n$($Modules | Foreach -Process {$_.Name})"
 
           # Prep and import Configurations from module (TestHelper)
-          Import-ModuleFromSource -Name $env:APPVEYOR_PROJECT_NAME
-          $Configurations = Invoke-ConfigurationPrep -Module $env:APPVEYOR_PROJECT_NAME -Path "$env:TEMP\$env:APPVEYOR_PROJECT_ID"
+          Import-ModuleFromSource -Name $ProjectName
+          $Configurations = Invoke-ConfigurationPrep -Module $ProjectName -Path "$env:TEMP\$ProjectID"
           Write-Host "Prepared configurations:`n$($Configurations | Foreach -Process {$_.Name})"
         }
         catch [System.Exception] {
@@ -62,9 +66,10 @@ task Install {
 
 # Synopsis: Run Lint and Unit Tests
 task UnitTests {
-    Set-Location $env:APPVEYOR_BUILD_FOLDER
-    $testResultsFile = "$env:APPVEYOR_BUILD_FOLDER\TestsResults.xml"
+    Set-Location $BuildFolder
+    $testResultsFile = "$BuildFolder\TestsResults.xml"
     $res = Invoke-Pester -OutputFormat NUnitXml -OutputFile $testResultsFile -PassThru
+    #TODO Test if results should go to AppVeyor
     (New-Object 'System.Net.WebClient').UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path $testResultsFile))
     if ($res.FailedCount -gt 0) {
         throw "$($res.FailedCount) tests failed."
@@ -73,7 +78,7 @@ task UnitTests {
 
 # Synopsis: Perform Azure Login
 task AzureLogin {
-    # Login to Azure using information stored in AppVeyor
+    # Login to Azure using information from params
     Write-Host "Logging in to Azure"
     Invoke-AzureSPNLogin -ApplicationID $ApplicationID -ApplicationPassword $ApplicationPassword -TenantID $TenantID
 }
@@ -82,7 +87,7 @@ task AzureLogin {
 task AzureAutomation {
     try {
         # Create Azure Resource Group and Automation account (TestHelper)
-        Write-Host "Creating Resource Group TestAutomation$env:APPVEYOR_BUILD_ID and Automation account DSCValidation$env:APPVEYOR_BUILD_ID"
+        Write-Host "Creating Resource Group TestAutomation$BuildID and Automation account DSCValidation$BuildID"
         if (New-ResourceGroupForTests) {
 
             # Import the modules discovered as requirements to Azure Automation (TestHelper)
