@@ -27,6 +27,8 @@ param(
 # Synopsis: Baseline the environment
 task Install {
     exec { try {
+          Set-Location $env:APPVEYOR_BUILD_FOLDER
+
           # Load modules from test repo
           Import-Module -Name $env:APPVEYOR_BUILD_FOLDER\DscConfiguration.Tests\TestHelper.psm1 -Force
           
@@ -60,6 +62,7 @@ task Install {
 
 # Synopsis: Run Lint and Unit Tests
 task UnitTests {
+    Set-Location $env:APPVEYOR_BUILD_FOLDER
     $testResultsFile = "$env:APPVEYOR_BUILD_FOLDER\TestsResults.xml"
     $res = Invoke-Pester -OutputFormat NUnitXml -OutputFile $testResultsFile -PassThru
     (New-Object 'System.Net.WebClient').UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path $testResultsFile))
