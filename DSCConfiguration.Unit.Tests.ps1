@@ -11,7 +11,7 @@
     along with the first test (which is replaced by the following 3) around Jan-Feb
     2017.
 #>
-Describe "Common Tests - PS Script Analyzer; Path $($Files.DirectoryName); Type $($Files.DirectoryName.GetType().Name)" {
+Describe 'Common Tests - PS Script Analyzer' {
 
     $requiredPssaRuleNames = @(
         'PSAvoidDefaultValueForMandatoryParameter',
@@ -60,7 +60,7 @@ Describe "Common Tests - PS Script Analyzer; Path $($Files.DirectoryName); Type 
         'PSUseUTF8EncodingForHelpFile'
     )
 
-    $Psm1Files = Get-Psm1FileList -FilePath $Files.DirectoryName
+    $Psm1Files = Get-Psm1FileList -FilePath $env:APPVEYOR_BUILD_FOLDER
 
     foreach ($Psm1File in $Psm1Files)
     {
@@ -183,7 +183,7 @@ Describe "Common Tests - PS Script Analyzer; Path $($Files.DirectoryName); Type 
 }
 
 Describe 'Common Tests - File Parsing' {
-    $psm1Files = Get-Psm1FileList -FilePath $Files.DirectoryName
+    $psm1Files = Get-Psm1FileList -FilePath $env:APPVEYOR_BUILD_FOLDER
 
     foreach ($psm1File in $psm1Files)
     {
@@ -208,7 +208,7 @@ Describe 'Common Tests - File Parsing' {
 }
 
 Describe 'Common Tests - File Formatting' {
-    $textFiles = Get-TextFilesList -FilePath $Files.DirectoryName
+    $textFiles = Get-TextFilesList -FilePath $env:APPVEYOR_BUILD_FOLDER
     
     It "Should not contain any files with Unicode file encoding" {
         $containsUnicodeFile = $false
