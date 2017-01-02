@@ -11,7 +11,7 @@
     along with the first test (which is replaced by the following 3) around Jan-Feb
     2017.
 #>
-Describe 'Common Tests - PS Script Analyzer' {
+Describe "Common Tests - PS Script Analyzer; Path ${$Files.DirectoryName}; Type ${$Files.DirectoryName.GetType().Name}" {
 
     $requiredPssaRuleNames = @(
         'PSAvoidDefaultValueForMandatoryParameter',
@@ -59,8 +59,7 @@ Describe 'Common Tests - PS Script Analyzer' {
         'PSUseToExportFieldsInManifest',
         'PSUseUTF8EncodingForHelpFile'
     )
-    Write-Host ${$Files.DirectoryName}
-    Write-Host ${$Files.DirectoryName.GetType().Name}
+
     $Psm1Files = Get-Psm1FileList -FilePath $Files.DirectoryName
 
     foreach ($Psm1File in $Psm1Files)
