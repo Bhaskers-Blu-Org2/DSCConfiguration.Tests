@@ -135,31 +135,6 @@ Describe 'Common Tests - PS Script Analyzer' {
                 $flaggedPssaRulesOutput | Should Be $null
             }
 
-            It 'Should pass any recently-added, error-level PS Script Analyzer rules' {
-                $knownPssaRuleNames = $requiredPssaRuleNames + $flaggedPssaRuleNames + $ignorePssaRuleNames
-
-                $newErrorPssaRulesOutput = Invoke-ScriptAnalyzer @invokeScriptAnalyzerParameters -ExcludeRule $knownPssaRuleNames -Severity 'Error'
-
-                if ($null -ne $newErrorPssaRulesOutput) {
-                    Write-Warning -Message 'Recently-added, error-level PSSA rule(s) did not pass.'
-                    Write-Warning -Message 'The following PSScriptAnalyzer errors need to be fixed or approved to be suppressed:'
-
-                    foreach ($newErrorPssaRuleOutput in $newErrorPssaRulesOutput)
-                    {
-                        Write-Warning -Message "$($newErrorPssaRuleOutput.ScriptName) (Line $($newErrorPssaRuleOutput.Line)): $($newErrorPssaRuleOutput.Message)"
-                    }
-
-                    Write-Warning -Message  'For instructions on how to run PSScriptAnalyzer on your own machine, please go to https://github.com/powershell/PSScriptAnalyzer'
-                }
-
-                <#
-                    Automatically passing this test since it may break several modules at the moment.
-                    Automatic pass to be removed Jan-Feb 2017.
-                #>
-                $newErrorPssaRulesOutput = $null
-                $newErrorPssaRulesOutput | Should Be $null
-            }
-
             It 'Should not suppress any required PS Script Analyzer rules' {
                 $requiredRuleIsSuppressed = $false
 
