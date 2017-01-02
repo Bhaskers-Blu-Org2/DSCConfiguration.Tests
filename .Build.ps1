@@ -28,8 +28,8 @@ param(
 task Install {
     exec { try {
           # Load modules from test repo
-          Import-Module -Name .\DscConfiguration.Tests\TestHelper.psm1 -Force
-          Import-Module -Name .\DscConfiguration.Tests\AppVeyorRunner.psm1 -Force
+          Import-Module -Name $env:APPVEYOR_BUILD_FOLDER\DscConfiguration.Tests\TestHelper.psm1 -Force
+          Import-Module -Name $env:APPVEYOR_BUILD_FOLDER\DscConfiguration.Tests\AppVeyorRunner.psm1 -Force
           
           # Install supporting environment modules from PSGallery
           $EnvironmentModules = @(
@@ -44,7 +44,7 @@ task Install {
           Invoke-UniquePSModulePath
           
           # Discover required modules from Configuration manifest (TestHelper)
-          $Modules = Get-RequiredGalleryModules -ManifestData (Import-PowerShellDataFile -Path ".\$env:APPVEYOR_PROJECT_NAME.psd1") -Install
+          $Modules = Get-RequiredGalleryModules -ManifestData (Import-PowerShellDataFile -Path "$env:APPVEYOR_BUILD_FOLDER\$env:APPVEYOR_PROJECT_NAME.psd1") -Install
           Write-Host "Downloaded modules:`n$($Modules | Foreach -Process {$_.Name})"
 
           # Prep and import Configurations from module (TestHelper)
@@ -61,7 +61,7 @@ task Install {
 
 # Synopsis: Run Lint and Unit Tests
 task UnitTests {
-    $testResultsFile = ".\TestsResults.xml"
+    $testResultsFile = "$env:APPVEYOR_BUILD_FOLDER\TestsResults.xml"
     $res = Invoke-Pester -OutputFormat NUnitXml -OutputFile $testResultsFile -PassThru
     (New-Object 'System.Net.WebClient').UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path $testResultsFile))
     if ($res.FailedCount -gt 0) {
