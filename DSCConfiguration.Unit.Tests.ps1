@@ -59,7 +59,8 @@ Describe 'Common Tests - PS Script Analyzer' {
         'PSUseToExportFieldsInManifest',
         'PSUseUTF8EncodingForHelpFile'
     )
-
+    Write-Host ${$Files.DirectoryName}
+    Write-Host ${$Files.DirectoryName.GetType().Name}
     $Psm1Files = Get-Psm1FileList -FilePath $Files.DirectoryName
 
     foreach ($Psm1File in $Psm1Files)
@@ -208,7 +209,7 @@ Describe 'Common Tests - File Parsing' {
 }
 
 Describe 'Common Tests - File Formatting' {
-    $textFiles = Get-TextFilesList $Files.DirectoryName
+    $textFiles = Get-TextFilesList -FilePath $Files.DirectoryName
     
     It "Should not contain any files with Unicode file encoding" {
         $containsUnicodeFile = $false
