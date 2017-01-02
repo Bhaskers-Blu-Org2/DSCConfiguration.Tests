@@ -9,7 +9,7 @@ function Invoke-UniquePSModulePath {
         foreach($path in $env:psmodulepath.split(';').ToUpper().ToLower()) {
             [array]$correctDirFormat += "$path\;"
         }
-        $correctDirFormat = $correctDirFormat.replace("\\","\") | ? {$_ -ne '\;'} | Select-Object -Unique
+        $correctDirFormat = $correctDirFormat.replace("\\","\") | Where-Object {$_ -ne '\;'} | Select-Object -Unique
         foreach ($path in $correctDirFormat.split(';')) {
             [string]$fixPath += "$path;"
         }
@@ -40,7 +40,7 @@ function Get-RequiredGalleryModules {
                 if ($galleryReference = Invoke-RestMethod -Method Get -Uri "https://www.powershellgallery.com/api/v2/FindPackagesById()?id='$RequiredModule'" -ErrorAction Continue)
                 {
                 $ModuleReference | Add-Member -MemberType NoteProperty -Name 'Name' -Value $RequiredModule
-                $ModuleReference | Add-Member -MemberType NoteProperty -Name 'URI' -Value ($galleryReference | ? {$_.Properties.IsLatestVersion.'#text' -eq $true}).content.src
+                $ModuleReference | Add-Member -MemberType NoteProperty -Name 'URI' -Value ($galleryReference | Where-Object {$_.Properties.IsLatestVersion.'#text' -eq $true}).content.src
                 $ModulesInformation += $ModuleReference
                 }
                 if ($Install -eq $true)
@@ -55,7 +55,7 @@ function Get-RequiredGalleryModules {
                 if ($galleryReference = Invoke-RestMethod -Method Get -Uri "https://www.powershellgallery.com/api/v2/FindPackagesById()?id='$($RequiredModule.ModuleName)'" -ErrorAction Continue)
                 {
                 $ModuleReference | Add-Member -MemberType NoteProperty -Name 'Name' -Value $RequiredModule.ModuleName
-                $ModuleReference | Add-Member -MemberType NoteProperty -Name 'URI' -Value ($galleryReference | ? {$_.Properties.Version -eq $RequiredModule.ModuleVersion}).content.src
+                $ModuleReference | Add-Member -MemberType NoteProperty -Name 'URI' -Value ($galleryReference | Where-Object {$_.Properties.Version -eq $RequiredModule.ModuleVersion}).content.src
                 $ModulesInformation += $ModuleReference
                 }
                 if ($Install -eq $true)
@@ -220,4 +220,40 @@ function Get-Psm1FileList
     )
 
     return Get-ChildItem -Path $FilePath -Filter '*.psm1' -File -Recurse
+}
+
+<#
+    .SYNOPSIS
+        Retrieves the list of suppressed PSSA rules in the file at the given path.
+
+    .PARAMETER FilePath
+        The path to the file to retrieve the suppressed rules of.
+#>
+function Get-SuppressedPSSARuleNameList
+{
+    [OutputType([String[]])]
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [String]
+        $FilePath
+    )
+
+    $suppressedPSSARuleNames = [String[]]@()
+
+    $fileAst = [System.Management.Automation.Language.Parser]::ParseFile($FilePath, [ref]$null, [ref]$null)
+
+    # Overall file attrbutes
+    $attributeAsts = $fileAst.FindAll({$args[0] -is [System.Management.Automation.Language.AttributeAst]}, $true)
+
+    foreach ($attributeAst in $attributeAsts)
+    {
+        if ([System.Diagnostics.CodeAnalysis.SuppressMessageAttribute].FullName.ToLower().Contains($attributeAst.TypeName.FullName.ToLower()))
+        {
+            $suppressedPSSARuleNames += $attributeAst.PositionalArguments.Extent.Text
+        }
+    }
+
+    return $suppressedPSSARuleNames
 }
