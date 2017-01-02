@@ -1,6 +1,6 @@
-    $Name = Get-Item -Path $env:APPVEYOR_BUILD_FOLDER | ForEach-Object -Process {$_.Name}
-    $Files = Get-ChildItem -Path $env:APPVEYOR_BUILD_FOLDER
-    $Manifest = Import-PowerShellDataFile -Path "$env:APPVEYOR_BUILD_FOLDER\$Name.psd1"
+$Name = Get-Item -Path $env:APPVEYOR_BUILD_FOLDER | ForEach-Object -Process {$_.Name}
+$Files = Get-ChildItem -Path $env:APPVEYOR_BUILD_FOLDER
+$Manifest = Import-PowerShellDataFile -Path "$env:APPVEYOR_BUILD_FOLDER\$Name.psd1"
     
 <#
     PSSA = PS Script Analyzer
@@ -158,6 +158,7 @@ Describe 'Common Tests - PS Script Analyzer' {
     }
 }
 
+<##>
 Describe 'Common Tests - File Parsing' {
     $psm1Files = Get-Psm1FileList -FilePath $env:APPVEYOR_BUILD_FOLDER
 
@@ -183,6 +184,7 @@ Describe 'Common Tests - File Parsing' {
     }
 }
 
+<##>
 Describe 'Common Tests - File Formatting' {
     $textFiles = Get-TextFilesList -FilePath $env:APPVEYOR_BUILD_FOLDER
     
@@ -358,14 +360,3 @@ Describe 'Common Tests - Configuration Module Requirements' {
         }
     }
 }
-
-# after:
-# technically are these unit or integration?
-
-# modules should be in AADSC
-
-# modules should show extracted activities
-
-# configurations should be in AADSC
-
-# configurations should show as compiled
