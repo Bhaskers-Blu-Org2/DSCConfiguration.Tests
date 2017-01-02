@@ -149,3 +149,75 @@ function Import-ModuleFromSource {
         throw "An error occured while importing module $Name`n$error"
     }
 }
+
+<#
+    .SYNOPSIS
+        Retrieves the parse errors for the given file.
+
+    .PARAMETER FilePath
+        The path to the file to get parse errors for.
+#>
+function Get-FileParseErrors
+{
+    [OutputType([System.Management.Automation.Language.ParseError[]])]
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(ValueFromPipeline = $true, Mandatory = $true)]
+        [String]
+        $FilePath
+    )
+
+    $parseErrors = $null
+    $null = [System.Management.Automation.Language.Parser]::ParseFile($FilePath, [ref] $null, [ref] $parseErrors)
+
+    return $parseErrors
+}
+
+<#
+    .SYNOPSIS
+        Retrieves all text files under the given root file path.
+
+    .PARAMETER Root
+        The root file path under which to retrieve all text files.
+
+    .NOTES
+        Retrieves all files with the '.gitignore', '.gitattributes', '.ps1', '.psm1', '.psd1',
+        '.json', '.xml', '.cmd', or '.mof' file extensions.
+#>
+function Get-TextFilesList
+{
+    [OutputType([System.IO.FileInfo[]])]
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [String]
+        $Root
+    )
+
+    $textFileExtensions = @('.gitignore', '.gitattributes', '.ps1', '.psm1', '.psd1', '.json', '.xml', '.cmd', '.mof')
+
+    return Get-ChildItem -Path $Root -File -Recurse | Where-Object { $textFileExtensions -contains $_.Extension }
+}
+
+<#
+    .SYNOPSIS
+        Retrieves all .psm1 files under the given file path.
+
+    .PARAMETER FilePath
+        The root file path to gather the .psm1 files from.
+#>
+function Get-Psm1FileList
+{
+    [OutputType([Object[]])]
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(ValueFromPipeline = $true, Mandatory = $true)]
+        [String]
+        $FilePath
+    )
+
+    return Get-ChildItem -Path $FilePath -Filter '*.psm1' -File -Recurse
+}
