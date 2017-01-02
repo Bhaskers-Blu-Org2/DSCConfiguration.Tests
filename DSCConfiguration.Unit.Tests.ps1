@@ -41,6 +41,7 @@ Describe 'Common Tests - PS Script Analyzer' {
     )
 
     $flaggedPssaRuleNames = @(
+        'PSAvoidUsingPlainTextForPassword',
         'PSAvoidGlobalVars',
         'PSAvoidUsingUsernameAndPasswordParams',
         'PSShouldProcess',
@@ -49,7 +50,6 @@ Describe 'Common Tests - PS Script Analyzer' {
     )
 
     $ignorePssaRuleNames = @(
-        'PSAvoidUsingPlainTextForPassword',
         'PSAvoidUsingConvertToSecureStringWithPlainText',
         'PSDSCDscExamplesPresent',
         'PSDSCDscTestsPresent',
@@ -72,7 +72,7 @@ Describe 'Common Tests - PS Script Analyzer' {
 
         Context $Psm1File.Name {
             It 'Should pass all error-level PS Script Analyzer rules' {
-                $errorPssaRulesOutput = Invoke-ScriptAnalyzer @invokeScriptAnalyzerParameters -Severity 'Error'
+                $errorPssaRulesOutput = Invoke-ScriptAnalyzer @invokeScriptAnalyzerParameters -ExcludeRule $knownPssaRuleNames -Severity 'Error'
 
                 if ($null -ne $errorPssaRulesOutput) {
                     Write-Warning -Message 'Error-level PSSA rule(s) did not pass.'
