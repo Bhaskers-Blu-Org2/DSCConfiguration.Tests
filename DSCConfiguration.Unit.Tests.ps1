@@ -42,7 +42,6 @@ Describe 'Common Tests - PS Script Analyzer' {
 
     $flaggedPssaRuleNames = @(
         'PSAvoidGlobalVars',
-        'PSAvoidUsingPlainTextForPassword',
         'PSAvoidUsingUsernameAndPasswordParams',
         'PSShouldProcess',
         'PSUseDeclaredVarsMoreThanAssigments',
@@ -50,6 +49,7 @@ Describe 'Common Tests - PS Script Analyzer' {
     )
 
     $ignorePssaRuleNames = @(
+        'PSAvoidUsingPlainTextForPassword',
         'PSAvoidUsingConvertToSecureStringWithPlainText',
         'PSDSCDscExamplesPresent',
         'PSDSCDscTestsPresent',
