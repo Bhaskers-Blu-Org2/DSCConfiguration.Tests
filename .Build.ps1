@@ -78,19 +78,19 @@ task AzureLogin {
 # Synopsis: Deploys configuration and modules to Azure Automation
 task AzureAutomation {
     try {
-        # Create Azure Resource Group and Automation account (AppVeyorRunner)
+        # Create Azure Resource Group and Automation account (TestHelper)
         Write-Host "Creating Resource Group TestAutomation$env:APPVEYOR_BUILD_ID and Automation account DSCValidation$env:APPVEYOR_BUILD_ID"
         if (New-ResourceGroupForTests) {
 
-            # Import the modules discovered as requirements to Azure Automation (AppVeyorRunner)
+            # Import the modules discovered as requirements to Azure Automation (TestHelper)
             Write-Host 'Importing modules to Azure Automation'
             foreach ($ImportModule in $Modules) {Import-ModuleToAzureAutomation -Module $ImportModule}
             
-            # Allow module activities to extract before importing configuration (AppVeyorRunner)
+            # Allow module activities to extract before importing configuration (TestHelper)
             Write-Host 'Waiting for all modules to finish extracting activities'
             foreach ($WaitForModule in $Modules) {Wait-ModuleExtraction -Module $WaitForModule}
                 
-            # Import and compile the Configurations using Azure Automation (AppVeyorRunner)
+            # Import and compile the Configurations using Azure Automation (TestHelper)
             Write-Host 'Importing configurations to Azure Automation'              
             foreach ($ImportConfiguration in $Configurations) {Import-ConfigurationToAzureAutomation -Configuration $ImportConfiguration}
 
