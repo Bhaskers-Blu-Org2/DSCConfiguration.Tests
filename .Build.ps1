@@ -29,7 +29,6 @@ task Install {
     exec { try {
           # Load modules from test repo
           Import-Module -Name $env:APPVEYOR_BUILD_FOLDER\DscConfiguration.Tests\TestHelper.psm1 -Force
-          Import-Module -Name $env:APPVEYOR_BUILD_FOLDER\DscConfiguration.Tests\AppVeyorRunner.psm1 -Force
           
           # Install supporting environment modules from PSGallery
           $EnvironmentModules = @(
