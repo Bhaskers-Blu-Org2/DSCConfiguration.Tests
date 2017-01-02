@@ -11,7 +11,7 @@
     along with the first test (which is replaced by the following 3) around Jan-Feb
     2017.
 #>
-Describe "Common Tests - PS Script Analyzer; Path {$Files.DirectoryName}; Type {$Files.DirectoryName.GetType().Name}" {
+Describe "Common Tests - PS Script Analyzer; Path $($Files.DirectoryName); Type $($Files.DirectoryName.GetType().Name)" {
 
     $requiredPssaRuleNames = @(
         'PSAvoidDefaultValueForMandatoryParameter',
