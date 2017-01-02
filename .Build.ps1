@@ -30,38 +30,36 @@ param(
 
 # Synopsis: Baseline the environment
 task Install {
-    exec { try {
-          Set-Location $BuildFolder
+    try {
+        Set-Location $BuildFolder
 
-          # Load modules from test repo
-          Import-Module -Name $BuildFolder\DscConfiguration.Tests\TestHelper.psm1 -Force
-          
-          # Install supporting environment modules from PSGallery
-          $EnvironmentModules = @(
-            'Pester',
-            'PSScriptAnalyzer',
-            'AzureRM'
-          )
-          Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.205 -Force | Out-Null
-          Install-Module -Name $EnvironmentModules -Repository PSGallery -Force
-          
-          # Fix module path if duplicates exist (TestHelper)
-          Invoke-UniquePSModulePath
-          
-          # Discover required modules from Configuration manifest (TestHelper)
-          $Modules = Get-RequiredGalleryModules -ManifestData (Import-PowerShellDataFile -Path "$BuildFolder\$ProjectName.psd1") -Install
-          Write-Host "Downloaded modules:`n$($Modules | Foreach -Process {$_.Name})"
+        # Load modules from test repo
+        Import-Module -Name $BuildFolder\DscConfiguration.Tests\TestHelper.psm1 -Force
+        
+        # Install supporting environment modules from PSGallery
+        $EnvironmentModules = @(
+        'Pester',
+        'PSScriptAnalyzer',
+        'AzureRM'
+        )
+        Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.205 -Force | Out-Null
+        Install-Module -Name $EnvironmentModules -Repository PSGallery -Force
+        
+        # Fix module path if duplicates exist (TestHelper)
+        Invoke-UniquePSModulePath
+        
+        # Discover required modules from Configuration manifest (TestHelper)
+        $Modules = Get-RequiredGalleryModules -ManifestData (Import-PowerShellDataFile -Path "$BuildFolder\$ProjectName.psd1") -Install
+        Write-Host "Downloaded modules:`n$($Modules | Foreach -Process {$_.Name})"
 
-          # Prep and import Configurations from module (TestHelper)
-          Import-ModuleFromSource -Name $ProjectName
-          $Configurations = Invoke-ConfigurationPrep -Module $ProjectName -Path "$env:TEMP\$ProjectID"
-          Write-Host "Prepared configurations:`n$($Configurations | Foreach -Process {$_.Name})"
-        }
-        catch [System.Exception] {
-            throw $error
-        }
+        # Prep and import Configurations from module (TestHelper)
+        Import-ModuleFromSource -Name $ProjectName
+        $Configurations = Invoke-ConfigurationPrep -Module $ProjectName -Path "$env:TEMP\$ProjectID"
+        Write-Host "Prepared configurations:`n$($Configurations | Foreach -Process {$_.Name})"
     }
-
+    catch [System.Exception] {
+        throw $error
+    }
 }
 
 # Synopsis: Run Lint and Unit Tests
