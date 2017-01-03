@@ -79,7 +79,7 @@ function Invoke-AzureSPNLogin {
         [string]$TenantID
     )
     try {
-        # TODO - is there a better way to pass secure strings from AppVeyor
+        # Build platform (AppVeyor) does not offer solution for passing secure strings
         $Credential = New-Object -typename System.Management.Automation.PSCredential -argumentlist $ApplicationID, $(convertto-securestring -String $ApplicationPassword -AsPlainText -Force)
     
         # Suppress request to share usage information
