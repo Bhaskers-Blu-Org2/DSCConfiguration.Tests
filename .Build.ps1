@@ -100,16 +100,20 @@ task AzureAutomation {
         if (New-ResourceGroupForTests) {
 
             # Import the modules discovered as requirements to Azure Automation (TestHelper)
-            Write-Host 'Importing modules to Azure Automation'
-            foreach ($ImportModule in $Global:Modules) {Import-ModuleToAzureAutomation -Module $ImportModule}
+            foreach ($ImportModule in $Global:Modules) {
+                Write-Host "Importing module $($ImportModule.Name) to Azure Automation"
+                Import-ModuleToAzureAutomation -Module $ImportModule
+            }
             
             # Allow module activities to extract before importing configuration (TestHelper)
             Write-Host 'Waiting for all modules to finish extracting activities'
             foreach ($WaitForModule in $Global:Modules) {Wait-ModuleExtraction -Module $WaitForModule}
                 
             # Import and compile the Configurations using Azure Automation (TestHelper)
-            Write-Host 'Importing configurations to Azure Automation'              
-            foreach ($ImportConfiguration in $Global:Configurations) {Import-ConfigurationToAzureAutomation -Configuration $ImportConfiguration}
+            foreach ($ImportConfiguration in $Global:Configurations) {
+                Write-Host "Importing configuration $($ImportConfiguration.Name) to Azure Automation"
+                Import-ConfigurationToAzureAutomation -Configuration $ImportConfiguration
+            }
 
             # Wait for Configurations to compile
             Write-Host 'Waiting for configurations to finish compiling in Azure Automation'              
