@@ -372,7 +372,7 @@ function Import-ConfigurationToAzureAutomation {
             $ConfigurationImport = Import-AzureRmAutomationDscConfiguration -ResourceGroupName $ResourceGroupName -AutomationAccountName $AutomationAccountName -SourcePath $Configuration.Location -Published -Force
 
             # Load configdata if it exists
-            if (Test-Path ".\ConfigurationData\$($Configuration.Name).ConfigData.psd1") {
+            if (Test-Path "$BuildFolder\ConfigurationData\$($Configuration.Name).ConfigData.psd1") {
                 $ConfigurationData = Import-PowerShellDataFile ".\ConfigurationData\$($Configuration.Name).ConfigData.psd1"
             }
 

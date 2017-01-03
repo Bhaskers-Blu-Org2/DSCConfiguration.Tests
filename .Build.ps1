@@ -127,7 +127,9 @@ task AzureAutomationConfigurations {
 
         # Wait for Configurations to compile
         Write-Host 'Waiting for configurations to finish compiling in Azure Automation'              
-        foreach ($WaitForConfiguration in $Global:Configurations) {Wait-ConfigurationCompilation -Configuration $WaitForConfiguration}
+        foreach ($WaitForConfiguration in $Global:Configurations) {
+            Wait-ConfigurationCompilation -Configuration $WaitForConfiguration
+        }
     }
     catch [System.Exception] {
         throw $error
