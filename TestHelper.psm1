@@ -287,8 +287,8 @@ function Test-FileInUnicode
 function New-ResourceGroupandAutomationAccount {
     param(
         [string]$Location = 'EastUS2',
-        [string]$ResourceGroupName = 'TestAutomation'+$BuildID,
-        [string]$AutomationAccountName = 'DSCValidation'+$BuildID
+        [string]$ResourceGroupName = 'TestAutomation'+$env:BuildID,
+        [string]$AutomationAccountName = 'DSCValidation'+$env:BuildID
     )
     try {
         # Create Resource Group
@@ -312,7 +312,7 @@ function New-ResourceGroupandAutomationAccount {
 <##>
 function Remove-AzureTestResources {
     param(
-        [string]$ResourceGroupName = 'TestAutomation'+$BuildID
+        [string]$ResourceGroupName = 'TestAutomation'+$env:BuildID
     )
     try {
         $Remove = Remove-AzureRmResourceGroup -Name $ResourceGroupName -Force
@@ -328,8 +328,8 @@ TODO should catch issues with import and return to build log
 function Import-ModuleToAzureAutomation {
     param(
         [array]$Module,
-        [string]$ResourceGroupName = 'TestAutomation'+$BuildID,
-        [string]$AutomationAccountName = 'DSCValidation'+$BuildID
+        [string]$ResourceGroupName = 'TestAutomation'+$env:BuildID,
+        [string]$AutomationAccountName = 'DSCValidation'+$env:BuildID
     )
     try {
         # Import module from custom object
@@ -346,8 +346,8 @@ TODO need timeout based on real expectations
 function Wait-ModuleExtraction {
     param(
         [array]$Module,
-        [string]$ResourceGroupName = 'TestAutomation'+$BuildID,
-        [string]$AutomationAccountName = 'DSCValidation'+$BuildID
+        [string]$ResourceGroupName = 'TestAutomation'+$env:BuildID,
+        [string]$AutomationAccountName = 'DSCValidation'+$env:BuildID
     )
     try {
         # The resource modules must finish the "Creating" stage before the configuration will compile successfully
@@ -364,8 +364,8 @@ function Wait-ModuleExtraction {
 function Import-ConfigurationToAzureAutomation {
     param(
         [psobject]$Configuration,
-        [string]$ResourceGroupName = 'TestAutomation'+$BuildID,
-        [string]$AutomationAccountName = 'DSCValidation'+$BuildID
+        [string]$ResourceGroupName = 'TestAutomation'+$env:BuildID,
+        [string]$AutomationAccountName = 'DSCValidation'+$env:BuildID
     )
     try {
             # Import Configuration to Azure Automation DSC
@@ -396,8 +396,8 @@ TODO need timeout based on real expectations
 function Wait-ConfigurationCompilation {
     param(
         [psobject]$Configuration,
-        [string]$ResourceGroupName = 'TestAutomation'+$BuildID,
-        [string]$AutomationAccountName = 'DSCValidation'+$BuildID
+        [string]$ResourceGroupName = 'TestAutomation'+$env:BuildID,
+        [string]$AutomationAccountName = 'DSCValidation'+$env:BuildID
     )
     try {
         while ((Get-AzureRmAutomationDscCompilationJob -ResourceGroupName $ResourceGroupName -AutomationAccountName $AutomationAccountName -Name $Configuration.Name).Status -ne 'Completed') {
