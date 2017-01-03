@@ -47,14 +47,24 @@ task Install {
         
         # Fix module path if duplicates exist (TestHelper)
         Invoke-UniquePSModulePath
-        
+    }
+    catch [System.Exception] {
+        throw $error
+    }
+}
+
+# Synopsis: Load the Configuration modules and required resources
+task Load {
+    try {
+        Set-Location $BuildFolder
+
         # Discover required modules from Configuration manifest (TestHelper)
-        $Modules = Get-RequiredGalleryModules -ManifestData (Import-PowerShellDataFile -Path "$BuildFolder\$ProjectName.psd1") -Install
+        $Global:Modules = Get-RequiredGalleryModules -ManifestData (Import-PowerShellDataFile -Path "$BuildFolder\$ProjectName.psd1") -Install
         Write-Host "Downloaded modules:`n$($Modules | Foreach -Process {$_.Name})"
 
         # Prep and import Configurations from module (TestHelper)
         Import-ModuleFromSource -Name $ProjectName
-        $Configurations = Invoke-ConfigurationPrep -Module $ProjectName -Path "$env:TEMP\$ProjectID"
+        $Global:Configurations = Invoke-ConfigurationPrep -Module $ProjectName -Path "$env:TEMP\$ProjectID"
         Write-Host "Prepared configurations:`n$($Configurations | Foreach -Process {$_.Name})"
     }
     catch [System.Exception] {
@@ -82,6 +92,7 @@ task AzureLogin {
 }
 
 # Synopsis: Deploys configuration and modules to Azure Automation
+#TODO modules and configurations are empty when this section is run; build script output section to input section?
 task AzureAutomation {
     try {
         # Create Azure Resource Group and Automation account (TestHelper)
@@ -90,19 +101,19 @@ task AzureAutomation {
 
             # Import the modules discovered as requirements to Azure Automation (TestHelper)
             Write-Host 'Importing modules to Azure Automation'
-            foreach ($ImportModule in $Modules) {Import-ModuleToAzureAutomation -Module $ImportModule}
+            foreach ($ImportModule in $Global:Modules) {Import-ModuleToAzureAutomation -Module $ImportModule}
             
             # Allow module activities to extract before importing configuration (TestHelper)
             Write-Host 'Waiting for all modules to finish extracting activities'
-            foreach ($WaitForModule in $Modules) {Wait-ModuleExtraction -Module $WaitForModule}
+            foreach ($WaitForModule in $Global:Modules) {Wait-ModuleExtraction -Module $WaitForModule}
                 
             # Import and compile the Configurations using Azure Automation (TestHelper)
             Write-Host 'Importing configurations to Azure Automation'              
-            foreach ($ImportConfiguration in $Configurations) {Import-ConfigurationToAzureAutomation -Configuration $ImportConfiguration}
+            foreach ($ImportConfiguration in $Global:Configurations) {Import-ConfigurationToAzureAutomation -Configuration $ImportConfiguration}
 
             # Wait for Configurations to compile
             Write-Host 'Waiting for configurations to finish compiling in Azure Automation'              
-            foreach ($WaitForConfiguration in $Configurations) {Wait-ConfigurationCompilation -Configuration $WaitForConfiguration}
+            foreach ($WaitForConfiguration in $Global:Configurations) {Wait-ConfigurationCompilation -Configuration $WaitForConfiguration}
             }
     }
     catch [System.Exception] {
@@ -116,4 +127,4 @@ task Clean {
 }
 
 # Synopsis: default build tasks
-task . Install, UnitTests, AzureLogin, AzureAutomation, Clean
+task . Install, Load, UnitTests, AzureLogin, AzureAutomation, Clean
