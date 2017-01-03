@@ -401,6 +401,7 @@ function Wait-ConfigurationCompilation {
     )
     try {
         while ((Get-AzureRmAutomationDscCompilationJob -ResourceGroupName $ResourceGroupName -AutomationAccountName $AutomationAccountName -Name $Configuration.Name).Status -ne 'Completed') {
+            Write-Host "Waiting for $($Configuration.Name) that has Status $((Get-AzureRmAutomationDscCompilationJob -ResourceGroupName $ResourceGroupName -AutomationAccountName $AutomationAccountName -Name $Configuration.Name).Status)"
             Start-Sleep -Seconds 15
         }   
     }
