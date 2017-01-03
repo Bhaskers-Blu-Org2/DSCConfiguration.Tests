@@ -91,34 +91,43 @@ task AzureLogin {
     Invoke-AzureSPNLogin -ApplicationID $ApplicationID -ApplicationPassword $ApplicationPassword -TenantID $TenantID
 }
 
-# Synopsis: Deploys configuration and modules to Azure Automation
-#TODO modules and configurations are empty when this section is run; build script output section to input section?
-task AzureAutomation {
+# Synopsis: Create Resource Group
+task ResourceGroupAndAutomationAccount {
+    # Create Azure Resource Group and Automation account (TestHelper)
+    Write-Host "Creating Resource Group TestAutomation$BuildID and Automation account DSCValidation$BuildID"
+    New-ResourceGroupandAutomationAccount
+}
+
+# Synopsis: Deploys modules to Azure Automation
+task AzureAutomationModules {
     try {
-        # Create Azure Resource Group and Automation account (TestHelper)
-        Write-Host "Creating Resource Group TestAutomation$BuildID and Automation account DSCValidation$BuildID"
-        if (New-ResourceGroupForTests) {
+        # Import the modules discovered as requirements to Azure Automation (TestHelper)
+        foreach ($ImportModule in $Global:Modules) {
+            Write-Host "Importing module $($ImportModule.Name) to Azure Automation"
+            Import-ModuleToAzureAutomation -Module $ImportModule
+        }
+        
+        # Allow module activities to extract before importing configuration (TestHelper)
+        Write-Host 'Waiting for all modules to finish extracting activities'
+        foreach ($WaitForModule in $Global:Modules) {Wait-ModuleExtraction -Module $WaitForModule}
+    }
+    catch [System.Exception] {
+        throw $error
+    }
+}
 
-            # Import the modules discovered as requirements to Azure Automation (TestHelper)
-            foreach ($ImportModule in $Global:Modules) {
-                Write-Host "Importing module $($ImportModule.Name) to Azure Automation"
-                Import-ModuleToAzureAutomation -Module $ImportModule
-            }
-            
-            # Allow module activities to extract before importing configuration (TestHelper)
-            Write-Host 'Waiting for all modules to finish extracting activities'
-            foreach ($WaitForModule in $Global:Modules) {Wait-ModuleExtraction -Module $WaitForModule}
-                
-            # Import and compile the Configurations using Azure Automation (TestHelper)
-            foreach ($ImportConfiguration in $Global:Configurations) {
-                Write-Host "Importing configuration $($ImportConfiguration.Name) to Azure Automation"
-                Import-ConfigurationToAzureAutomation -Configuration $ImportConfiguration
-            }
+# Synopsis: Deploys configurations to Azure Automation
+task AzureAutomationConfigurations {
+    try {
+        # Import and compile the Configurations using Azure Automation (TestHelper)
+        foreach ($ImportConfiguration in $Global:Configurations) {
+            Write-Host "Importing configuration $($ImportConfiguration.Name) to Azure Automation"
+            Import-ConfigurationToAzureAutomation -Configuration $ImportConfiguration
+        }
 
-            # Wait for Configurations to compile
-            Write-Host 'Waiting for configurations to finish compiling in Azure Automation'              
-            foreach ($WaitForConfiguration in $Global:Configurations) {Wait-ConfigurationCompilation -Configuration $WaitForConfiguration}
-            }
+        # Wait for Configurations to compile
+        Write-Host 'Waiting for configurations to finish compiling in Azure Automation'              
+        foreach ($WaitForConfiguration in $Global:Configurations) {Wait-ConfigurationCompilation -Configuration $WaitForConfiguration}
     }
     catch [System.Exception] {
         throw $error
@@ -131,4 +140,4 @@ task Clean {
 }
 
 # Synopsis: default build tasks
-task . Install, Load, UnitTests, AzureLogin, AzureAutomation, Clean
+task . Install, Load, UnitTests, AzureLogin, ResourceGroupAndAutomationAccount, AzureAutomationModules, AzureAutomationConfigurations, Clean

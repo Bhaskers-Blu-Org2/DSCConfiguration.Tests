@@ -2,9 +2,6 @@
 Comments
 #>
 
-$env:ResourceGroupName = 'TestAutomation'+$env:APPVEYOR_BUILD_ID
-$env:AutomationAccountName = 'DSCValidation'+$env:APPVEYOR_BUILD_ID
-
 <##>
 function Invoke-UniquePSModulePath {
     try {
@@ -287,11 +284,11 @@ function Test-FileInUnicode
 }
 
 <##>
-function New-ResourceGroupforTests {
+function New-ResourceGroupandAutomationAccount {
     param(
         [string]$Location = 'EastUS2',
-        [string]$ResourceGroupName = $env:ResourceGroupName,
-        [string]$AutomationAccountName = $env:AutomationAccountName
+        [string]$ResourceGroupName = 'TestAutomation'+$BuildID,
+        [string]$AutomationAccountName = 'DSCValidation'+$BuildID
     )
     try {
         # Create Resource Group
@@ -315,7 +312,7 @@ function New-ResourceGroupforTests {
 <##>
 function Remove-AzureTestResources {
     param(
-        [string]$ResourceGroupName = $env:ResourceGroupName
+        [string]$ResourceGroupName = 'TestAutomation'+$BuildID
     )
     try {
         $Remove = Remove-AzureRmResourceGroup -Name $ResourceGroupName -Force
@@ -331,8 +328,8 @@ TODO should catch issues with import and return to build log
 function Import-ModuleToAzureAutomation {
     param(
         [array]$Module,
-        [string]$ResourceGroupName = $env:ResourceGroupName,
-        [string]$AutomationAccountName = $env:AutomationAccountName
+        [string]$ResourceGroupName = 'TestAutomation'+$BuildID,
+        [string]$AutomationAccountName = 'DSCValidation'+$BuildID
     )
     try {
         # Import module from custom object
@@ -349,8 +346,8 @@ TODO need timeout based on real expectations
 function Wait-ModuleExtraction {
     param(
         [array]$Module,
-        [string]$ResourceGroupName = $env:ResourceGroupName,
-        [string]$AutomationAccountName = $env:AutomationAccountName
+        [string]$ResourceGroupName = 'TestAutomation'+$BuildID,
+        [string]$AutomationAccountName = 'DSCValidation'+$BuildID
     )
     try {
         # The resource modules must finish the "Creating" stage before the configuration will compile successfully
@@ -367,8 +364,8 @@ function Wait-ModuleExtraction {
 function Import-ConfigurationToAzureAutomation {
     param(
         [psobject]$Configuration,
-        [string]$ResourceGroupName = $env:ResourceGroupName,
-        [string]$AutomationAccountName = $env:AutomationAccountName
+        [string]$ResourceGroupName = 'TestAutomation'+$BuildID,
+        [string]$AutomationAccountName = 'DSCValidation'+$BuildID
     )
     try {
             # Import Configuration to Azure Automation DSC
@@ -399,8 +396,8 @@ TODO need timeout based on real expectations
 function Wait-ConfigurationCompilation {
     param(
         [psobject]$Configuration,
-        [string]$ResourceGroupName = $env:ResourceGroupName,
-        [string]$AutomationAccountName = $env:AutomationAccountName
+        [string]$ResourceGroupName = 'TestAutomation'+$BuildID,
+        [string]$AutomationAccountName = 'DSCValidation'+$BuildID
     )
     try {
         while ((Get-AzureRmAutomationDscCompilationJob -ResourceGroupName $ResourceGroupName -AutomationAccountName $AutomationAccountName -Name $Configuration.Name).Status -ne 'Completed') {
