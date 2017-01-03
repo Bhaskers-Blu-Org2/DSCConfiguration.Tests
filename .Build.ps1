@@ -22,7 +22,7 @@ param(
     $ApplicationID = (property ApplicationID),
     $ApplicationPassword = (property ApplicationPassword),
     $TenantID = (property TenantID),
-    $BuildFolder = (property BuildFolder),
+    $env:BuildFolder = (property BuildFolder),
     $ProjectName = (property ProjectName),
     $ProjectID = (property ProjectID),
     $BuildID = (property BuildID)
@@ -31,10 +31,10 @@ param(
 # Synopsis: Baseline the environment
 task Install {
     try {
-        Set-Location $BuildFolder
+        Set-Location $env:BuildFolder
 
         # Load modules from test repo
-        Import-Module -Name $BuildFolder\DscConfiguration.Tests\TestHelper.psm1 -Force
+        Import-Module -Name $env:BuildFolder\DscConfiguration.Tests\TestHelper.psm1 -Force
         
         # Install supporting environment modules from PSGallery
         $EnvironmentModules = @(
@@ -56,10 +56,10 @@ task Install {
 # Synopsis: Load the Configuration modules and required resources
 task Load {
     try {
-        Set-Location $BuildFolder
+        Set-Location $env:BuildFolder
 
         # Discover required modules from Configuration manifest (TestHelper)
-        $Global:Modules = Get-RequiredGalleryModules -ManifestData (Import-PowerShellDataFile -Path "$BuildFolder\$ProjectName.psd1") -Install
+        $Global:Modules = Get-RequiredGalleryModules -ManifestData (Import-PowerShellDataFile -Path "$env:BuildFolder\$ProjectName.psd1") -Install
         Write-Host "Downloaded modules:`n$($Modules | Foreach -Process {$_.Name})"
 
         # Prep and import Configurations from module (TestHelper)
@@ -74,11 +74,15 @@ task Load {
 
 # Synopsis: Run Lint and Unit Tests
 task UnitTests {
-    Set-Location $BuildFolder
-    $testResultsFile = "$BuildFolder\TestsResults.xml"
+    Set-Location $env:BuildFolder
+
+    $testResultsFile = "$env:BuildFolder\TestsResults.xml"
+
     $res = Invoke-Pester -OutputFormat NUnitXml -OutputFile $testResultsFile -PassThru
+    
     #TODO Test if results should go to AppVeyor
     (New-Object 'System.Net.WebClient').UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path $testResultsFile))
+    
     if ($res.FailedCount -gt 0) {
         throw "$($res.FailedCount) tests failed."
     }
@@ -101,6 +105,8 @@ task ResourceGroupAndAutomationAccount {
 # Synopsis: Deploys modules to Azure Automation
 task AzureAutomationModules {
     try {
+        Set-Location $env:BuildFolder
+
         # Import the modules discovered as requirements to Azure Automation (TestHelper)
         foreach ($ImportModule in $Global:Modules) {
             Write-Host "Importing module $($ImportModule.Name) to Azure Automation"
@@ -119,6 +125,8 @@ task AzureAutomationModules {
 # Synopsis: Deploys configurations to Azure Automation
 task AzureAutomationConfigurations {
     try {
+        Set-Location $env:BuildFolder
+
         # Import and compile the Configurations using Azure Automation (TestHelper)
         foreach ($ImportConfiguration in $Global:Configurations) {
             Write-Host "Importing configuration $($ImportConfiguration.Name) to Azure Automation"
