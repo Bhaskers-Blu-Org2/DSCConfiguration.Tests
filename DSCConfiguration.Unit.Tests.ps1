@@ -11,7 +11,7 @@ $Manifest = Import-PowerShellDataFile -Path "$env:APPVEYOR_BUILD_FOLDER\$Name.ps
     along with the first test (which is replaced by the following 3) around Jan-Feb
     2017.
 #>
-Describe 'Common Tests - PS Script Analyzer' {
+Describe 'Common Tests - PS Script Analyzer' -Tag Lint {
 
     $requiredPssaRuleNames = @(
         'PSAvoidDefaultValueForMandatoryParameter',
@@ -159,7 +159,7 @@ Describe 'Common Tests - PS Script Analyzer' {
 }
 
 <##>
-Describe 'Common Tests - File Parsing' {
+Describe 'Common Tests - File Parsing' -Tag Lint {
     $psm1Files = Get-Psm1FileList -FilePath $env:APPVEYOR_BUILD_FOLDER
 
     foreach ($psm1File in $psm1Files)
@@ -185,7 +185,7 @@ Describe 'Common Tests - File Parsing' {
 }
 
 <##>
-Describe 'Common Tests - File Formatting' {
+Describe 'Common Tests - File Formatting' -Tag Lint {
     $textFiles = Get-TextFilesList -FilePath $env:APPVEYOR_BUILD_FOLDER
     
     It "Should not contain any files with Unicode file encoding" {
@@ -274,7 +274,7 @@ Describe 'Common Tests - File Formatting' {
 
 <#
 #>
-Describe 'Common Tests - Configuration Module Requirements' {
+Describe 'Common Tests - Configuration Module Requirements' -Tag Unit {
     Context "$Name module manifest properties" {
         It 'Contains a module file that aligns to the folder name' {
             $Files.Name.Contains("$Name.psm1") | Should Be True

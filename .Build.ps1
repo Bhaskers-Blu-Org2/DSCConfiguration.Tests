@@ -73,12 +73,12 @@ task Load {
 }
 
 # Synopsis: Run Lint and Unit Tests
-task UnitTests {
+task LintUnitTests {
     Set-Location $env:BuildFolder
 
     $testResultsFile = "$env:BuildFolder\TestsResults.xml"
 
-    $res = Invoke-Pester -OutputFormat NUnitXml -OutputFile $testResultsFile -PassThru
+    $res = Invoke-Pester -Tag Lint,Unit -OutputFormat NUnitXml -OutputFile $testResultsFile -PassThru
     
     #TODO Test if results should go to AppVeyor
     (New-Object 'System.Net.WebClient').UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path $testResultsFile))
@@ -150,4 +150,4 @@ task Clean {
 }
 
 # Synopsis: default build tasks
-task . Install, Load, UnitTests, AzureLogin, ResourceGroupAndAutomationAccount, AzureAutomationModules, AzureAutomationConfigurations, Clean
+task . Install, Load, LintUnitTests, AzureLogin, ResourceGroupAndAutomationAccount, AzureAutomationModules, AzureAutomationConfigurations, Clean
