@@ -204,7 +204,7 @@ task AzureVM {
         foreach ($testConfiguration in $script:Configurations) {
             # Retrieve Azure Automation DSC registration information
             $Account = Get-AzureRMAutomationAccount -ResourceGroupName "TestAutomation$BuildID" `
-            -Account "DSCValidation$BuildID"
+            -Name "DSCValidation$BuildID"
             $RegistrationInfo = $Account | Get-AzureRmAutomationRegistrationInfo
             $registrationUrl = $RegistrationInfo.Endpoint
             $registrationKey = $RegistrationInfo.PrimaryKey | ConvertTo-SecureString -AsPlainText `
