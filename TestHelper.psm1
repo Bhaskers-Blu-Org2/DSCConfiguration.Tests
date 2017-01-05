@@ -450,7 +450,7 @@ function New-RandomPassword
         }
     }
 
-    $characters = 1..$Length | % {
+    $characters = 1..$Length | ForEach-Object {
         $characterIndex = Get-Random -Minimum 0 -Maximum $allowedCharacters.Count
         $allowedCharacters[$characterIndex]
     }
