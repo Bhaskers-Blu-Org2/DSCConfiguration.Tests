@@ -236,7 +236,7 @@ task AzureVM {
 }
 
 # Synopsis: remove all assets deployed to Azure and any local temporary changes (should be none)
-task Clean {
+task Clean -Safe {
     Write-Task Clean
     Remove-AzureTestResources
     Write-Task Clean -End
