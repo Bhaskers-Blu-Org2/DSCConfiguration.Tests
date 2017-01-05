@@ -64,8 +64,8 @@
     "vmName": "[concat(uniquestring(resourceGroup().id), 'vm')]",
     "virtualNetworkName": "[concat(uniquestring(resourceGroup().id), 'net')]",
     "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
-    "modulesUrl": "https://github.com/Azure/azure-quickstart-templates/raw/master/dsc-extension-azure-automation-pullserver/UpdateLCMforAAPull.zip",
-    "configurationFunction": "UpdateLCMforAAPull.ps1\\ConfigureLCMforAAPull"
+    "modulesUrl": "https://github.com/Microsoft/DSCConfiguration.Tests/raw/master/RegistrationMetaConfigV2.zip",
+    "configurationFunction": "RegistrationMetaConfigV2.ps1\\RegistrationMetaConfigV2"
   },
   "resources": [
     {
