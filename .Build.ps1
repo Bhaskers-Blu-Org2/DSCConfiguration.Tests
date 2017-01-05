@@ -79,13 +79,13 @@ task Load {
         Set-Location $env:BuildFolder
 
         # Discover required modules from Configuration manifest (TestHelper)
-        $Global:Modules = Get-RequiredGalleryModules -ManifestData (Import-PowerShellDataFile `
+        $script:Modules = Get-RequiredGalleryModules -ManifestData (Import-PowerShellDataFile `
         -Path "$env:BuildFolder\$ProjectName.psd1") -Install
         Write-Output "Downloaded modules:`n$($Modules | Foreach -Process {$_.Name})"
 
         # Prep and import Configurations from module (TestHelper)
         Import-ModuleFromSource -Name $ProjectName
-        $Global:Configurations = Invoke-ConfigurationPrep -Module $ProjectName -Path `
+        $script:Configurations = Invoke-ConfigurationPrep -Module $ProjectName -Path `
         "$env:TEMP\$ProjectID"
         Write-Output "Prepared configurations:`n$($Configurations | Foreach -Process {$_.Name})"
         Write-Task Load -End
@@ -158,14 +158,14 @@ task AzureAutomationModules {
         Set-Location $env:BuildFolder
 
         # Import the modules discovered as requirements to Azure Automation (TestHelper)
-        foreach ($ImportModule in $Global:Modules) {
+        foreach ($ImportModule in $script:Modules) {
             Write-Output "Importing module $($ImportModule.Name) to Azure Automation"
             Import-ModuleToAzureAutomation -Module $ImportModule
         }
         
         # Allow module activities to extract before importing configuration (TestHelper)
         Write-Output 'Waiting for all modules to finish extracting activities'
-        foreach ($WaitForModule in $Global:Modules) {Wait-ModuleExtraction -Module $WaitForModule}
+        foreach ($WaitForModule in $script:Modules) {Wait-ModuleExtraction -Module $WaitForModule}
         Write-Task AzureAutomationModules -End
     }
     catch [System.Exception] {
@@ -180,14 +180,14 @@ task AzureAutomationConfigurations {
         Set-Location $env:BuildFolder
 
         # Import and compile the Configurations using Azure Automation (TestHelper)
-        foreach ($ImportConfiguration in $Global:Configurations) {
+        foreach ($ImportConfiguration in $script:Configurations) {
             Write-Output "Importing configuration $($ImportConfiguration.Name) to Azure Automation"
             Import-ConfigurationToAzureAutomation -Configuration $ImportConfiguration
         }
 
         # Wait for Configurations to compile
         Write-Output 'Waiting for configurations to finish compiling in Azure Automation'              
-        foreach ($WaitForConfiguration in $Global:Configurations) {
+        foreach ($WaitForConfiguration in $script:Configurations) {
             Wait-ConfigurationCompilation -Configuration $WaitForConfiguration
         }
         Write-Task AzureAutomationConfigurations -End
@@ -201,7 +201,7 @@ task AzureAutomationConfigurations {
 task AzureVM {
     try {
         Write-Task AzureVM
-        foreach ($testConfiguration in $Global:Configurations) {
+        foreach ($testConfiguration in $script:Configurations) {
             # Retrieve Azure Automation DSC registration information
             $Account = Get-AzureRMAutomationAccount -ResourceGroupName "TestAutomation$BuildID" `
             -Account "DSCValidation$BuildID"
