@@ -218,18 +218,7 @@ task AzureVM {
             $dnsLabelPrefix = "$(Get-Random -Minimum 1000 -Maximum 9999) `
             $($testConfiguration.Name.substring(0,10))"
 
-            New-AzureRmResourceGroupDeployment -Name $BuildID -ResourceGroupName `
-            "TestAutomation$BuildID" `
-            -TemplateFile $BuildFolder\DSCConfiguration.Tests\AzureDeploy.json `
-            -TemplateParameterFile `
-            $BuildFolder\DSCConfiguration.Tests\AzureDeploy.parameters.json `
-            -dnsLabelPrefix $dnsLabelPrefix `
-            -vmName $testConfiguration
-            -adminPassword $adminPassword `
-            -registrationUrl $registrationUrl `
-            -registrationKey $registrationKey `
-            -nodeConfigurationName $testConfiguration.localhost `
-            -verbose
+            New-AzureRMResourceGroupDeployment -Name $BuildID -ResourceGroupName "TestAutomation$BuildID" -TemplateFile "$BuildFolder\DSCConfiguration.Tests\AzureDeploy.json" -TemplateParameterFile "$BuildFolder\DSCConfiguration.Tests\AzureDeploy.parameters.json" -dnsLabelPrefix $dnsLabelPrefix -vmName $testConfiguration -adminPassword $adminPassword -registrationUrl $registrationUrl -registrationKey $registrationKey -nodeConfigurationName $testConfiguration.localhost -verbose
         }
         Write-Task AzureVM -End
     }
