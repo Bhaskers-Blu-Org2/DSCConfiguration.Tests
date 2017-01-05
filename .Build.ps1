@@ -34,11 +34,14 @@ param(
     [switch]$End
 )
     if ($End) {
+        Write-Output ''
         Write-Output "########## End of Task $Name ##########"
         Write-Output ''
     }
     else {
+        Write-Output ''
         Write-Output "########## Start of Task $Name ##########"
+        Write-Output ''
     }    
 }
 
