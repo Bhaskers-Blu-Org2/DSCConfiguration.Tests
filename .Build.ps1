@@ -216,7 +216,7 @@ task AzureVM {
 
             # DNS name based on random chars followed by first 10 of configuration name
             $dnsLabelPrefix = "$(Get-Random -Minimum 1000 -Maximum 9999) `
-            $($testConfiguration.substring(0,10))"
+            $($testConfiguration.Name.substring(0,10))"
 
             New-AzureRmResourceGroupDeployment -Name $BuildID -ResourceGroupName `
             "TestAutomation$BuildID" `
