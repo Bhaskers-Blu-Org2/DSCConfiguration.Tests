@@ -1,0 +1,683 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "automationAccounts_vmtest_sku": {
+            "defaultValue": null,
+            "type": "SecureObject"
+        },
+        "virtualMachines_vmtest_adminPassword": {
+            "defaultValue": null,
+            "type": "SecureString"
+        },
+        "extensions_Microsoft.Powershell.DSC_protectedSettings": {
+            "defaultValue": null,
+            "type": "SecureObject"
+        },
+        "automationAccounts_vmtest_name": {
+            "defaultValue": "vmtest",
+            "type": "String"
+        },
+        "virtualMachines_vmtest_name": {
+            "defaultValue": "vmtest",
+            "type": "String"
+        },
+        "networkInterfaces_vmtest787_name": {
+            "defaultValue": "vmtest787",
+            "type": "String"
+        },
+        "networkSecurityGroups_vmtest_nsg_name": {
+            "defaultValue": "vmtest-nsg",
+            "type": "String"
+        },
+        "publicIPAddresses_vmtestpip_name": {
+            "defaultValue": "vmtestpip",
+            "type": "String"
+        },
+        "publicIPAddresses_vmtest_ip_name": {
+            "defaultValue": "vmtest-ip",
+            "type": "String"
+        },
+        "virtualNetworks_vmtestvnet_name": {
+            "defaultValue": "vmtestvnet",
+            "type": "String"
+        },
+        "virtualNetworks_vmtest_vnet_name": {
+            "defaultValue": "vmtest-vnet",
+            "type": "String"
+        },
+        "storageAccounts_pc3qxwvnaq6kovmtestsa_name": {
+            "defaultValue": "pc3qxwvnaq6kovmtestsa",
+            "type": "String"
+        },
+        "storageAccounts_vmtestdiag898_name": {
+            "defaultValue": "vmtestdiag898",
+            "type": "String"
+        },
+        "storageAccounts_vmtestdisks824_name": {
+            "defaultValue": "vmtestdisks824",
+            "type": "String"
+        },
+        "modules_Azure_name": {
+            "defaultValue": "vmtest/Azure",
+            "type": "String"
+        },
+        "modules_Azure.Storage_name": {
+            "defaultValue": "vmtest/Azure.Storage",
+            "type": "String"
+        },
+        "modules_AzureRM.Automation_name": {
+            "defaultValue": "vmtest/AzureRM.Automation",
+            "type": "String"
+        },
+        "modules_AzureRM.Compute_name": {
+            "defaultValue": "vmtest/AzureRM.Compute",
+            "type": "String"
+        },
+        "modules_AzureRM.Profile_name": {
+            "defaultValue": "vmtest/AzureRM.Profile",
+            "type": "String"
+        },
+        "modules_AzureRM.Resources_name": {
+            "defaultValue": "vmtest/AzureRM.Resources",
+            "type": "String"
+        },
+        "modules_AzureRM.Sql_name": {
+            "defaultValue": "vmtest/AzureRM.Sql",
+            "type": "String"
+        },
+        "modules_AzureRM.Storage_name": {
+            "defaultValue": "vmtest/AzureRM.Storage",
+            "type": "String"
+        },
+        "modules_Microsoft.PowerShell.Core_name": {
+            "defaultValue": "vmtest/Microsoft.PowerShell.Core",
+            "type": "String"
+        },
+        "modules_Microsoft.PowerShell.Diagnostics_name": {
+            "defaultValue": "vmtest/Microsoft.PowerShell.Diagnostics",
+            "type": "String"
+        },
+        "modules_Microsoft.PowerShell.Management_name": {
+            "defaultValue": "vmtest/Microsoft.PowerShell.Management",
+            "type": "String"
+        },
+        "modules_Microsoft.PowerShell.Security_name": {
+            "defaultValue": "vmtest/Microsoft.PowerShell.Security",
+            "type": "String"
+        },
+        "modules_Microsoft.PowerShell.Utility_name": {
+            "defaultValue": "vmtest/Microsoft.PowerShell.Utility",
+            "type": "String"
+        },
+        "modules_Microsoft.WSMan.Management_name": {
+            "defaultValue": "vmtest/Microsoft.WSMan.Management",
+            "type": "String"
+        },
+        "modules_Orchestrator.AssetManagement.Cmdlets_name": {
+            "defaultValue": "vmtest/Orchestrator.AssetManagement.Cmdlets",
+            "type": "String"
+        },
+        "extensions_Microsoft.Powershell.DSC_name": {
+            "defaultValue": "vmtest/Microsoft.Powershell.DSC",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "comments": "Generalized from resource: '/subscriptions/59f55e3c-d6f0-446b-ad86-20c35ba8abff/resourcegroups/vmtest/providers/Microsoft.Automation/automationAccounts/vmtest'.",
+            "type": "Microsoft.Automation/automationAccounts",
+            "name": "[parameters('automationAccounts_vmtest_name')]",
+            "apiVersion": "2015-10-31",
+            "location": "eastus2",
+            "properties": {
+                "sku": "[parameters('automationAccounts_vmtest_sku')]"
+            },
+            "resources": [],
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/59f55e3c-d6f0-446b-ad86-20c35ba8abff/resourceGroups/vmtest/providers/Microsoft.Compute/virtualMachines/vmtest'.",
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[parameters('virtualMachines_vmtest_name')]",
+            "apiVersion": "2015-06-15",
+            "location": "eastus2",
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "Standard_DS1_v2"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "MicrosoftWindowsServer",
+                        "offer": "WindowsServer",
+                        "sku": "2012-R2-Datacenter",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "[parameters('virtualMachines_vmtest_name')]",
+                        "createOption": "FromImage",
+                        "vhd": {
+                            "uri": "[concat('https', '://', parameters('storageAccounts_vmtestdisks824_name'), '.blob.core.windows.net', concat('/vhds/', parameters('virtualMachines_vmtest_name'),'20170104145950.vhd'))]"
+                        },
+                        "caching": "ReadWrite"
+                    },
+                    "dataDisks": []
+                },
+                "osProfile": {
+                    "computerName": "[parameters('virtualMachines_vmtest_name')]",
+                    "adminUsername": "testadmin",
+                    "windowsConfiguration": {
+                        "provisionVMAgent": true,
+                        "enableAutomaticUpdates": true
+                    },
+                    "secrets": [],
+                    "adminPassword": "[parameters('virtualMachines_vmtest_adminPassword')]"
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_vmtest787_name'))]"
+                        }
+                    ]
+                }
+            },
+            "resources": [],
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_vmtestdisks824_name'))]",
+                "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_vmtest787_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/59f55e3c-d6f0-446b-ad86-20c35ba8abff/resourceGroups/vmtest/providers/Microsoft.Network/networkInterfaces/vmtest787'.",
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[parameters('networkInterfaces_vmtest787_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "eastus2",
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAddress": "10.1.0.4",
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_vmtest_ip_name'))]"
+                            },
+                            "subnet": {
+                                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_vmtest_vnet_name')), '/subnets/default')]"
+                            }
+                        }
+                    }
+                ],
+                "dnsSettings": {
+                    "dnsServers": []
+                },
+                "enableIPForwarding": false,
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_vmtest_nsg_name'))]"
+                }
+            },
+            "resources": [],
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_vmtest_ip_name'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_vmtest_vnet_name'))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_vmtest_nsg_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/59f55e3c-d6f0-446b-ad86-20c35ba8abff/resourceGroups/vmtest/providers/Microsoft.Network/networkSecurityGroups/vmtest-nsg'.",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "[parameters('networkSecurityGroups_vmtest_nsg_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "eastus2",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "default-allow-rdp",
+                        "properties": {
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "3389",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 1000,
+                            "direction": "Inbound"
+                        }
+                    }
+                ]
+            },
+            "resources": [],
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/59f55e3c-d6f0-446b-ad86-20c35ba8abff/resourceGroups/vmtest/providers/Microsoft.Network/publicIPAddresses/vmtestpip'.",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[parameters('publicIPAddresses_vmtestpip_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "centralus",
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic",
+                "idleTimeoutInMinutes": 4,
+                "dnsSettings": {
+                    "domainNameLabel": "vmtest685947"
+                }
+            },
+            "resources": [],
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/59f55e3c-d6f0-446b-ad86-20c35ba8abff/resourceGroups/vmtest/providers/Microsoft.Network/publicIPAddresses/vmtest-ip'.",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[parameters('publicIPAddresses_vmtest_ip_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "eastus2",
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic",
+                "idleTimeoutInMinutes": 4
+            },
+            "resources": [],
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/59f55e3c-d6f0-446b-ad86-20c35ba8abff/resourceGroups/vmtest/providers/Microsoft.Network/virtualNetworks/vmtestvnet'.",
+            "type": "Microsoft.Network/virtualNetworks",
+            "name": "[parameters('virtualNetworks_vmtestvnet_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "centralus",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "192.168.0.0/16"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "vmtestsubnet",
+                        "properties": {
+                            "addressPrefix": "192.168.0.0/24"
+                        }
+                    }
+                ]
+            },
+            "resources": [],
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/59f55e3c-d6f0-446b-ad86-20c35ba8abff/resourceGroups/vmtest/providers/Microsoft.Network/virtualNetworks/vmtest-vnet'.",
+            "type": "Microsoft.Network/virtualNetworks",
+            "name": "[parameters('virtualNetworks_vmtest_vnet_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "eastus2",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "10.1.0.0/24"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "default",
+                        "properties": {
+                            "addressPrefix": "10.1.0.0/24"
+                        }
+                    }
+                ]
+            },
+            "resources": [],
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/59f55e3c-d6f0-446b-ad86-20c35ba8abff/resourceGroups/vmtest/providers/Microsoft.Storage/storageAccounts/pc3qxwvnaq6kovmtestsa'.",
+            "type": "Microsoft.Storage/storageAccounts",
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "kind": "Storage",
+            "name": "[parameters('storageAccounts_pc3qxwvnaq6kovmtestsa_name')]",
+            "apiVersion": "2016-01-01",
+            "location": "centralus",
+            "tags": {},
+            "properties": {},
+            "resources": [],
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/59f55e3c-d6f0-446b-ad86-20c35ba8abff/resourceGroups/vmtest/providers/Microsoft.Storage/storageAccounts/vmtestdiag898'.",
+            "type": "Microsoft.Storage/storageAccounts",
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "kind": "Storage",
+            "name": "[parameters('storageAccounts_vmtestdiag898_name')]",
+            "apiVersion": "2016-01-01",
+            "location": "eastus2",
+            "tags": {},
+            "properties": {},
+            "resources": [],
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/59f55e3c-d6f0-446b-ad86-20c35ba8abff/resourceGroups/vmtest/providers/Microsoft.Storage/storageAccounts/vmtestdisks824'.",
+            "type": "Microsoft.Storage/storageAccounts",
+            "sku": {
+                "name": "Premium_LRS",
+                "tier": "Premium"
+            },
+            "kind": "Storage",
+            "name": "[parameters('storageAccounts_vmtestdisks824_name')]",
+            "apiVersion": "2016-01-01",
+            "location": "eastus2",
+            "tags": {},
+            "properties": {},
+            "resources": [],
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/59f55e3c-d6f0-446b-ad86-20c35ba8abff/resourcegroups/vmtest/providers/Microsoft.Automation/automationAccounts/vmtest/modules/Azure'.",
+            "type": "Microsoft.Automation/automationAccounts/modules",
+            "name": "[parameters('modules_Azure_name')]",
+            "apiVersion": "2015-10-31",
+            "properties": {
+                "isGlobal": true,
+                "version": null,
+                "sizeInBytes": 0
+            },
+            "resources": [],
+            "dependsOn": [
+                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_vmtest_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/59f55e3c-d6f0-446b-ad86-20c35ba8abff/resourcegroups/vmtest/providers/Microsoft.Automation/automationAccounts/vmtest/modules/Azure.Storage'.",
+            "type": "Microsoft.Automation/automationAccounts/modules",
+            "name": "[parameters('modules_Azure.Storage_name')]",
+            "apiVersion": "2015-10-31",
+            "properties": {
+                "isGlobal": true,
+                "version": null,
+                "sizeInBytes": 0
+            },
+            "resources": [],
+            "dependsOn": [
+                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_vmtest_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/59f55e3c-d6f0-446b-ad86-20c35ba8abff/resourcegroups/vmtest/providers/Microsoft.Automation/automationAccounts/vmtest/modules/AzureRM.Automation'.",
+            "type": "Microsoft.Automation/automationAccounts/modules",
+            "name": "[parameters('modules_AzureRM.Automation_name')]",
+            "apiVersion": "2015-10-31",
+            "properties": {
+                "isGlobal": true,
+                "version": null,
+                "sizeInBytes": 0
+            },
+            "resources": [],
+            "dependsOn": [
+                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_vmtest_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/59f55e3c-d6f0-446b-ad86-20c35ba8abff/resourcegroups/vmtest/providers/Microsoft.Automation/automationAccounts/vmtest/modules/AzureRM.Compute'.",
+            "type": "Microsoft.Automation/automationAccounts/modules",
+            "name": "[parameters('modules_AzureRM.Compute_name')]",
+            "apiVersion": "2015-10-31",
+            "properties": {
+                "isGlobal": true,
+                "version": null,
+                "sizeInBytes": 0
+            },
+            "resources": [],
+            "dependsOn": [
+                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_vmtest_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/59f55e3c-d6f0-446b-ad86-20c35ba8abff/resourcegroups/vmtest/providers/Microsoft.Automation/automationAccounts/vmtest/modules/AzureRM.Profile'.",
+            "type": "Microsoft.Automation/automationAccounts/modules",
+            "name": "[parameters('modules_AzureRM.Profile_name')]",
+            "apiVersion": "2015-10-31",
+            "properties": {
+                "isGlobal": true,
+                "version": null,
+                "sizeInBytes": 0
+            },
+            "resources": [],
+            "dependsOn": [
+                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_vmtest_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/59f55e3c-d6f0-446b-ad86-20c35ba8abff/resourcegroups/vmtest/providers/Microsoft.Automation/automationAccounts/vmtest/modules/AzureRM.Resources'.",
+            "type": "Microsoft.Automation/automationAccounts/modules",
+            "name": "[parameters('modules_AzureRM.Resources_name')]",
+            "apiVersion": "2015-10-31",
+            "properties": {
+                "isGlobal": true,
+                "version": null,
+                "sizeInBytes": 0
+            },
+            "resources": [],
+            "dependsOn": [
+                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_vmtest_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/59f55e3c-d6f0-446b-ad86-20c35ba8abff/resourcegroups/vmtest/providers/Microsoft.Automation/automationAccounts/vmtest/modules/AzureRM.Sql'.",
+            "type": "Microsoft.Automation/automationAccounts/modules",
+            "name": "[parameters('modules_AzureRM.Sql_name')]",
+            "apiVersion": "2015-10-31",
+            "properties": {
+                "isGlobal": true,
+                "version": null,
+                "sizeInBytes": 0
+            },
+            "resources": [],
+            "dependsOn": [
+                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_vmtest_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/59f55e3c-d6f0-446b-ad86-20c35ba8abff/resourcegroups/vmtest/providers/Microsoft.Automation/automationAccounts/vmtest/modules/AzureRM.Storage'.",
+            "type": "Microsoft.Automation/automationAccounts/modules",
+            "name": "[parameters('modules_AzureRM.Storage_name')]",
+            "apiVersion": "2015-10-31",
+            "properties": {
+                "isGlobal": true,
+                "version": null,
+                "sizeInBytes": 0
+            },
+            "resources": [],
+            "dependsOn": [
+                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_vmtest_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/59f55e3c-d6f0-446b-ad86-20c35ba8abff/resourcegroups/vmtest/providers/Microsoft.Automation/automationAccounts/vmtest/modules/Microsoft.PowerShell.Core'.",
+            "type": "Microsoft.Automation/automationAccounts/modules",
+            "name": "[parameters('modules_Microsoft.PowerShell.Core_name')]",
+            "apiVersion": "2015-10-31",
+            "properties": {
+                "isGlobal": true,
+                "version": null,
+                "sizeInBytes": 0
+            },
+            "resources": [],
+            "dependsOn": [
+                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_vmtest_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/59f55e3c-d6f0-446b-ad86-20c35ba8abff/resourcegroups/vmtest/providers/Microsoft.Automation/automationAccounts/vmtest/modules/Microsoft.PowerShell.Diagnostics'.",
+            "type": "Microsoft.Automation/automationAccounts/modules",
+            "name": "[parameters('modules_Microsoft.PowerShell.Diagnostics_name')]",
+            "apiVersion": "2015-10-31",
+            "properties": {
+                "isGlobal": true,
+                "version": null,
+                "sizeInBytes": 0
+            },
+            "resources": [],
+            "dependsOn": [
+                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_vmtest_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/59f55e3c-d6f0-446b-ad86-20c35ba8abff/resourcegroups/vmtest/providers/Microsoft.Automation/automationAccounts/vmtest/modules/Microsoft.PowerShell.Management'.",
+            "type": "Microsoft.Automation/automationAccounts/modules",
+            "name": "[parameters('modules_Microsoft.PowerShell.Management_name')]",
+            "apiVersion": "2015-10-31",
+            "properties": {
+                "isGlobal": true,
+                "version": null,
+                "sizeInBytes": 0
+            },
+            "resources": [],
+            "dependsOn": [
+                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_vmtest_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/59f55e3c-d6f0-446b-ad86-20c35ba8abff/resourcegroups/vmtest/providers/Microsoft.Automation/automationAccounts/vmtest/modules/Microsoft.PowerShell.Security'.",
+            "type": "Microsoft.Automation/automationAccounts/modules",
+            "name": "[parameters('modules_Microsoft.PowerShell.Security_name')]",
+            "apiVersion": "2015-10-31",
+            "properties": {
+                "isGlobal": true,
+                "version": null,
+                "sizeInBytes": 0
+            },
+            "resources": [],
+            "dependsOn": [
+                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_vmtest_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/59f55e3c-d6f0-446b-ad86-20c35ba8abff/resourcegroups/vmtest/providers/Microsoft.Automation/automationAccounts/vmtest/modules/Microsoft.PowerShell.Utility'.",
+            "type": "Microsoft.Automation/automationAccounts/modules",
+            "name": "[parameters('modules_Microsoft.PowerShell.Utility_name')]",
+            "apiVersion": "2015-10-31",
+            "properties": {
+                "isGlobal": true,
+                "version": null,
+                "sizeInBytes": 0
+            },
+            "resources": [],
+            "dependsOn": [
+                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_vmtest_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/59f55e3c-d6f0-446b-ad86-20c35ba8abff/resourcegroups/vmtest/providers/Microsoft.Automation/automationAccounts/vmtest/modules/Microsoft.WSMan.Management'.",
+            "type": "Microsoft.Automation/automationAccounts/modules",
+            "name": "[parameters('modules_Microsoft.WSMan.Management_name')]",
+            "apiVersion": "2015-10-31",
+            "properties": {
+                "isGlobal": true,
+                "version": null,
+                "sizeInBytes": 0
+            },
+            "resources": [],
+            "dependsOn": [
+                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_vmtest_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/59f55e3c-d6f0-446b-ad86-20c35ba8abff/resourcegroups/vmtest/providers/Microsoft.Automation/automationAccounts/vmtest/modules/Orchestrator.AssetManagement.Cmdlets'.",
+            "type": "Microsoft.Automation/automationAccounts/modules",
+            "name": "[parameters('modules_Orchestrator.AssetManagement.Cmdlets_name')]",
+            "apiVersion": "2015-10-31",
+            "properties": {
+                "isGlobal": true,
+                "version": null,
+                "sizeInBytes": 0
+            },
+            "resources": [],
+            "dependsOn": [
+                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccounts_vmtest_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/59f55e3c-d6f0-446b-ad86-20c35ba8abff/resourceGroups/vmtest/providers/Microsoft.Compute/virtualMachines/vmtest/extensions/Microsoft.Powershell.DSC'.",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "name": "[parameters('extensions_Microsoft.Powershell.DSC_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "eastus2",
+            "tags": {},
+            "properties": {
+                "publisher": "Microsoft.Powershell",
+                "type": "DSC",
+                "typeHandlerVersion": "2.19",
+                "autoUpgradeMinorVersion": false,
+                "settings": {
+                    "ModulesUrl": "https://eus2oaasibizamarketprod1.blob.core.windows.net/automationdscpreview/RegistrationMetaConfigV2.zip",
+                    "ConfigurationFunction": "RegistrationMetaConfigV2.ps1\\RegistrationMetaConfigV2",
+                    "Properties": [
+                        {
+                            "Name": "RegistrationKey",
+                            "Value": {
+                                "UserName": "PLACEHOLDER_DONOTUSE",
+                                "Password": "PrivateSettingsRef:registrationKeyPrivate"
+                            },
+                            "TypeName": "System.Management.Automation.PSCredential"
+                        },
+                        {
+                            "Name": "RegistrationUrl",
+                            "Value": "https://eus2-agentservice-prod-1.azure-automation.net/accounts/b85962a3-b306-4328-8db2-eb7a6473e910",
+                            "TypeName": "System.String"
+                        },
+                        {
+                            "Name": "NodeConfigurationName",
+                            "Value": "",
+                            "TypeName": "System.String"
+                        },
+                        {
+                            "Name": "ConfigurationMode",
+                            "Value": "applyAndMonitor",
+                            "TypeName": "System.String"
+                        },
+                        {
+                            "Name": "ConfigurationModeFrequencyMins",
+                            "Value": "15",
+                            "TypeName": "System.Int32"
+                        },
+                        {
+                            "Name": "RefreshFrequencyMins",
+                            "Value": "30",
+                            "TypeName": "System.Int32"
+                        },
+                        {
+                            "Name": "RebootNodeIfNeeded",
+                            "Value": true,
+                            "TypeName": "System.Boolean"
+                        },
+                        {
+                            "Name": "ActionAfterReboot",
+                            "Value": "continueConfiguration",
+                            "TypeName": "System.String"
+                        },
+                        {
+                            "Name": "AllowModuleOverwrite",
+                            "Value": false,
+                            "TypeName": "System.Boolean"
+                        },
+                        {
+                            "Name": "Timestamp",
+                            "Value": "1/5/2017 2:31:38 PM",
+                            "TypeName": "System.String"
+                        }
+                    ]
+                },
+                "protectedSettings": "[parameters('extensions_Microsoft.Powershell.DSC_protectedSettings')]"
+            },
+            "resources": [],
+            "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachines_vmtest_name'))]"
+            ]
+        }
+    ]
+}

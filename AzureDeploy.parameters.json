@@ -2,14 +2,14 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "adminUsername": {
-      "value": "GEN-USER"
-    },
-    "adminPassword": {
-      "value": "GEN-PASSWORD"
-    },
     "dnsLabelPrefix": {
-      "value": "GEN-UNIQUE"
+      "value": "vmtest685947"
+    },
+    "adminUsername": {
+      "value": "vmtestAdmin"
+    },
+    "WindowsOSVersion": {
+      "value": "2016-Datacenter"
     }
   }
 }
