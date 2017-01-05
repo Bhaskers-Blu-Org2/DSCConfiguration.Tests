@@ -2,6 +2,12 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+    "vmName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name for the Virtual Machine."
+      }
+    },
     "adminUsername": {
       "type": "string",
       "metadata": {
@@ -61,7 +67,6 @@
     "subnetName": "subnet",
     "subnetPrefix": "10.0.0.0/24",
     "publicIPAddressName": "[concat(uniquestring(resourceGroup().id), 'pip')]",
-    "vmName": "[concat(uniquestring(resourceGroup().id), 'vm')]",
     "virtualNetworkName": "[concat(uniquestring(resourceGroup().id), 'net')]",
     "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
     "modulesUrl": "https://github.com/Microsoft/DSCConfiguration.Tests/raw/master/RegistrationMetaConfigV2.zip",
@@ -141,7 +146,7 @@
     {
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Compute/virtualMachines",
-      "name": "[variables('vmName')]",
+      "name": "[parameters('vmName')]",
       "location": "[resourceGroup().location]",
       "dependsOn": [
         "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
@@ -152,7 +157,6 @@
           "vmSize": "Standard_A2"
         },
         "osProfile": {
-          "computerName": "[variables('vmName')]",
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPassword')]"
         },
@@ -194,16 +198,16 @@
     },
     {
         "type": "Microsoft.Compute/virtualMachines/extensions",
-        "name": "[concat(variables('vmName'),'/Microsoft.Powershell.DSC')]",
+        "name": "[concat(parameters('vmName'),'/Microsoft.Powershell.DSC')]",
         "apiVersion": "2015-06-15",
         "location": "[resourceGroup().location]",
         "dependsOn": [
-            "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
+            "[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'))]"
         ],
         "properties": {
             "publisher": "Microsoft.Powershell",
             "type": "DSC",
-            "typeHandlerVersion": "2.21",
+            "typeHandlerVersion": "2.19",
             "autoUpgradeMinorVersion": true,
             "protectedSettings": {
                 "Items": {

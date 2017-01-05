@@ -408,3 +408,52 @@ function Wait-ConfigurationCompilation {
         throw "An error occured while waiting for configuration $($Configuration.Name) to compile in Azure Automation`n$error"        
     }
 }
+
+<#
+    This work was originally published in the PowerShell xJEA module.
+    https://github.com/PowerShell/xJea/blob/dev/DSCResources/Library/JeaAccount.psm1
+    .Synopsis
+    Creates a random password.
+    .DESCRIPTION
+    Creates a random password by generating a array of characters and passing it to Get-Random
+    .EXAMPLE
+    PS> New-RandomPassword
+    g0dIDojsRGcV
+    .EXAMPLE
+    PS> New-RandomPassword -Length 3
+    dyN
+    .EXAMPLE
+    PS> New-RandomPassword -Length 30 -UseSpecialCharacters
+    r5Lhs1K9n*joZl$u^NDO&TkWvPCf2c
+#>
+function New-RandomPassword
+{
+    [CmdletBinding()]
+    [OutputType([String])]
+    Param
+    (
+        # Length of the password
+        [Parameter(Mandatory=$False, Position=0)]
+        [ValidateRange(12, 127)]
+        $Length=12,
+
+        # Includes the characters !@#$%^&*-+ in the password
+        [switch]$UseSpecialCharacters
+    )
+
+    [char[]]$allowedCharacters = ([Char]'a'..[char]'z') + ([char]'A'..[char]'Z') + ([byte][char]'0'..[byte][char]'9')
+    if ($UseSpecialCharacters)
+    {
+        foreach ($c in '!','@','#','$','%','^','&','*','-','+')
+        {
+            $allowedCharacters += [char]$c
+        }
+    }
+
+    $characters = 1..$Length | % {
+        $characterIndex = Get-Random -Minimum 0 -Maximum $allowedCharacters.Count
+        $allowedCharacters[$characterIndex]
+    }
+
+    return (-join $characters)
+}

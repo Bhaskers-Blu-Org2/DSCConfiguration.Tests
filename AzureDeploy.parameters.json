@@ -3,10 +3,13 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "dnsLabelPrefix": {
-      "value": "vmtest685947"
+      "value": "[concat(uniquestring(resourceGroup().id)]"
+    },
+    "vmName": {
+      "value": "[concat(uniquestring(resourceGroup().id), 'vm')]"
     },
     "adminUsername": {
-      "value": "vmtestAdmin"
+      "value": "dscValidationAdmin"
     },
     "WindowsOSVersion": {
       "value": "2016-Datacenter"
