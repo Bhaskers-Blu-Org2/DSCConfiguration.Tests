@@ -197,7 +197,7 @@ task AzureVM {
 task IntegrationTestAzureVMs {
     $testResultsFile = "$env:BuildFolder\VMIntegrationTestsResults.xml"
 
-    $res = Invoke-Pester -Tag VMIntegration -OutputFormat NUnitXml -OutputFile $testResultsFile `
+    $res = Invoke-Pester -Tag AzureVMIntegration -OutputFormat NUnitXml -OutputFile $testResultsFile `
     -PassThru
     
     #TODO Test if results should go to AppVeyor
