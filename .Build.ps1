@@ -33,13 +33,16 @@ function Write-Task {
 param(
     [string]$Name
 )
-    Write-Build -Color White -Text ''
+    Write-Output `n
     Write-Build -Color Cyan -Text "########## $Name ##########"
-    Write-Build -Color White -Text ''
+    Write-Output `n
 }
 
 Enter-BuildTask {
     Write-Task $Task.Name
+}
+Exit-BuildTask {
+    Write-Output `n
 }
 
 # Synopsis: Baseline the environment
