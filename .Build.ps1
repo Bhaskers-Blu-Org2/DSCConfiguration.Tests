@@ -96,10 +96,8 @@ task LoadModules {
 # Synopsis: Run Lint and Unit Tests
 task LintUnitTests {
     try {
-        Write-Task LintUnitTests
         Set-Location $env:BuildFolder
-
-        $testResultsFile = "$env:BuildFolder\TestsResults.xml"
+        $testResultsFile = "$env:BuildFolder\LintUnitTestsResults.xml"
 
         $res = Invoke-Pester -Tag Lint,Unit -OutputFormat NUnitXml -OutputFile $testResultsFile `
         -PassThru
@@ -108,10 +106,6 @@ task LintUnitTests {
         (New-Object 'System.Net.WebClient').UploadFile( `
         "https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", `
         (Resolve-Path $testResultsFile))
-        
-        if ($res.FailedCount -gt 0) {
-            throw "$($res.FailedCount) tests failed."
-        }
     }
     catch [System.Exception] {
         throw $error
@@ -190,6 +184,25 @@ task AzureAutomationConfigurations {
     }
 }
 
+# Synopsis: Integration tests to verify that modules and configurations loaded to Azure Automation DSC successfully
+task IntegrationTestAzureAutomationDSC {
+    try {
+        Set-Location $env:BuildFolder
+        $testResultsFile = "$env:BuildFolder\AADSCIntegrationTestsResults.xml"
+
+        $res = Invoke-Pester -Tag AADSCIntegration -OutputFormat NUnitXml -OutputFile $testResultsFile `
+        -PassThru
+        
+        #TODO Test if results should go to AppVeyor
+        (New-Object 'System.Net.WebClient').UploadFile( `
+        "https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", `
+        (Resolve-Path $testResultsFile))
+    }
+    catch [System.Exception] {
+        throw $error
+    }
+}
+
 # Synopsis: Deploys Azure VM and bootstraps to Azure Automation DSC
 task AzureVM {
     try {
@@ -218,6 +231,44 @@ task AzureVM {
     }    
 }
 
+# Synopsis: Integration tests to verify that DSC configuration successfuly applied in virtual machines
+task IntegrationTestAzureVMs {
+    try {
+        Set-Location $env:BuildFolder
+        $testResultsFile = "$env:BuildFolder\VMIntegrationTestsResults.xml"
+
+        $res = Invoke-Pester -Tag VMIntegration -OutputFormat NUnitXml -OutputFile $testResultsFile `
+        -PassThru
+        
+        #TODO Test if results should go to AppVeyor
+        (New-Object 'System.Net.WebClient').UploadFile( `
+        "https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", `
+        (Resolve-Path $testResultsFile))
+    }
+    catch [System.Exception] {
+        throw $error
+    }
+}
+
+# Synopsis: Acceptance tests to verify that DSC configuration successfuly applied in virtual machines
+task AcceptanceTestAzureVMs {
+    try {
+        Set-Location $env:BuildFolder
+        $testResultsFile = "$env:BuildFolder\VMAcceptanceTestsResults.xml"
+
+        $res = Invoke-Pester -Tag VMAcceptance -OutputFormat NUnitXml -OutputFile $testResultsFile `
+        -PassThru
+        
+        #TODO Test if results should go to AppVeyor
+        (New-Object 'System.Net.WebClient').UploadFile( `
+        "https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", `
+        (Resolve-Path $testResultsFile))
+    }
+    catch [System.Exception] {
+        throw $error
+    }
+}
+
 # Synopsis: remove all assets deployed to Azure and any local temporary changes (should be none)
 Task Clean {
     Write-Task ExitBuild
@@ -230,4 +281,5 @@ Exit-Build {
 
 # Synopsis: default build tasks
 Task . LoadModules, LintUnitTests, AzureLogin, ResourceGroupAndAutomationAccount, `
-AzureAutomationModules, AzureAutomationConfigurations, AzureVM
+AzureAutomationModules, AzureAutomationConfigurations, IntegrationTestAzureAutomationDSC, `
+AzureVM, IntegrationTestAzureVMs, AcceptanceTestAzureVMs
