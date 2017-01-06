@@ -204,7 +204,7 @@ task IntegrationTestAzureAutomationDSC {
 task AzureVM {
     try {
         $script:Configurations | Invoke-Parallel -ImportVariable -Scriptblock {
-            Import-Module AzureRM -Force
+            Install-Module AzureRM -Force
             # Retrieve Azure Automation DSC registration information
             $Account = Get-AzureRMAutomationAccount -ResourceGroupName "TestAutomation$BuildID" `
             -Name "DSCValidation$BuildID"
