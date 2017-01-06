@@ -34,8 +34,12 @@ param(
     [string]$Name
 )
     Write-Build -Color White -Text ''
-    Write-Build -Color Cyan -Text "########## Start of $Name ##########"
+    Write-Build -Color Cyan -Text "########## $Name ##########"
     Write-Build -Color White -Text ''
+}
+
+Enter-BuildTask {
+    Write-Task $Task.Name
 }
 
 # Synopsis: Baseline the environment
