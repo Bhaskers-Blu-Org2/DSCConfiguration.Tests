@@ -29,5 +29,6 @@ Describe 'Common Tests - Azure Automation DSC' -Tag AADSCIntegration {
             It "$ConfigurationCommand should be present in AADSC" {
                 $AADSCConfigurationNames.Contains("$ConfigurationCommand") | Should Not True
             }
+        }
     }
 }
