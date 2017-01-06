@@ -250,25 +250,6 @@ task IntegrationTestAzureVMs {
     }
 }
 
-# Synopsis: Acceptance tests to verify that DSC configuration successfuly applied in virtual machines
-task AcceptanceTestAzureVMs {
-    try {
-        Set-Location $env:BuildFolder
-        $testResultsFile = "$env:BuildFolder\VMAcceptanceTestsResults.xml"
-
-        $res = Invoke-Pester -Tag VMAcceptance -OutputFormat NUnitXml -OutputFile $testResultsFile `
-        -PassThru
-        
-        #TODO Test if results should go to AppVeyor
-        (New-Object 'System.Net.WebClient').UploadFile( `
-        "https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", `
-        (Resolve-Path $testResultsFile))
-    }
-    catch [System.Exception] {
-        throw $error
-    }
-}
-
 # Synopsis: remove all assets deployed to Azure and any local temporary changes (should be none)
 Task Clean {
     Write-Task ExitBuild
@@ -282,4 +263,4 @@ Exit-Build {
 # Synopsis: default build tasks
 Task . LoadModules, LintUnitTests, AzureLogin, ResourceGroupAndAutomationAccount, `
 AzureAutomationModules, AzureAutomationConfigurations, IntegrationTestAzureAutomationDSC, `
-AzureVM, IntegrationTestAzureVMs, AcceptanceTestAzureVMs
+AzureVM, IntegrationTestAzureVMs
