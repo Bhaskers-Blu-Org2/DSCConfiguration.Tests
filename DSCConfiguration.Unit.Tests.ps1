@@ -1,6 +1,6 @@
-$Name = Get-Item -Path $env:APPVEYOR_BUILD_FOLDER | ForEach-Object -Process {$_.Name}
-$Files = Get-ChildItem -Path $env:APPVEYOR_BUILD_FOLDER
-$Manifest = Import-PowerShellDataFile -Path "$env:APPVEYOR_BUILD_FOLDER\$Name.psd1"
+$Name = Get-Item -Path $env:BuildFolder | ForEach-Object -Process {$_.Name}
+$Files = Get-ChildItem -Path $env:BuildFolder
+$Manifest = Import-PowerShellDataFile -Path "$env:BuildFolder\$Name.psd1"
     
 <#
     PSSA = PS Script Analyzer

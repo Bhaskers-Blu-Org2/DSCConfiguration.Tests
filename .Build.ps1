@@ -33,9 +33,7 @@ function Write-Task {
 param(
     [string]$Name
 )
-    Write-Output `n
     Write-Build -Color Cyan -Text "########## $Name ##########"
-    Write-Output `n
 }
 
 Enter-BuildTask {

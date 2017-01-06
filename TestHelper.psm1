@@ -21,6 +21,18 @@ function Invoke-UniquePSModulePath {
 }
 
 <##>
+function Get-DSCConfigurationCommands {
+param(
+    [string]$Module
+)
+    $CommandParams = @{
+        CommandType = 'Configuration'
+        Module = $Module
+    }
+    Get-Command @CommandParams
+}
+
+<##>
 function Get-RequiredGalleryModules {
     param(
         [hashtable]$ManifestData,
@@ -72,37 +84,6 @@ function Get-RequiredGalleryModules {
 }
 
 <##>
-function Invoke-AzureSPNLogin {
-    param(
-        [string]$ApplicationID,
-        [string]$ApplicationPassword,
-        [string]$TenantID
-    )
-    try {
-        # Build platform (AppVeyor) does not offer solution for passing secure strings
-        $Credential = New-Object -typename System.Management.Automation.PSCredential -argumentlist $ApplicationID, $(convertto-securestring -String $ApplicationPassword -AsPlainText -Force)
-    
-        # Suppress request to share usage information
-        $Path = "$Home\AppData\Roaming\Windows Azure Powershell\"
-        if (!(Test-Path -Path $Path)) {
-            $AzPSProfile = New-Item -Path $Path -ItemType Directory
-        }
-        $AzProfileContent = Set-Content -Value '{"enableAzureDataCollection":true}' -Path (Join-Path $Path 'AzureDataCollectionProfile.json') 
-
-        # Handle Login
-        if (Add-AzureRmAccount -Credential $Credential -ServicePrincipal -TenantID $TenantID -ErrorAction SilentlyContinue) {
-            return $true
-        }
-        else {
-            return $false
-        }
-    }
-    catch [System.Exception] {
-        throw "An error occured while logging in to Azure`n$error"    
-    }
-}
-
-<##>
 function Invoke-ConfigurationPrep {
     param(
         [string]$Module = "*",
@@ -110,7 +91,7 @@ function Invoke-ConfigurationPrep {
     )
     try {
         # Get list of configurations loaded from module
-        $Configurations = Get-Command -Type 'Configuration' -Module $Module
+        $Configurations = Get-DSCConfigurationCommands -Module $Module
         $Configurations | Add-Member -MemberType NoteProperty -Name Location -Value $null
 
         # Create working folder
@@ -281,6 +262,37 @@ function Test-FileInUnicode
     $zeroBytes = @( $fileBytes -eq 0 )
 
     return ($zeroBytes.Length -ne 0)
+}
+
+<##>
+function Invoke-AzureSPNLogin {
+    param(
+        [string]$ApplicationID,
+        [string]$ApplicationPassword,
+        [string]$TenantID
+    )
+    try {
+        # Build platform (AppVeyor) does not offer solution for passing secure strings
+        $Credential = New-Object -typename System.Management.Automation.PSCredential -argumentlist $ApplicationID, $(convertto-securestring -String $ApplicationPassword -AsPlainText -Force)
+    
+        # Suppress request to share usage information
+        $Path = "$Home\AppData\Roaming\Windows Azure Powershell\"
+        if (!(Test-Path -Path $Path)) {
+            $AzPSProfile = New-Item -Path $Path -ItemType Directory
+        }
+        $AzProfileContent = Set-Content -Value '{"enableAzureDataCollection":true}' -Path (Join-Path $Path 'AzureDataCollectionProfile.json') 
+
+        # Handle Login
+        if (Add-AzureRmAccount -Credential $Credential -ServicePrincipal -TenantID $TenantID -ErrorAction SilentlyContinue) {
+            return $true
+        }
+        else {
+            return $false
+        }
+    }
+    catch [System.Exception] {
+        throw "An error occured while logging in to Azure`n$error"    
+    }
 }
 
 <##>
