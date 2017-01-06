@@ -31,7 +31,6 @@ param(
 # Synopsis: Baseline the environment
 Enter-Build {
     try {
-        Write-Task EnterBuild
         Set-Location $env:BuildFolder
 
         # Load modules from test repo
