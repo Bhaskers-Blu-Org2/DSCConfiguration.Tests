@@ -32,16 +32,15 @@ function Write-Task {
 param(
     [switch]$End
 )
-    $color = 'Cyan'
     if ($End) {
-        Write-Build -text ''
-        Write-Build -color $color -text "########## End of Task $($Task.Name) ##########"
-        Write-Build -text ''
+        Write-Build -Color White -Text ''
+        Write-Build -Color Cyan -Text "########## End of Task $($Task.Name) ##########"
+        Write-Build -Color White -Text ''
     }
     else {
-        Write-Build -text ''
-        Write-Build -color $color -text "########## Start of Task $($Task.Name) ##########"
-        Write-Build -text ''
+        Write-Build -Color White -Text ''
+        Write-Build -Color Cyan -Text "########## Start of Task $($Task.Name) ##########"
+        Write-Build -Color White -Text ''
     }    
 }
 
