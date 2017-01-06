@@ -221,7 +221,7 @@ task AzureVM {
             -ResourceGroupName "TestAutomation$BuildID" `
             -TemplateFile "$env:BuildFolder\DSCConfiguration.Tests\AzureDeploy.json" `
             -TemplateParameterFile "$env:BuildFolder\DSCConfiguration.Tests\AzureDeploy.parameters.json" `
-            -dnsLabelPrefix $dnsLabelPrefix 
+            -dnsLabelPrefix $dnsLabelPrefix `
             -vmName $testConfiguration.Name `
             -adminPassword $adminPassword `
             -registrationUrl $registrationUrl `
