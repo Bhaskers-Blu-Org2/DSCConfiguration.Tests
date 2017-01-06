@@ -55,7 +55,7 @@ Enter-Build {
 }
 
 # Synopsis: Load the Configuration modules and required resources
-task Load {
+task LoadModules {
     try {
         Write-Task Load
         Set-Location $env:BuildFolder
@@ -202,11 +202,15 @@ task AzureVM {
 }
 
 # Synopsis: remove all assets deployed to Azure and any local temporary changes (should be none)
-Exit-Build {
+Task Clean {
     Write-Task Exit
     Remove-AzureTestResources
 }
 
+Exit-Build {
+        Task Clean
+}
+
 # Synopsis: default build tasks
-task . Load, LintUnitTests, AzureLogin, ResourceGroupAndAutomationAccount, `
+Task . LoadModules, LintUnitTests, AzureLogin, ResourceGroupAndAutomationAccount, `
 AzureAutomationModules, AzureAutomationConfigurations, AzureVM
