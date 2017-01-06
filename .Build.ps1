@@ -39,7 +39,7 @@ param(
 }
 
 Enter-BuildTask {
-    Write-Task $Task.Name
+    Write-task $task.Name
 }
 Exit-BuildTask {
     # PLACEHOLDER
@@ -47,7 +47,12 @@ Exit-BuildTask {
 
 # Synopsis: Baseline the environment
 Enter-Build {
-    try {
+    task Install
+}
+
+# Synopsis: Install prerequisites for the build environment
+task Install {
+        try {
         Set-Location $env:BuildFolder
 
         # Load modules from test repo
@@ -57,7 +62,8 @@ Enter-Build {
         $EnvironmentModules = @(
         'Pester',
         'PSScriptAnalyzer',
-        'AzureRM'
+        'AzureRM',
+        'PSParallel'
         )
         Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.205 -Force | Out-Null
         Install-Module -Name $EnvironmentModules -Repository PSGallery -Force
@@ -68,6 +74,7 @@ Enter-Build {
     catch [System.Exception] {
         throw $error
     }
+
 }
 
 # Synopsis: Load the Configuration modules and required resources
@@ -200,7 +207,7 @@ task IntegrationTestAzureAutomationDSC {
 # Synopsis: Deploys Azure VM and bootstraps to Azure Automation DSC
 task AzureVM {
     try {
-        foreach ($testConfiguration in $script:Configurations) {
+        $script:Configurations | Invoke-Parallel -ImportModules -ImportVariables {
             # Retrieve Azure Automation DSC registration information
             $Account = Get-AzureRMAutomationAccount -ResourceGroupName "TestAutomation$BuildID" `
             -Name "DSCValidation$BuildID"
@@ -216,7 +223,16 @@ task AzureVM {
             # DNS name based on random chars followed by first 10 of configuration name
             $dnsLabelPrefix = "$($testConfiguration.Name.substring(0,10).ToLower())$(Get-Random -Minimum 1000 -Maximum 9999)"
 
-            New-AzureRMResourceGroupDeployment -Name $BuildID -ResourceGroupName "TestAutomation$BuildID" -TemplateFile "$env:BuildFolder\DSCConfiguration.Tests\AzureDeploy.json" -TemplateParameterFile "$env:BuildFolder\DSCConfiguration.Tests\AzureDeploy.parameters.json" -dnsLabelPrefix $dnsLabelPrefix -vmName $testConfiguration -adminPassword $adminPassword -registrationUrl $registrationUrl -registrationKey $registrationKey -nodeConfigurationName "$($testConfiguration.Name).localhost" -verbose
+            New-AzureRMResourceGroupDeployment -Name $BuildID `
+            -ResourceGroupName "TestAutomation$BuildID" `
+            -TemplateFile "$env:BuildFolder\DSCConfiguration.Tests\AzureDeploy.json" `
+            -TemplateParameterFile "$env:BuildFolder\DSCConfiguration.Tests\AzureDeploy.parameters.json" `
+            -dnsLabelPrefix $dnsLabelPrefix 
+            -vmName $testConfiguration `
+            -adminPassword $adminPassword `
+            -registrationUrl $registrationUrl `
+            -registrationKey $registrationKey `
+            -nodeConfigurationName "$($testConfiguration.Name).localhost"
         }
     }
     catch [System.Exception] {
@@ -244,15 +260,15 @@ task IntegrationTestAzureVMs {
 }
 
 # Synopsis: remove all assets deployed to Azure and any local temporary changes (should be none)
-Task Clean {
+task Clean {
     Remove-AzureTestResources
 }
 
 Exit-Build {
-        Task Clean
+        task Clean
 }
 
 # Synopsis: default build tasks
-Task . LoadModules, LintUnitTests, AzureLogin, ResourceGroupAndAutomationAccount, `
+task . LoadModules, LintUnitTests, AzureLogin, ResourceGroupAndAutomationAccount, `
 AzureAutomationModules, AzureAutomationConfigurations, IntegrationTestAzureAutomationDSC, `
 AzureVM, IntegrationTestAzureVMs
