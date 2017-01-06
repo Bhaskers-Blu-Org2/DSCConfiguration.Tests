@@ -38,6 +38,7 @@ param(
 }
 
 Enter-BuildTask {
+    $BuildRoot = $env:BuildFolder
     Write-task $task.Name
 }
 Exit-BuildTask {
@@ -46,8 +47,6 @@ Exit-BuildTask {
 
 # Synopsis: Baseline the environment
 Enter-Build {
-    Set-Location $env:BuildFolder
-
     # Load modules from test repo
     Import-Module -Name $env:BuildFolder\DscConfiguration.Tests\TestHelper.psm1 -Force
     
@@ -66,8 +65,6 @@ Enter-Build {
 
 # Synopsis: Load the Configuration modules and required resources
 task LoadModules {
-    Set-Location $env:BuildFolder
-
     # Discover required modules from Configuration manifest (TestHelper)
     $script:Modules = Get-RequiredGalleryModules -ManifestData (Import-PowerShellDataFile `
     -Path "$env:BuildFolder\$ProjectName.psd1") -Install
@@ -82,7 +79,6 @@ task LoadModules {
 
 # Synopsis: Run Lint and Unit Tests
 task LintUnitTests {
-    Set-Location $env:BuildFolder
     $testResultsFile = "$env:BuildFolder\LintUnitTestsResults.xml"
 
     $res = Invoke-Pester -Tag Lint,Unit -OutputFormat NUnitXml -OutputFile $testResultsFile `
@@ -112,8 +108,6 @@ task ResourceGroupAndAutomationAccount {
 
 # Synopsis: Deploys modules to Azure Automation
 task AzureAutomationModules {
-    Set-Location $env:BuildFolder
-
     # Import the modules discovered as requirements to Azure Automation (TestHelper)
     foreach ($ImportModule in $script:Modules) {
         Write-Output "Importing module $($ImportModule.Name) to Azure Automation"
@@ -127,8 +121,6 @@ task AzureAutomationModules {
 
 # Synopsis: Deploys configurations to Azure Automation
 task AzureAutomationConfigurations {
-    Set-Location $env:BuildFolder
-
     # Import and compile the Configurations using Azure Automation (TestHelper)
     foreach ($ImportConfiguration in $script:Configurations) {
         Write-Output "Importing configuration $($ImportConfiguration.Name) to Azure Automation"
@@ -144,7 +136,6 @@ task AzureAutomationConfigurations {
 
 # Synopsis: Integration tests to verify that modules and configurations loaded to Azure Automation DSC successfully
 task IntegrationTestAzureAutomationDSC {
-    Set-Location $env:BuildFolder
     $testResultsFile = "$env:BuildFolder\AADSCIntegrationTestsResults.xml"
 
     $res = Invoke-Pester -Tag AADSCIntegration -OutputFormat NUnitXml -OutputFile $testResultsFile `
@@ -204,7 +195,6 @@ task AzureVM {
 
 # Synopsis: Integration tests to verify that DSC configuration successfuly applied in virtual machines
 task IntegrationTestAzureVMs {
-    Set-Location $env:BuildFolder
     $testResultsFile = "$env:BuildFolder\VMIntegrationTestsResults.xml"
 
     $res = Invoke-Pester -Tag VMIntegration -OutputFormat NUnitXml -OutputFile $testResultsFile `
