@@ -45,11 +45,6 @@ Exit-BuildTask {
     # PLACEHOLDER
 }
 
-# Synopsis: Baseline the environment
-Enter-Build {
-    task Install
-}
-
 # Synopsis: Install prerequisites for the build environment
 task Install {
         try {
@@ -75,6 +70,11 @@ task Install {
         throw $error
     }
 
+}
+
+# Synopsis: Baseline the environment
+Enter-Build {
+    task Install
 }
 
 # Synopsis: Load the Configuration modules and required resources
