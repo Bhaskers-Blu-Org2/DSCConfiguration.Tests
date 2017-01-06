@@ -233,6 +233,21 @@ task AzureVM {
             -registrationUrl $registrationUrl `
             -registrationKey $registrationKey `
             -nodeConfigurationName "$($testConfiguration.Name).localhost"
+
+            $Status = Get-AzureRMResourceGroupDeployment -ResourceGroupName "TestAutomation$BuildID" `
+            -Name $BuildID
+
+            if ($Status.ProvisioningState -eq 'Succeeded') {
+                Write-Output $Status.Outputs
+            }
+            else {
+                $Error = Get-AzureRMDeploymentOperation -ResourceGroupName "TestAutomation$BuildID" `
+                -Name $BuildID
+                $Message = $Error.Properties | Where-Object {$_.ProvisioningState -eq 'Failed'} | `
+                ForEach-Object {$_.StatusMessage} | ForEach-Object {$_.Error} | `
+                ForEach-Object {$_.Details} | ForEach-Object {$_.Message}
+                Write-Error $Message
+            }
         }
     }
     catch [System.Exception] {
