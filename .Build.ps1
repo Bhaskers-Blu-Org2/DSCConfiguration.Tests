@@ -42,13 +42,12 @@ Enter-BuildTask {
     Write-Task $Task.Name
 }
 Exit-BuildTask {
-    Write-Output `n
+    # PLACEHOLDER
 }
 
 # Synopsis: Baseline the environment
 Enter-Build {
     try {
-        Write-Task EnterBuild
         Set-Location $env:BuildFolder
 
         # Load modules from test repo
@@ -74,7 +73,6 @@ Enter-Build {
 # Synopsis: Load the Configuration modules and required resources
 task LoadModules {
     try {
-        Write-Task Load
         Set-Location $env:BuildFolder
 
         # Discover required modules from Configuration manifest (TestHelper)
@@ -115,7 +113,6 @@ task LintUnitTests {
 # Synopsis: Perform Azure Login
 task AzureLogin {
     try {
-        Write-Task AzureLogin
         # Login to Azure using information from params
         Write-Output "Logging in to Azure"
         Invoke-AzureSPNLogin -ApplicationID $ApplicationID -ApplicationPassword `
@@ -129,7 +126,6 @@ task AzureLogin {
 # Synopsis: Create Resource Group
 task ResourceGroupAndAutomationAccount {
     try {
-        Write-Task ResourceGroupAndAutomationAccount
         # Create Azure Resource Group and Automation account (TestHelper)
         Write-Output "Creating Resource Group TestAutomation$BuildID"
         Write-Output "and Automation account DSCValidation$BuildID"
@@ -143,7 +139,6 @@ task ResourceGroupAndAutomationAccount {
 # Synopsis: Deploys modules to Azure Automation
 task AzureAutomationModules {
     try {
-        Write-Task AzureAutomationModules
         Set-Location $env:BuildFolder
 
         # Import the modules discovered as requirements to Azure Automation (TestHelper)
@@ -164,7 +159,6 @@ task AzureAutomationModules {
 # Synopsis: Deploys configurations to Azure Automation
 task AzureAutomationConfigurations {
     try {
-        Write-Task AzureAutomationConfigurations
         Set-Location $env:BuildFolder
 
         # Import and compile the Configurations using Azure Automation (TestHelper)
@@ -206,7 +200,6 @@ task IntegrationTestAzureAutomationDSC {
 # Synopsis: Deploys Azure VM and bootstraps to Azure Automation DSC
 task AzureVM {
     try {
-        Write-Task AzureVM
         foreach ($testConfiguration in $script:Configurations) {
             # Retrieve Azure Automation DSC registration information
             $Account = Get-AzureRMAutomationAccount -ResourceGroupName "TestAutomation$BuildID" `
@@ -252,7 +245,6 @@ task IntegrationTestAzureVMs {
 
 # Synopsis: remove all assets deployed to Azure and any local temporary changes (should be none)
 Task Clean {
-    Write-Task ExitBuild
     Remove-AzureTestResources
 }
 
