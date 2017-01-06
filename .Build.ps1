@@ -52,13 +52,14 @@ try {
 
     # Load modules from test repo
     Import-Module -Name $env:BuildFolder\DscConfiguration.Tests\TestHelper.psm1 -Force
+    Git Clone https://github.com/RamblingCookieMonster/Invoke-Parallel
+    . .\Invoke-Parallel\Invoke-Parallel.ps1
     
     # Install supporting environment modules from PSGallery
     $EnvironmentModules = @(
     'Pester',
     'PSScriptAnalyzer',
-    'AzureRM',
-    'PSParallel'
+    'AzureRM'
     )
     Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.205 -Force | Out-Null
     Install-Module -Name $EnvironmentModules -Repository PSGallery -Force
@@ -201,7 +202,7 @@ task IntegrationTestAzureAutomationDSC {
 # Synopsis: Deploys Azure VM and bootstraps to Azure Automation DSC
 task AzureVM {
     try {
-        $script:Configurations | Invoke-Parallel -Scriptblock {
+        $script:Configurations | Invoke-Parallel -ImportModule -ImportVariable -Scriptblock {
             # Retrieve Azure Automation DSC registration information
             $Account = Get-AzureRMAutomationAccount -ResourceGroupName "TestAutomation$BuildID" `
             -Name "DSCValidation$BuildID"
