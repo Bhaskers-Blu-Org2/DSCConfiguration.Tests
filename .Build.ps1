@@ -28,26 +28,10 @@ param(
     $BuildID = (property BuildID)
 )
 
-function Write-Task {
-param(
-    [switch]$End
-)
-    if ($End) {
-        Write-Build -Color White -Text ''
-        Write-Build -Color Cyan -Text "########## End of Task $($Task.Name) ##########"
-        Write-Build -Color White -Text ''
-    }
-    else {
-        Write-Build -Color White -Text ''
-        Write-Build -Color Cyan -Text "########## Start of Task $($Task.Name) ##########"
-        Write-Build -Color White -Text ''
-    }    
-}
-
 # Synopsis: Baseline the environment
 Enter-Build {
     try {
-        Write-Task
+        Write-Task EnterBuild
         Set-Location $env:BuildFolder
 
         # Load modules from test repo
@@ -64,7 +48,6 @@ Enter-Build {
         
         # Fix module path if duplicates exist (TestHelper)
         Invoke-UniquePSModulePath
-        Write-Task -End
     }
     catch [System.Exception] {
         throw $error
@@ -74,7 +57,7 @@ Enter-Build {
 # Synopsis: Load the Configuration modules and required resources
 task Load {
     try {
-        Write-Task
+        Write-Task Load
         Set-Location $env:BuildFolder
 
         # Discover required modules from Configuration manifest (TestHelper)
@@ -87,7 +70,6 @@ task Load {
         $script:Configurations = Invoke-ConfigurationPrep -Module $ProjectName -Path `
         "$env:TEMP\$ProjectID"
         Write-Output "Prepared configurations:`n$($Configurations | Foreach -Process {$_.Name})"
-        Write-Task -End
     }
     catch [System.Exception] {
         throw $error
@@ -97,7 +79,7 @@ task Load {
 # Synopsis: Run Lint and Unit Tests
 task LintUnitTests {
     try {
-        Write-Task
+        Write-Task LintUnitTests
         Set-Location $env:BuildFolder
 
         $testResultsFile = "$env:BuildFolder\TestsResults.xml"
@@ -117,18 +99,16 @@ task LintUnitTests {
     catch [System.Exception] {
         throw $error
     }
-    Write-Task -End
 }
 
 # Synopsis: Perform Azure Login
 task AzureLogin {
     try {
-        Write-Task
+        Write-Task AzureLogin
         # Login to Azure using information from params
         Write-Output "Logging in to Azure"
         Invoke-AzureSPNLogin -ApplicationID $ApplicationID -ApplicationPassword `
         $ApplicationPassword -TenantID $TenantID
-        Write-Task -End
     }
     catch [System.Exception] {
         throw $error
@@ -138,12 +118,11 @@ task AzureLogin {
 # Synopsis: Create Resource Group
 task ResourceGroupAndAutomationAccount {
     try {
-        Write-Task
+        Write-Task ResourceGroupAndAutomationAccount
         # Create Azure Resource Group and Automation account (TestHelper)
         Write-Output "Creating Resource Group TestAutomation$BuildID"
         Write-Output "and Automation account DSCValidation$BuildID"
         New-ResourceGroupandAutomationAccount
-        Write-Task -End
     }
     catch [System.Exception] {
         throw $error
@@ -153,7 +132,7 @@ task ResourceGroupAndAutomationAccount {
 # Synopsis: Deploys modules to Azure Automation
 task AzureAutomationModules {
     try {
-        Write-Task
+        Write-Task AzureAutomationModules
         Set-Location $env:BuildFolder
 
         # Import the modules discovered as requirements to Azure Automation (TestHelper)
@@ -165,7 +144,6 @@ task AzureAutomationModules {
         # Allow module activities to extract before importing configuration (TestHelper)
         Write-Output 'Waiting for all modules to finish extracting activities'
         foreach ($WaitForModule in $script:Modules) {Wait-ModuleExtraction -Module $WaitForModule}
-        Write-Task -End
     }
     catch [System.Exception] {
         throw $error
@@ -175,7 +153,7 @@ task AzureAutomationModules {
 # Synopsis: Deploys configurations to Azure Automation
 task AzureAutomationConfigurations {
     try {
-        Write-Task
+        Write-Task AzureAutomationConfigurations
         Set-Location $env:BuildFolder
 
         # Import and compile the Configurations using Azure Automation (TestHelper)
@@ -189,7 +167,6 @@ task AzureAutomationConfigurations {
         foreach ($WaitForConfiguration in $script:Configurations) {
             Wait-ConfigurationCompilation -Configuration $WaitForConfiguration
         }
-        Write-Task -End
     }
     catch [System.Exception] {
         throw $error
@@ -199,7 +176,7 @@ task AzureAutomationConfigurations {
 # Synopsis: Deploys Azure VM and bootstraps to Azure Automation DSC
 task AzureVM {
     try {
-        Write-Task
+        Write-Task AzureVM
         foreach ($testConfiguration in $script:Configurations) {
             # Retrieve Azure Automation DSC registration information
             $Account = Get-AzureRMAutomationAccount -ResourceGroupName "TestAutomation$BuildID" `
@@ -218,7 +195,6 @@ task AzureVM {
 
             New-AzureRMResourceGroupDeployment -Name $BuildID -ResourceGroupName "TestAutomation$BuildID" -TemplateFile "$env:BuildFolder\DSCConfiguration.Tests\AzureDeploy.json" -TemplateParameterFile "$env:BuildFolder\DSCConfiguration.Tests\AzureDeploy.parameters.json" -dnsLabelPrefix $dnsLabelPrefix -vmName $testConfiguration -adminPassword $adminPassword -registrationUrl $registrationUrl -registrationKey $registrationKey -nodeConfigurationName "$($testConfiguration.Name).localhost" -verbose
         }
-        Write-Task -End
     }
     catch [System.Exception] {
         throw $error
@@ -227,9 +203,8 @@ task AzureVM {
 
 # Synopsis: remove all assets deployed to Azure and any local temporary changes (should be none)
 Exit-Build {
-    Write-Task
+    Write-Task Exit
     Remove-AzureTestResources
-    Write-Task -End
 }
 
 # Synopsis: default build tasks

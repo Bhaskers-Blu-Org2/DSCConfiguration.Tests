@@ -457,3 +457,13 @@ function New-RandomPassword
 
     return (-join $characters)
 }
+
+<##>
+function Write-Task {
+param(
+    [string]$Name
+)
+    Write-Build -Color White -Text ''
+    Write-Build -Color Cyan -Text "########## Start of $Name ##########"
+    Write-Build -Color White -Text ''
+}
