@@ -54,7 +54,7 @@ try {
     Import-Module -Name $env:BuildFolder\DscConfiguration.Tests\TestHelper.psm1 -Force
     mkdir "$env:BuildFolder\InvokeParallel"
     Invoke-WebRequest -Uri 'https://github.com/RamblingCookieMonster/Invoke-Parallel/raw/master/Invoke-Parallel/Invoke-Parallel.ps1' -OutFile "$env:BuildFolder\InvokeParallel\Invoke-Parallel.ps1"
-    . .\Invoke-Parallel\Invoke-Parallel.ps1
+    . "$env:BuildFolder\InvokeParallel\Invoke-Parallel.ps1"
     
     # Install supporting environment modules from PSGallery
     $EnvironmentModules = @(
