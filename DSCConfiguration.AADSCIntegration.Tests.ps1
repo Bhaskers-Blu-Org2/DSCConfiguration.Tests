@@ -17,12 +17,12 @@ Describe 'Common Tests - Azure Automation DSC' -Tag AADSCIntegration {
 
     Context "Modules" {
         It 'Modules should be present in AADSC account' {
-            $Modules.count | Should NotBeNull
+            $Modules.count | Should Not BeNullorEmpty
         }
     }
     Context "Configurations" {
         It 'Configurations should be present in AADSC account' {
-            $Configurations.count | Should NotBeNull
+            $Configurations.count | Should Not BeNullorEmpty
         }
     }
 }
