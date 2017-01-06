@@ -7,22 +7,27 @@ Describe 'Common Tests - Azure Automation DSC' -Tag AADSCIntegration {
 
     $CurrentModuleManifest = Get-ChildItem -Path $env:BuildFolder -Filter "$env:ProjectName.psd1" | ForEach-Object {$_.FullName}
     $RequiredModules = Get-RequiredGalleryModules (Import-PowerShellDataFile $CurrentModuleManifest)
-    $Configurations = Get-DSCConfigurationCommands
+    $ConfigurationCommands = Get-DSCConfigurationCommands
 
     # Get AADSC Modules
-    $Modules = Get-AzureRmAutomationModule -ResourceGroupName $ResourceGroup -AutomationAccountName $AutomationAccount
+    $AADSCModules = Get-AzureRmAutomationModule -ResourceGroupName $ResourceGroup -AutomationAccountName $AutomationAccount
+    $AADSCModuleNames = $AADSCModules | ForEach-Object {$_.Name}
 
     # Get AADSC Configurations
-    $Configurations = Get-AzureRmAutomationDscConfiguration -ResourceGroupName $ResourceGroup -AutomationAccountName $AutomationAccount
+    $AADSCConfigurations = Get-AzureRmAutomationDscConfiguration -ResourceGroupName $ResourceGroup -AutomationAccountName $AutomationAccount
+    $AADSCConfigurationNames = $AADSCCOnfigurations | ForEach-Object {$_.Name}
 
     Context "Modules" {
-        It 'Modules should be present in AADSC account' {
-            $Modules.count | Should Not BeNullorEmpty
+        ForEach ($RequiredModule in $RequiredModules) {
+            It "$($RequiredModule.Name) should be present in AADSC" {
+                $AADSCModuleNames.Contains("$RequiredModule") | Should Not True
+            }
         }
     }
     Context "Configurations" {
-        It 'Configurations should be present in AADSC account' {
-            $Configurations.count | Should Not BeNullorEmpty
-        }
+        ForEach ($ConfigurationCommand in $ConfigurationCommands) {
+            It "$ConfigurationCommand should be present in AADSC" {
+                $AADSCConfigurationNames.Contains("$ConfigurationCommand") | Should Not True
+            }
     }
 }
