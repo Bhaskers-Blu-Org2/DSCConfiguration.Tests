@@ -215,7 +215,7 @@ task AzureVM {
             ConvertTo-SecureString -AsPlainText -Force
 
             # DNS name based on random chars followed by first 10 of configuration name
-            $dnsLabelPrefix = "$(Get-Random -Minimum 1000 -Maximum 9999)$($testConfiguration.Name.substring(0,10))"
+            $dnsLabelPrefix = "$($testConfiguration.Name.substring(0,10).ToLower())$(Get-Random -Minimum 1000 -Maximum 9999)"
 
             New-AzureRMResourceGroupDeployment -Name $BuildID -ResourceGroupName "TestAutomation$BuildID" -TemplateFile "$env:BuildFolder\DSCConfiguration.Tests\AzureDeploy.json" -TemplateParameterFile "$env:BuildFolder\DSCConfiguration.Tests\AzureDeploy.parameters.json" -dnsLabelPrefix $dnsLabelPrefix -vmName $testConfiguration -adminPassword $adminPassword -registrationUrl $registrationUrl -registrationKey $registrationKey -nodeConfigurationName "$($testConfiguration.Name).localhost" -verbose
         }
