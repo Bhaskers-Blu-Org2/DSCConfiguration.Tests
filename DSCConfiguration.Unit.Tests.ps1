@@ -1,7 +1,3 @@
-$Name = Get-Item -Path $env:BuildFolder | ForEach-Object -Process {$_.Name}
-$Files = Get-ChildItem -Path $env:BuildFolder
-$Manifest = Import-PowerShellDataFile -Path "$env:BuildFolder\$Name.psd1"
-    
 <#
     PSSA = PS Script Analyzer
     Only the first and last tests here will pass/fail correctly at the moment. The other 3 tests
@@ -61,7 +57,7 @@ Describe 'Common Tests - PS Script Analyzer' -Tag Lint {
         'PSUseUTF8EncodingForHelpFile'
     )
 
-    $Psm1Files = Get-Psm1FileList -FilePath $env:APPVEYOR_BUILD_FOLDER
+    $Psm1Files = Get-Psm1FileList -FilePath $env:BuildFolder
 
     foreach ($Psm1File in $Psm1Files)
     {
@@ -160,7 +156,7 @@ Describe 'Common Tests - PS Script Analyzer' -Tag Lint {
 
 <##>
 Describe 'Common Tests - File Parsing' -Tag Lint {
-    $psm1Files = Get-Psm1FileList -FilePath $env:APPVEYOR_BUILD_FOLDER
+    $psm1Files = Get-Psm1FileList -FilePath $env:BuildFolder
 
     foreach ($psm1File in $psm1Files)
     {
@@ -186,7 +182,7 @@ Describe 'Common Tests - File Parsing' -Tag Lint {
 
 <##>
 Describe 'Common Tests - File Formatting' -Tag Lint {
-    $textFiles = Get-TextFilesList -FilePath $env:APPVEYOR_BUILD_FOLDER
+    $textFiles = Get-TextFilesList -FilePath $env:BuildFolder
     
     It "Should not contain any files with Unicode file encoding" {
         $containsUnicodeFile = $false
@@ -275,6 +271,10 @@ Describe 'Common Tests - File Formatting' -Tag Lint {
 <#
 #>
 Describe 'Common Tests - Configuration Module Requirements' -Tag Unit {
+    $Name = Get-Item -Path $env:BuildFolder | ForEach-Object -Process {$_.Name}
+    $Files = Get-ChildItem -Path $env:BuildFolder
+    $Manifest = Import-PowerShellDataFile -Path "$env:BuildFolder\$Name.psd1"
+
     Context "$Name module manifest properties" {
         It 'Contains a module file that aligns to the folder name' {
             $Files.Name.Contains("$Name.psm1") | Should Be True
@@ -285,7 +285,7 @@ Describe 'Common Tests - Configuration Module Requirements' -Tag Unit {
         It 'Contains a readme' {
             $Files.Name.Contains("README.md") | Should Be True
         }
-        It "Manifest $env:APPVEYOR_BUILD_FOLDER\$Name.psd1 should import as a data file" {
+        It "Manifest $env:BuildFolder\$Name.psd1 should import as a data file" {
             $Manifest.GetType() | Should Be 'Hashtable'
         }
         It 'Should point to the root module in the manifest' {

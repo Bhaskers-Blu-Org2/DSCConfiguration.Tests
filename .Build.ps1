@@ -50,9 +50,6 @@ try {
 
     # Load modules from test repo
     Import-Module -Name $env:BuildFolder\DscConfiguration.Tests\TestHelper.psm1 -Force
-    $InvokeParallelFolder = (New-Item -ItemType Directory -Path "$env:ProgramFiles\WindowsPowerShell\Modules\InvokeParallel" -Force).FullName
-    Invoke-WebRequest -Uri 'https://github.com/RamblingCookieMonster/Invoke-Parallel/raw/master/Invoke-Parallel/Invoke-Parallel.ps1' -OutFile "$InvokeParallelFolder\Invoke-Parallel.ps1"
-    . "$InvokeParallelFolder\Invoke-Parallel.ps1"
     
     # Install supporting environment modules from PSGallery
     $EnvironmentModules = @(
