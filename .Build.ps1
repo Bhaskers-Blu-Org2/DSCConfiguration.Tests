@@ -28,9 +28,20 @@ param(
     $BuildID = (property BuildID)
 )
 
+<##>
+function Write-Task {
+param(
+    [string]$Name
+)
+    Write-Build -Color White -Text ''
+    Write-Build -Color Cyan -Text "########## Start of $Name ##########"
+    Write-Build -Color White -Text ''
+}
+
 # Synopsis: Baseline the environment
 Enter-Build {
     try {
+        Write-Task EnterBuild
         Set-Location $env:BuildFolder
 
         # Load modules from test repo
@@ -202,7 +213,7 @@ task AzureVM {
 
 # Synopsis: remove all assets deployed to Azure and any local temporary changes (should be none)
 Task Clean {
-    Write-Task Exit
+    Write-Task ExitBuild
     Remove-AzureTestResources
 }
 
