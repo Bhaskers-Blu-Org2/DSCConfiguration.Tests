@@ -201,7 +201,7 @@ task IntegrationTestAzureAutomationDSC {
 # Synopsis: Deploys Azure VM and bootstraps to Azure Automation DSC
 task AzureVM {
     try {
-        $script:Configurations | Invoke-Parallel -ImportModules -ImportVariables {
+        $script:Configurations | Invoke-Parallel -Scriptblock {
             # Retrieve Azure Automation DSC registration information
             $Account = Get-AzureRMAutomationAccount -ResourceGroupName "TestAutomation$BuildID" `
             -Name "DSCValidation$BuildID"
