@@ -52,7 +52,8 @@ try {
 
     # Load modules from test repo
     Import-Module -Name $env:BuildFolder\DscConfiguration.Tests\TestHelper.psm1 -Force
-    Git Clone https://github.com/RamblingCookieMonster/Invoke-Parallel
+    mkdir "$env:BuildFolder\InvokeParallel"
+    Invoke-WebRequest -Uri 'https://github.com/RamblingCookieMonster/Invoke-Parallel/raw/master/Invoke-Parallel/Invoke-Parallel.ps1' -OutFile "$env:BuildFolder\InvokeParallel\Invoke-Parallel.ps1"
     . .\Invoke-Parallel\Invoke-Parallel.ps1
     
     # Install supporting environment modules from PSGallery
