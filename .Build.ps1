@@ -45,36 +45,30 @@ Exit-BuildTask {
     # PLACEHOLDER
 }
 
-# Synopsis: Install prerequisites for the build environment
-task Install {
-        try {
-        Set-Location $env:BuildFolder
+# Synopsis: Baseline the environment
+Enter-Build {
+try {
+    Set-Location $env:BuildFolder
 
-        # Load modules from test repo
-        Import-Module -Name $env:BuildFolder\DscConfiguration.Tests\TestHelper.psm1 -Force
-        
-        # Install supporting environment modules from PSGallery
-        $EnvironmentModules = @(
-        'Pester',
-        'PSScriptAnalyzer',
-        'AzureRM',
-        'PSParallel'
-        )
-        Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.205 -Force | Out-Null
-        Install-Module -Name $EnvironmentModules -Repository PSGallery -Force
-        
-        # Fix module path if duplicates exist (TestHelper)
-        Invoke-UniquePSModulePath
+    # Load modules from test repo
+    Import-Module -Name $env:BuildFolder\DscConfiguration.Tests\TestHelper.psm1 -Force
+    
+    # Install supporting environment modules from PSGallery
+    $EnvironmentModules = @(
+    'Pester',
+    'PSScriptAnalyzer',
+    'AzureRM',
+    'PSParallel'
+    )
+    Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.205 -Force | Out-Null
+    Install-Module -Name $EnvironmentModules -Repository PSGallery -Force
+    
+    # Fix module path if duplicates exist (TestHelper)
+    Invoke-UniquePSModulePath
     }
     catch [System.Exception] {
         throw $error
     }
-
-}
-
-# Synopsis: Baseline the environment
-Enter-Build {
-    task Install
 }
 
 # Synopsis: Load the Configuration modules and required resources
