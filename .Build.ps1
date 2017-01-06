@@ -203,8 +203,7 @@ task IntegrationTestAzureAutomationDSC {
 # Synopsis: Deploys Azure VM and bootstraps to Azure Automation DSC
 task AzureVM {
     try {
-        $script:Configurations | Invoke-Parallel -ImportVariable -Scriptblock {
-            Install-Module AzureRM -Force
+        ForEach ($testConfiguration in $script:Configurations) {
             # Retrieve Azure Automation DSC registration information
             $Account = Get-AzureRMAutomationAccount -ResourceGroupName "TestAutomation$BuildID" `
             -Name "DSCValidation$BuildID"
@@ -225,7 +224,7 @@ task AzureVM {
             -TemplateFile "$env:BuildFolder\DSCConfiguration.Tests\AzureDeploy.json" `
             -TemplateParameterFile "$env:BuildFolder\DSCConfiguration.Tests\AzureDeploy.parameters.json" `
             -dnsLabelPrefix $dnsLabelPrefix 
-            -vmName $testConfiguration `
+            -vmName $testConfiguration.Name `
             -adminPassword $adminPassword `
             -registrationUrl $registrationUrl `
             -registrationKey $registrationKey `
