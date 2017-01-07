@@ -93,6 +93,8 @@ function Invoke-ConfigurationPrep {
         # Get list of configurations loaded from module
         $Configurations = Get-DSCConfigurationCommands -Module $Module
         $Configurations | Add-Member -MemberType NoteProperty -Name Location -Value $null
+        $Configurations | Add-Member -MemberType NoteProperty -Name WindowsOSVersions -Value (Get-Module -Name $Module).PrivateData.PSData.WindowsOSVersions
+
 
         # Create working folder
         New-Item -Path $Path -ItemType Directory -Force | Out-Null
