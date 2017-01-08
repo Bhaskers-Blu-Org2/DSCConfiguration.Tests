@@ -150,6 +150,7 @@ task IntegrationTestAzureAutomationDSC {
 # Synopsis: Deploys Azure VM and bootstraps to Azure Automation DSC
 task AzureVM {
     ForEach ($testConfiguration in $script:Configurations) {
+      ForEach ($WindowsOSVersion in $testConfiguration.WindowsOSVersion) {
         # Retrieve Azure Automation DSC registration information
         $Account = Get-AzureRMAutomationAccount -ResourceGroupName "TestAutomation$BuildID" `
         -Name "DSCValidation$BuildID"
@@ -171,6 +172,7 @@ task AzureVM {
         -TemplateParameterFile "$env:BuildFolder\DSCConfiguration.Tests\AzureDeploy.parameters.json" `
         -dnsLabelPrefix $dnsLabelPrefix `
         -vmName $testConfiguration.Name `
+        -WindowsOSVersion $WindowsOSVersion `
         -adminPassword $adminPassword `
         -registrationUrl $registrationUrl `
         -registrationKey $registrationKey `
@@ -190,6 +192,7 @@ task AzureVM {
             ForEach-Object {$_.Details} | ForEach-Object {$_.Message}
             Write-Error $Message
         }
+      }
     }
 }
 
