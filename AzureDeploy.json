@@ -26,7 +26,7 @@
         "description": "Unique DNS Name for the Public IP used to access the Virtual Machine."
       }
     },
-    "windowsOSVersion": {
+    "WindowsOSVersion": {
       "type": "string",
       "defaultValue": "2016-Datacenter",
       "allowedValues": [
@@ -165,7 +165,7 @@
           "imageReference": {
             "publisher": "MicrosoftWindowsServer",
             "offer": "WindowsServer",
-            "sku": "[parameters('windowsOSVersion')]",
+            "sku": "[parameters('WindowsOSVersion')]",
             "version": "latest"
           },
           "osDisk": {
