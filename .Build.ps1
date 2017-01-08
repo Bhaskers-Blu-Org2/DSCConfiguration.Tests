@@ -168,7 +168,7 @@ task AzureVM {
         $dnsLabelPrefix = "$($testConfiguration.Name.substring(0,10).ToLower())$(Get-Random -Minimum 1000 -Maximum 9999)"
         
         # VM Name based on configuration name and OS name
-        $vmName = "$($testConfiguration.Name)_$WindowsOSVersion.replace('-','')"
+        $vmName = "$($testConfiguration.Name).$($WindowsOSVersion.replace('-',''))"
 
         New-AzureRMResourceGroupDeployment -Name $BuildID `
         -ResourceGroupName "TestAutomation$BuildID" `
