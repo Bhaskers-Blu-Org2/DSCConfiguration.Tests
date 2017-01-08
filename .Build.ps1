@@ -164,7 +164,7 @@ task AzureVM {
     # Wait for all VM deployments to finish (asynch)
     ForEach ($Job in $VMDeployments) {
         Wait-Job -Job $Job
-        Recieve-Job $Job
+        Receive-Job -Job $Job
     }
 }
 
