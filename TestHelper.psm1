@@ -430,7 +430,7 @@ param(
     [string]$Configuration,
     [string]$WindowsOSVersion
 )
-    Write-Output "Deploying build $BuildID of configuration $($Configuration.Name) to OS version $WindowsOSVersion"
+    Write-Output "Deploying build $BuildID of configuration $Configuration to OS version $WindowsOSVersion"
     # Retrieve Azure Automation DSC registration information
     $Account = Get-AzureRMAutomationAccount -ResourceGroupName "TestAutomation$BuildID" `
     -Name "DSCValidation$BuildID"
@@ -444,10 +444,10 @@ param(
     ConvertTo-SecureString -AsPlainText -Force
 
     # DNS name based on random chars followed by first 10 of configuration name
-    $dnsLabelPrefix = "$($Configuration.Name.substring(0,10).ToLower())$(Get-Random -Minimum 1000 -Maximum 9999)"
+    $dnsLabelPrefix = "$($Configuration.substring(0,10).ToLower())$(Get-Random -Minimum 1000 -Maximum 9999)"
 
     # VM Name based on configuration name and OS name
-    $vmName = "$($Configuration.Name).$($WindowsOSVersion.replace('-',''))"
+    $vmName = "$Configuration.$($WindowsOSVersion.replace('-',''))"
 
     New-AzureRMResourceGroupDeployment -Name $BuildID `
     -ResourceGroupName "TestAutomation$BuildID" `
@@ -459,7 +459,7 @@ param(
     -adminPassword $adminPassword `
     -registrationUrl $registrationUrl `
     -registrationKey $registrationKey `
-    -nodeConfigurationName "$($Configuration.Name).localhost"
+    -nodeConfigurationName "$Configuration.localhost"
 
     $Status = Get-AzureRMResourceGroupDeployment -ResourceGroupName "TestAutomation$BuildID" `
     -Name $BuildID

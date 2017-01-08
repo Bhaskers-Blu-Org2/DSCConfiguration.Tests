@@ -154,7 +154,7 @@ task AzureVM {
       ForEach ($WindowsOSVersion in $Configuration.WindowsOSVersion) {
         $VMDeployment = Start-Job -ScriptBlock {New-AzureTestVM} -ArgumentList @{
             BuildID = $BuildID
-            Configuration = $Configuration
+            Configuration = $Configuration.Name
             WindowsOSVersion = $WindowsOSVersion
         }
         $VMDeployments += $VMDeployment
