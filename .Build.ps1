@@ -166,13 +166,16 @@ task AzureVM {
 
         # DNS name based on random chars followed by first 10 of configuration name
         $dnsLabelPrefix = "$($testConfiguration.Name.substring(0,10).ToLower())$(Get-Random -Minimum 1000 -Maximum 9999)"
+        
+        $ VM Name based on configuration name and OS name
+        $vmName = "$($testConfiguration.Name)_$WindowsOSVersion.replace('-','')"
 
         New-AzureRMResourceGroupDeployment -Name $BuildID `
         -ResourceGroupName "TestAutomation$BuildID" `
         -TemplateFile "$env:BuildFolder\DSCConfiguration.Tests\AzureDeploy.json" `
         -TemplateParameterFile "$env:BuildFolder\DSCConfiguration.Tests\AzureDeploy.parameters.json" `
         -dnsLabelPrefix $dnsLabelPrefix `
-        -vmName $testConfiguration.Name `
+        -vmName $vmName `
         -WindowsOSVersion $WindowsOSVersion `
         -adminPassword $adminPassword `
         -registrationUrl $registrationUrl `
