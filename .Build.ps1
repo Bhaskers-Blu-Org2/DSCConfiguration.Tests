@@ -155,6 +155,8 @@ task AzureVM {
         Write-Output "Deploying build $BuildID of configuration $Configuration to OS version $WindowsOSVersion"
         $VMDeployment = Start-Job -ScriptBlock {
             Import-Module -Name $env:BuildFolder\DscConfiguration.Tests\TestHelper.psm1 -Force
+            Invoke-AzureSPNLogin -ApplicationID $env:ApplicationID -ApplicationPassword `
+            $env:ApplicationPassword -TenantID $env:TenantID
             New-AzureTestVM
         } -ArgumentList @($BuildID,$Configuration.Name,$WindowsOSVersion)
         $VMDeployments += $VMDeployment
