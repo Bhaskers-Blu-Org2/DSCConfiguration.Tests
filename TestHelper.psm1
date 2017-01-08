@@ -469,7 +469,7 @@ function New-AzureTestVM {
     Write-Output 'Issued ARM deployment command'
 
     $Status = Get-AzureRMResourceGroupDeployment -ResourceGroupName "TestAutomation$BuildID" `
-    -Name $BuildID
+    -Name $vmName
 
     Write-Output 'DEBUG: Retreieved status of deployment'
 
