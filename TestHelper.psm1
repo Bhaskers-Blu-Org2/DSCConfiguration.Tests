@@ -448,7 +448,7 @@ function New-AzureTestVM {
     # VM Name based on configuration name and OS name
     $vmName = "$Configuration.$($WindowsOSVersion.replace('-',''))"
 
-    New-AzureRMResourceGroupDeployment -Name $BuildID `
+    New-AzureRMResourceGroupDeployment -Name $vmName `
     -ResourceGroupName "TestAutomation$BuildID" `
     -TemplateFile "$env:BuildFolder\DSCConfiguration.Tests\AzureDeploy.json" `
     -TemplateParameterFile "$env:BuildFolder\DSCConfiguration.Tests\AzureDeploy.parameters.json" `
