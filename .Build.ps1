@@ -172,7 +172,7 @@ task AzureVM {
         -TemplateParameterFile "$env:BuildFolder\DSCConfiguration.Tests\AzureDeploy.parameters.json" `
         -dnsLabelPrefix $dnsLabelPrefix `
         -vmName $testConfiguration.Name `
-        -WindowsOSVersion $WindowsOSVersion `
+        -windowsOSVersion $WindowsOSVersion `
         -adminPassword $adminPassword `
         -registrationUrl $registrationUrl `
         -registrationKey $registrationKey `
