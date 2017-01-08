@@ -151,6 +151,7 @@ task IntegrationTestAzureAutomationDSC {
 task AzureVM {
     ForEach ($testConfiguration in $script:Configurations) {
       ForEach ($WindowsOSVersion in $testConfiguration.WindowsOSVersion) {
+        Write-Output "DEBUG: $WindowsOSVersion"
         # Retrieve Azure Automation DSC registration information
         $Account = Get-AzureRMAutomationAccount -ResourceGroupName "TestAutomation$BuildID" `
         -Name "DSCValidation$BuildID"
