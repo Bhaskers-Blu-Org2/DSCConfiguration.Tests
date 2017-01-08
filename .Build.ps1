@@ -172,7 +172,7 @@ task AzureVM {
     ForEach ($Job in $VMDeployments) {
         Wait-Job -Job $Job
         Write-Output `n
-        Write-Output "########## Output from $Job.Name ##########"
+        Write-Output "########## Output from $($Job.Name) ##########"
         Receive-Job -Job $Job
     }
 }
