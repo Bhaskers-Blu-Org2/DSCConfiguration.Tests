@@ -153,11 +153,7 @@ task AzureVM {
     ForEach ($Configuration in $script:Configurations) {
       ForEach ($WindowsOSVersion in $Configuration.WindowsOSVersion) {
         Write-Output "Deploying build $BuildID of configuration $Configuration to OS version $WindowsOSVersion"
-        $VMDeployment = Start-Job -ScriptBlock {New-AzureTestVM} -ArgumentList @{
-            BuildID = $BuildID
-            Configuration = $Configuration.Name
-            WindowsOSVersion = $WindowsOSVersion
-        }
+        $VMDeployment = Start-Job -ScriptBlock {New-AzureTestVM} -ArgumentList @($BuildID,$Configuration.Name,$WindowsOSVersion)
         $VMDeployments += $VMDeployment
       }
     }
