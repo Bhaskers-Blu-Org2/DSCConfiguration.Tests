@@ -478,7 +478,7 @@ function New-AzureTestVM {
     }
     else {
         $Error = Get-AzureRMDeploymentOperation -ResourceGroupName "TestAutomation$BuildID" `
-        -Name $BuildID
+        -Name $vmName
         $Message = $Error.Properties | Where-Object {$_.ProvisioningState -eq 'Failed'} | `
         ForEach-Object {$_.StatusMessage} | ForEach-Object {$_.Error} | `
         ForEach-Object {$_.Details} | ForEach-Object {$_.Message}
