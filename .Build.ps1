@@ -152,7 +152,8 @@ task AzureVM {
     $VMDeployments = @()
     ForEach ($Configuration in $script:Configurations) {
       ForEach ($WindowsOSVersion in $Configuration.WindowsOSVersion) {
-        Write-Output "Deploying $WindowsOSVersion and bootstrapping configuration $Configuration"
+        Write-Output "Deploying $WindowsOSVersion and bootstrapping configuration $($Configuration.Name)"
+        $JobName = "$($Configuration.Name).$($WindowsOSVersion.replace('-',''))"
         $VMDeployment = Start-Job -ScriptBlock {
         param(
             [string]$BuildID,
@@ -163,14 +164,15 @@ task AzureVM {
             Invoke-AzureSPNLogin -ApplicationID $env:ApplicationID -ApplicationPassword `
             $env:ApplicationPassword -TenantID $env:TenantID
             New-AzureTestVM -BuildID $BuildID -Configuration $Configuration -WindowsOSVersion $WindowsOSVersion
-        } -ArgumentList @($BuildID,$Configuration.Name,$WindowsOSVersion)
+        } -ArgumentList @($BuildID,$Configuration.Name,$WindowsOSVersion) -Name $JobName
         $VMDeployments += $VMDeployment
       }
     }
-    Write-Output $VMDeployments
     # Wait for all VM deployments to finish (asynch)
     ForEach ($Job in $VMDeployments) {
         Wait-Job -Job $Job
+        Write-Output `n
+        Write-Output "########## Output from $Job.Name ##########"
         Receive-Job -Job $Job
     }
 }
