@@ -138,8 +138,8 @@ task AzureAutomationConfigurations {
 task IntegrationTestAzureAutomationDSC {
     $testResultsFile = "$env:BuildFolder\AADSCIntegrationTestsResults.xml"
 
-    $res = Invoke-Pester -Tag AADSCIntegration -OutputFormat NUnitXml -OutputFile $testResultsFile `
-    -PassThru
+    $res = Invoke-Pester -Tag AADSCIntegration -OutputFormat NUnitXml `
+    -OutputFile $testResultsFile -PassThru
     
     #TODO Test if results should go to AppVeyor
     (New-Object 'System.Net.WebClient').UploadFile( `
@@ -149,10 +149,21 @@ task IntegrationTestAzureAutomationDSC {
 
 # Synopsis: Deploys Azure VM and bootstraps to Azure Automation DSC
 task AzureVM {
+    $VMDeployments = @()
     ForEach ($Configuration in $script:Configurations) {
       ForEach ($WindowsOSVersion in $Configuration.WindowsOSVersion) {
-        $AzureVM = New-AzureTestVM -BuildID $BuildID -Configuration $Configuration -WindowsOSVersion $WindowsOSVersion
+        $VMDeployment = Start-Job -ScriptBlock {New-AzureTestVM} -ArgumentList @{
+            BuildID = $BuildID
+            Configuration = $Configuration
+            WindowsOSVersion = $WindowsOSVersion
+        }
+        $VMDeployments += $VMDeployment
       }
+    }
+    # Wait for all VM deployments to finish (asynch)
+    ForEach ($Job in $VMDeployments) {
+        Wait-Job -Job $Job
+        Recieve-Job $Job
     }
 }
 
