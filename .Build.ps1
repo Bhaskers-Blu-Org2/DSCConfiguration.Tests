@@ -151,8 +151,7 @@ task IntegrationTestAzureAutomationDSC {
 task AzureVM {
     ForEach ($Configuration in $script:Configurations) {
       ForEach ($WindowsOSVersion in $Configuration.WindowsOSVersion) {
-        Write-Output "DEBUG: $WindowsOSVersion"
-        New-AzureTestVM -BuildID $BuildID -Configuration $Configuration -WindowsOSVersion $WindowsOSVersion
+        $AzureVM = New-AzureTestVM -BuildID $BuildID -Configuration $Configuration -WindowsOSVersion $WindowsOSVersion
       }
     }
 }
