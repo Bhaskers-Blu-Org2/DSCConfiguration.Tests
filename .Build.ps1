@@ -152,12 +152,17 @@ task AzureVM {
     $VMDeployments = @()
     ForEach ($Configuration in $script:Configurations) {
       ForEach ($WindowsOSVersion in $Configuration.WindowsOSVersion) {
-        Write-Output "Deploying build $BuildID of configuration $Configuration to OS version $WindowsOSVersion"
+        Write-Output "Deploying $WindowsOSVersion and bootstrapping configuration $Configuration"
         $VMDeployment = Start-Job -ScriptBlock {
+        param(
+            [string]$BuildID,
+            [string]$Configuration,
+            [string]$WindowsOSVersion
+        )
             Import-Module -Name $env:BuildFolder\DscConfiguration.Tests\TestHelper.psm1 -Force
             Invoke-AzureSPNLogin -ApplicationID $env:ApplicationID -ApplicationPassword `
             $env:ApplicationPassword -TenantID $env:TenantID
-            New-AzureTestVM
+            New-AzureTestVM -BuildID $BuildID -Configuration $Configuration -WindowsOSVersion $WindowsOSVersion
         } -ArgumentList @($BuildID,$Configuration.Name,$WindowsOSVersion)
         $VMDeployments += $VMDeployment
       }

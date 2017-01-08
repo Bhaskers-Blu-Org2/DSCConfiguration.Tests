@@ -430,7 +430,6 @@ function New-AzureTestVM {
         [string]$Configuration,
         [string]$WindowsOSVersion
     )
-    Write-Output "Deploying build $BuildID of configuration $Configuration to OS version $WindowsOSVersion"
     # Retrieve Azure Automation DSC registration information
     $Account = Get-AzureRMAutomationAccount -ResourceGroupName "TestAutomation$BuildID" `
     -Name "DSCValidation$BuildID"
