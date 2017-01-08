@@ -149,53 +149,10 @@ task IntegrationTestAzureAutomationDSC {
 
 # Synopsis: Deploys Azure VM and bootstraps to Azure Automation DSC
 task AzureVM {
-    ForEach ($testConfiguration in $script:Configurations) {
-      ForEach ($WindowsOSVersion in $testConfiguration.WindowsOSVersion) {
+    ForEach ($Configuration in $script:Configurations) {
+      ForEach ($WindowsOSVersion in $Configuration.WindowsOSVersion) {
         Write-Output "DEBUG: $WindowsOSVersion"
-        # Retrieve Azure Automation DSC registration information
-        $Account = Get-AzureRMAutomationAccount -ResourceGroupName "TestAutomation$BuildID" `
-        -Name "DSCValidation$BuildID"
-        $RegistrationInfo = $Account | Get-AzureRmAutomationRegistrationInfo
-        $registrationUrl = $RegistrationInfo.Endpoint
-        $registrationKey = $RegistrationInfo.PrimaryKey | ConvertTo-SecureString -AsPlainText `
-        -Force
-        
-        # Random password for local administrative account
-        $adminPassword = new-randompassword -length 24 -UseSpecialCharacters | `
-        ConvertTo-SecureString -AsPlainText -Force
-
-        # DNS name based on random chars followed by first 10 of configuration name
-        $dnsLabelPrefix = "$($testConfiguration.Name.substring(0,10).ToLower())$(Get-Random -Minimum 1000 -Maximum 9999)"
-        
-        # VM Name based on configuration name and OS name
-        $vmName = "$($testConfiguration.Name).$($WindowsOSVersion.replace('-',''))"
-
-        New-AzureRMResourceGroupDeployment -Name $BuildID `
-        -ResourceGroupName "TestAutomation$BuildID" `
-        -TemplateFile "$env:BuildFolder\DSCConfiguration.Tests\AzureDeploy.json" `
-        -TemplateParameterFile "$env:BuildFolder\DSCConfiguration.Tests\AzureDeploy.parameters.json" `
-        -dnsLabelPrefix $dnsLabelPrefix `
-        -vmName $vmName `
-        -WindowsOSVersion $WindowsOSVersion `
-        -adminPassword $adminPassword `
-        -registrationUrl $registrationUrl `
-        -registrationKey $registrationKey `
-        -nodeConfigurationName "$($testConfiguration.Name).localhost"
-
-        $Status = Get-AzureRMResourceGroupDeployment -ResourceGroupName "TestAutomation$BuildID" `
-        -Name $BuildID
-
-        if ($Status.ProvisioningState -eq 'Succeeded') {
-            Write-Output $Status.Outputs
-        }
-        else {
-            $Error = Get-AzureRMDeploymentOperation -ResourceGroupName "TestAutomation$BuildID" `
-            -Name $BuildID
-            $Message = $Error.Properties | Where-Object {$_.ProvisioningState -eq 'Failed'} | `
-            ForEach-Object {$_.StatusMessage} | ForEach-Object {$_.Error} | `
-            ForEach-Object {$_.Details} | ForEach-Object {$_.Message}
-            Write-Error $Message
-        }
+        New-AzureTestVM -BuildID $BuildID -Configuration $Configuration -WindowsOSVersion $WindowsOSVersion
       }
     }
 }

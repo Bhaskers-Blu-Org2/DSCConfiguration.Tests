@@ -423,6 +423,60 @@ function Wait-ConfigurationCompilation {
     }
 }
 
+<##>
+function New-AzureTestVM {
+param(
+    [string]$BuildID,
+    [string]$Configuration,
+    [string]$WindowsOSVersion
+)
+    Write-Output "Deploying build $BuildID of configuration $($Configuration.Name) to OS version $WindowsOSVersion"
+    # Retrieve Azure Automation DSC registration information
+    $Account = Get-AzureRMAutomationAccount -ResourceGroupName "TestAutomation$BuildID" `
+    -Name "DSCValidation$BuildID"
+    $RegistrationInfo = $Account | Get-AzureRmAutomationRegistrationInfo
+    $registrationUrl = $RegistrationInfo.Endpoint
+    $registrationKey = $RegistrationInfo.PrimaryKey | ConvertTo-SecureString -AsPlainText `
+    -Force
+
+    # Random password for local administrative account
+    $adminPassword = new-randompassword -length 24 -UseSpecialCharacters | `
+    ConvertTo-SecureString -AsPlainText -Force
+
+    # DNS name based on random chars followed by first 10 of configuration name
+    $dnsLabelPrefix = "$($Configuration.Name.substring(0,10).ToLower())$(Get-Random -Minimum 1000 -Maximum 9999)"
+
+    # VM Name based on configuration name and OS name
+    $vmName = "$($Configuration.Name).$($WindowsOSVersion.replace('-',''))"
+
+    New-AzureRMResourceGroupDeployment -Name $BuildID `
+    -ResourceGroupName "TestAutomation$BuildID" `
+    -TemplateFile "$env:BuildFolder\DSCConfiguration.Tests\AzureDeploy.json" `
+    -TemplateParameterFile "$env:BuildFolder\DSCConfiguration.Tests\AzureDeploy.parameters.json" `
+    -dnsLabelPrefix $dnsLabelPrefix `
+    -vmName $vmName `
+    -WindowsOSVersion $WindowsOSVersion `
+    -adminPassword $adminPassword `
+    -registrationUrl $registrationUrl `
+    -registrationKey $registrationKey `
+    -nodeConfigurationName "$($Configuration.Name).localhost"
+
+    $Status = Get-AzureRMResourceGroupDeployment -ResourceGroupName "TestAutomation$BuildID" `
+    -Name $BuildID
+
+    if ($Status.ProvisioningState -eq 'Succeeded') {
+        Write-Output $Status.Outputs
+    }
+    else {
+        $Error = Get-AzureRMDeploymentOperation -ResourceGroupName "TestAutomation$BuildID" `
+        -Name $BuildID
+        $Message = $Error.Properties | Where-Object {$_.ProvisioningState -eq 'Failed'} | `
+        ForEach-Object {$_.StatusMessage} | ForEach-Object {$_.Error} | `
+        ForEach-Object {$_.Details} | ForEach-Object {$_.Message}
+        Write-Error $Message
+    }
+}
+
 <#
     This work was originally published in the PowerShell xJEA module.
     https://github.com/PowerShell/xJea/blob/dev/DSCResources/Library/JeaAccount.psm1
