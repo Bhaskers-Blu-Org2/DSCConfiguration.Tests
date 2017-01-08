@@ -214,12 +214,8 @@ task IntegrationTestAzureVMs {
 }
 
 # Synopsis: remove all assets deployed to Azure and any local temporary changes (should be none)
-task Clean {
-    Remove-AzureTestResources
-}
-
 Exit-Build {
-        task Clean
+    Remove-AzureTestResources
 }
 
 # Synopsis: default build tasks
