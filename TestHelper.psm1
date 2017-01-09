@@ -328,7 +328,8 @@ function Test-FileInUnicode
     return ($zeroBytes.Length -ne 0)
 }
 
-<##>
+<#
+#>
 function Invoke-AzureSPNLogin
 {
     [CmdletBinding()]
@@ -350,12 +351,15 @@ function Invoke-AzureSPNLogin
         -AsPlainText -Force)
     
         # Suppress request to share usage information
+        Enable-AzureDataCollection
+        <# 
         $Path = "$Home\AppData\Roaming\Windows Azure Powershell\"
         if (!(Test-Path -Path $Path)) {
             $AzPSProfile = New-Item -Path $Path -ItemType Directory
         }
         $AzProfileContent = Set-Content -Value '{"enableAzureDataCollection":true}' `
         -Path (Join-Path $Path 'AzureDataCollectionProfile.json') 
+        #>
 
         # Handle Login
         Add-AzureRmAccount -Credential $Credential -ServicePrincipal -TenantID $TenantID `

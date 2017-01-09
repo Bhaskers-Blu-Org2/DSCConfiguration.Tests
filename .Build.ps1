@@ -75,7 +75,7 @@ task LoadModules {
     # Prep and import Configurations from module (TestHelper)
     Import-ModuleFromSource -Name $ProjectName
     $script:Configurations = Invoke-ConfigurationPrep -Module $ProjectName -Path `
-    "$env:TEMP\$ProjectID" -Verbose
+    "$env:TEMP\$ProjectID"
     Write-Output "Loaded configurations:`n$($script:Configurations | ForEach-Object -Process {$_.Name})"
 }
 
@@ -94,7 +94,7 @@ task LintUnitTests {
 task AzureLogin {
     # Login to Azure using information from params
     Invoke-AzureSPNLogin -ApplicationID $ApplicationID -ApplicationPassword `
-    $ApplicationPassword -TenantID $TenantID
+    $ApplicationPassword -TenantID $TenantID -Verbose
 }
 
 # Synopsis: Create Resource Group
