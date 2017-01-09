@@ -67,6 +67,8 @@ Enter-Build {
 # Synopsis: Load the Configuration modules and required resources
 task LoadModules {
     # Discover required modules from Configuration manifest (TestHelper)
+    Write-Output "The build folder is $BuildFolder"
+    Write-Output "The build folder is $env:BuildFolder"
     $script:Modules = Get-RequiredGalleryModules -ManifestData (Import-PowerShellDataFile `
     -Path "$BuildFolder\$ProjectName.psd1") -Install
 
