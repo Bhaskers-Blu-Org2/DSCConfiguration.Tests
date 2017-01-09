@@ -3,7 +3,7 @@
 Describe 'Common Tests - Azure VM' -Tag AzureVMIntegration {
 
     $ResourceGroup = "TestAutomation$env:BuildID"
-    $AutomationAccount = "DSCValidation$env:BuildID"
+    $AutomationAccount = "AADSC$env:BuildID"
 
     $ConfigurationCommands = Get-DSCConfigurationCommands -Module $env:ProjectName
     $OSVersion = (Import-PowerShellDataFile $env:BuildFolder\$env:ProjectName.psd1).PrivateData.PSData.WindowsOSVersion

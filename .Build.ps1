@@ -94,7 +94,7 @@ task LintUnitTests {
 task AzureLogin {
     # Login to Azure using information from params
     Invoke-AzureSPNLogin -ApplicationID $ApplicationID -ApplicationPassword `
-    $ApplicationPassword -TenantID $TenantID -Verbose
+    $ApplicationPassword -TenantID $TenantID
 }
 
 # Synopsis: Create Resource Group

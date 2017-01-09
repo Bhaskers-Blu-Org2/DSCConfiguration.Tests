@@ -344,7 +344,7 @@ function Invoke-AzureSPNLogin
     )
     try 
     {
-        Write-Verbose "Logging in to Azure"
+        Write-Output "Logging in to Azure"
         
         # Build platform (AppVeyor) does not offer solution for passing secure strings
         $Credential = New-Object -typename System.Management.Automation.PSCredential -argumentlist $ApplicationID, $(convertto-securestring -String $ApplicationPassword -AsPlainText -Force)
@@ -357,7 +357,7 @@ function Invoke-AzureSPNLogin
         $AzProfileContent = Set-Content -Value '{"enableAzureDataCollection":true}' -Path (Join-Path $Path 'AzureDataCollectionProfile.json') 
 
         # Handle Login
-        Add-AzureRmAccount -Credential $Credential -ServicePrincipal -TenantID $TenantID -ErrorAction SilentlyContinue
+        $AddAccount = Add-AzureRmAccount -Credential $Credential -ServicePrincipal -TenantID $TenantID -ErrorAction SilentlyContinue
     }
     catch [System.Exception] {
         throw "An error occured while logging in to Azure`n$error"    
@@ -368,7 +368,6 @@ function Invoke-AzureSPNLogin
 function New-ResourceGroupandAutomationAccount
 {
     [CmdletBinding()]
-    [OutputType([System.Boolean])]       
     param
     (
         [string]$Location = 'EastUS2',
@@ -386,14 +385,6 @@ function New-ResourceGroupandAutomationAccount
         # Create Azure Automation account
         $AutomationAccount = New-AzureRMAutomationAccount -ResourceGroupName $ResourceGroupName `
         -Name $AutomationAccountName -Location $Location
-
-        if ($Account = Get-AzureRmAutomationAccount -ResourceGroupName $ResourceGroupName `
-        -Name $AutomationAccountName) {
-            return $true
-        }
-        else {
-            return $false
-        }
     }
     catch [System.Exception] {
         throw "A failure occured while creating the Resource Group $ResourceGroupName or Automation Account $AutomationAccountName`n$error"

@@ -184,87 +184,89 @@ Describe 'Common Tests - File Parsing' -Tag Lint {
 Describe 'Common Tests - File Formatting' -Tag Lint {
     $textFiles = Get-TextFilesList -FilePath $env:BuildFolder
     
-    It "Should not contain any files with Unicode file encoding" {
-        $containsUnicodeFile = $false
+    Context 'Text files' {
+        It "Should not contain any files with Unicode file encoding" {
+            $containsUnicodeFile = $false
 
-        foreach ($textFile in $textFiles)
-        {
-            if (Test-FileInUnicode $textFile) {
-                if($textFile.Extension -ieq '.mof')
-                {
-                    Write-Warning -Message "File $($textFile.FullName) should be converted to ASCII. Use fixer function 'Get-UnicodeFilesList `$pwd | ConvertTo-ASCII'."
-                }
-                else
-                {
-                    Write-Warning -Message "File $($textFile.FullName) should be converted to UTF-8. Use fixer function 'Get-UnicodeFilesList `$pwd | ConvertTo-UTF8'."
-                }
-
-                $containsUnicodeFile = $true
-            }
-        }
-
-        $containsUnicodeFile | Should Be $false
-    }
-
-    It 'Should not contain any files with tab characters' {
-        $containsFileWithTab = $false
-
-        foreach ($textFile in $textFiles)
-        {
-            $fileName = $textFile.FullName
-            $fileContent = Get-Content -Path $fileName -Raw
-
-            $tabCharacterMatches = $fileContent | Select-String "`t"
-
-            if ($null -ne $tabCharacterMatches)
+            foreach ($textFile in $textFiles)
             {
-                Write-Warning -Message "Found tab character(s) in $fileName. Use fixer function 'Get-TextFilesList `$pwd | ConvertTo-SpaceIndentation'."
-                $containsFileWithTab = $true
-            }
-        }
+                if (Test-FileInUnicode $textFile) {
+                    if($textFile.Extension -ieq '.mof')
+                    {
+                        Write-Warning -Message "File $($textFile.FullName) should be converted to ASCII. Use fixer function 'Get-UnicodeFilesList `$pwd | ConvertTo-ASCII'."
+                    }
+                    else
+                    {
+                        Write-Warning -Message "File $($textFile.FullName) should be converted to UTF-8. Use fixer function 'Get-UnicodeFilesList `$pwd | ConvertTo-UTF8'."
+                    }
 
-        $containsFileWithTab | Should Be $false
-    }
-
-    It 'Should not contain empty files' {
-        $containsEmptyFile = $false
-
-        foreach ($textFile in $textFiles)
-        {
-            $fileContent = Get-Content -Path $textFile.FullName -Raw
-
-            if([String]::IsNullOrWhiteSpace($fileContent))
-            {
-                Write-Warning -Message "File $($textFile.FullName) is empty. Please remove this file."
-                $containsEmptyFile = $true
-            }
-        }
-
-        $containsEmptyFile | Should Be $false
-    }
-
-    It 'Should not contain files without a newline at the end' {
-        $containsFileWithoutNewLine = $false
-
-        foreach ($textFile in $textFiles)
-        {
-            $fileContent = Get-Content -Path $textFile.FullName -Raw
-
-            if(-not [String]::IsNullOrWhiteSpace($fileContent) -and $fileContent[-1] -ne "`n")
-            {
-                if (-not $containsFileWithoutNewLine)
-                {
-                    Write-Warning -Message 'Each file must end with a new line.'
+                    $containsUnicodeFile = $true
                 }
-
-                Write-Warning -Message "$($textFile.FullName) does not end with a new line. Use fixer function 'Add-NewLine'"
-                
-                $containsFileWithoutNewLine = $true
             }
+
+            $containsUnicodeFile | Should Be $false
         }
 
-                
-        $containsFileWithoutNewLine | Should Be $false
+        It 'Should not contain any files with tab characters' {
+            $containsFileWithTab = $false
+
+            foreach ($textFile in $textFiles)
+            {
+                $fileName = $textFile.FullName
+                $fileContent = Get-Content -Path $fileName -Raw
+
+                $tabCharacterMatches = $fileContent | Select-String "`t"
+
+                if ($null -ne $tabCharacterMatches)
+                {
+                    Write-Warning -Message "Found tab character(s) in $fileName. Use fixer function 'Get-TextFilesList `$pwd | ConvertTo-SpaceIndentation'."
+                    $containsFileWithTab = $true
+                }
+            }
+
+            $containsFileWithTab | Should Be $false
+        }
+
+        It 'Should not contain empty files' {
+            $containsEmptyFile = $false
+
+            foreach ($textFile in $textFiles)
+            {
+                $fileContent = Get-Content -Path $textFile.FullName -Raw
+
+                if([String]::IsNullOrWhiteSpace($fileContent))
+                {
+                    Write-Warning -Message "File $($textFile.FullName) is empty. Please remove this file."
+                    $containsEmptyFile = $true
+                }
+            }
+
+            $containsEmptyFile | Should Be $false
+        }
+
+        It 'Should not contain files without a newline at the end' {
+            $containsFileWithoutNewLine = $false
+
+            foreach ($textFile in $textFiles)
+            {
+                $fileContent = Get-Content -Path $textFile.FullName -Raw
+
+                if(-not [String]::IsNullOrWhiteSpace($fileContent) -and $fileContent[-1] -ne "`n")
+                {
+                    if (-not $containsFileWithoutNewLine)
+                    {
+                        Write-Warning -Message 'Each file must end with a new line.'
+                    }
+
+                    Write-Warning -Message "$($textFile.FullName) does not end with a new line. Use fixer function 'Add-NewLine'"
+                    
+                    $containsFileWithoutNewLine = $true
+                }
+            }
+
+                    
+            $containsFileWithoutNewLine | Should Be $false
+        }
     }
 }
 
