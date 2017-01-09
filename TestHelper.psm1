@@ -8,8 +8,7 @@ function Invoke-UniquePSModulePath
 {
     [CmdletBinding()]
     param
-    (
-    ) 
+    () 
     try 
     {
         Write-Output 'Verifying there are no duplicates in PSModulePath.'
@@ -53,6 +52,7 @@ function Get-RequiredGalleryModules
     [CmdletBinding()]
     [OutputType([System.Object[]])]
     param(
+        [Parameter(Mandatory=$true)]
         [hashtable]$ManifestData,
         [switch]$Install
     )
@@ -172,6 +172,7 @@ function Import-ModuleFromSource
     [CmdletBinding()]     
     param
     (
+        [Parameter(Mandatory=$true)]
         [string]$Name
     )
     try 
@@ -333,8 +334,11 @@ function Invoke-AzureSPNLogin
     [CmdletBinding()]
     param
     (
+        [Parameter(Mandatory=$true)]
         [string]$ApplicationID,
+        [Parameter(Mandatory=$true)]
         [string]$ApplicationPassword,
+        [Parameter(Mandatory=$true)]
         [string]$TenantID
     )
     try {
@@ -422,6 +426,7 @@ function Import-ModuleToAzureAutomation
     [CmdletBinding()]     
     param
     (
+        [Parameter(Mandatory=$true)]
         [array]$Module,
         [string]$ResourceGroupName = 'TestAutomation'+$env:BuildID,
         [string]$AutomationAccountName = 'AADSC'+$env:BuildID
@@ -446,6 +451,7 @@ function Wait-ModuleExtraction
     [CmdletBinding()]     
     param
     (
+        [Parameter(Mandatory=$true)]
         [array]$Module,
         [string]$ResourceGroupName = 'TestAutomation'+$env:BuildID,
         [string]$AutomationAccountName = 'AADSC'+$env:BuildID
@@ -472,6 +478,7 @@ function Import-ConfigurationToAzureAutomation
     [CmdletBinding()]     
     param
     (
+        [Parameter(Mandatory=$true)]
         [psobject]$Configuration,
         [string]$ResourceGroupName = 'TestAutomation'+$env:BuildID,
         [string]$AutomationAccountName = 'AADSC'+$env:BuildID
@@ -513,6 +520,7 @@ function Wait-ConfigurationCompilation
     [CmdletBinding()]     
     param
     (
+        [Parameter(Mandatory=$true)]
         [psobject]$Configuration,
         [string]$ResourceGroupName = 'TestAutomation'+$env:BuildID,
         [string]$AutomationAccountName = 'AADSC'+$env:BuildID
@@ -538,7 +546,9 @@ function New-AzureTestVM
     [CmdletBinding()]     
     param
     (
+        [Parameter(Mandatory=$true)]
         [string]$BuildID,
+        [Parameter(Mandatory=$true)]
         [string]$Configuration,
         [string]$WindowsOSVersion = '2016-Datacenter'
     )
