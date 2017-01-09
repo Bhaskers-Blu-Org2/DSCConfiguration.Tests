@@ -50,7 +50,8 @@ function Get-DSCConfigurationCommands
 #>
 function Get-RequiredGalleryModules
 {
-    [CmdletBinding()] 
+    [CmdletBinding()]
+    [OutputType([System.Object[]])]
     param(
         [hashtable]$ManifestData,
         [switch]$Install
@@ -329,7 +330,7 @@ function Test-FileInUnicode
 <##>
 function Invoke-AzureSPNLogin
 {
-    [CmdletBinding()]     
+    [CmdletBinding()]
     param
     (
         [string]$ApplicationID,
@@ -337,7 +338,7 @@ function Invoke-AzureSPNLogin
         [string]$TenantID
     )
     try {
-        Write-Output "Logging in to Azure"
+        Write-Verbose "Logging in to Azure"
         
         # Build platform (AppVeyor) does not offer solution for passing secure strings
         $Credential = New-Object -typename System.Management.Automation.PSCredential `
@@ -353,13 +354,8 @@ function Invoke-AzureSPNLogin
         -Path (Join-Path $Path 'AzureDataCollectionProfile.json') 
 
         # Handle Login
-        if (Add-AzureRmAccount -Credential $Credential -ServicePrincipal -TenantID $TenantID `
-        -ErrorAction SilentlyContinue) {
-            return $true
-        }
-        else {
-            return $false
-        }
+        Add-AzureRmAccount -Credential $Credential -ServicePrincipal -TenantID $TenantID `
+        -ErrorAction SilentlyContinue
     }
     catch [System.Exception] {
         throw "An error occured while logging in to Azure`n$error"    
@@ -369,7 +365,8 @@ function Invoke-AzureSPNLogin
 <##>
 function New-ResourceGroupandAutomationAccount
 {
-    [CmdletBinding()]     
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]       
     param
     (
         [string]$Location = 'EastUS2',
