@@ -342,28 +342,22 @@ function Invoke-AzureSPNLogin
         [Parameter(Mandatory=$true)]
         [string]$TenantID
     )
-    try {
+    try 
+    {
         Write-Verbose "Logging in to Azure"
         
         # Build platform (AppVeyor) does not offer solution for passing secure strings
-        $Credential = New-Object -typename System.Management.Automation.PSCredential `
-        -argumentlist $ApplicationID, $(convertto-securestring -String $ApplicationPassword `
-        -AsPlainText -Force)
+        $Credential = New-Object -typename System.Management.Automation.PSCredential -argumentlist $ApplicationID, $(convertto-securestring -String $ApplicationPassword -AsPlainText -Force)
     
         # Suppress request to share usage information
-        Enable-AzureDataCollection
-        <# 
         $Path = "$Home\AppData\Roaming\Windows Azure Powershell\"
         if (!(Test-Path -Path $Path)) {
             $AzPSProfile = New-Item -Path $Path -ItemType Directory
         }
-        $AzProfileContent = Set-Content -Value '{"enableAzureDataCollection":true}' `
-        -Path (Join-Path $Path 'AzureDataCollectionProfile.json') 
-        #>
+        $AzProfileContent = Set-Content -Value '{"enableAzureDataCollection":true}' -Path (Join-Path $Path 'AzureDataCollectionProfile.json') 
 
         # Handle Login
-        Add-AzureRmAccount -Credential $Credential -ServicePrincipal -TenantID $TenantID `
-        -ErrorAction SilentlyContinue
+        Add-AzureRmAccount -Credential $Credential -ServicePrincipal -TenantID $TenantID -ErrorAction SilentlyContinue
     }
     catch [System.Exception] {
         throw "An error occured while logging in to Azure`n$error"    
