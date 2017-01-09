@@ -438,8 +438,6 @@ function New-AzureTestVM {
     $registrationKey = $RegistrationInfo.PrimaryKey | ConvertTo-SecureString -AsPlainText `
     -Force
 
-    Write-Output 'DEBUG: Retreieved information from AA'
-
     # Random password for local administrative account
     $adminPassword = new-randompassword -length 24 -UseSpecialCharacters | `
     ConvertTo-SecureString -AsPlainText -Force
@@ -447,14 +445,10 @@ function New-AzureTestVM {
     # DNS name based on random chars followed by first 10 of configuration name
     $dnsLabelPrefix = "$($Configuration.substring(0,10).ToLower())$(Get-Random -Minimum 1000 -Maximum 9999)"
 
-    Write-Output 'DEBUG: Created dns name'
-
     # VM Name based on configuration name and OS name
     $vmName = "$Configuration.$($WindowsOSVersion.replace('-',''))"
 
-    Write-Output 'DEBUG: Created VM Name'
-
-    New-AzureRMResourceGroupDeployment -Name $vmName `
+    $AzureVm = New-AzureRMResourceGroupDeployment -Name $vmName `
     -ResourceGroupName "TestAutomation$BuildID" `
     -TemplateFile "$env:BuildFolder\DSCConfiguration.Tests\AzureDeploy.json" `
     -TemplateParameterFile "$env:BuildFolder\DSCConfiguration.Tests\AzureDeploy.parameters.json" `
@@ -466,19 +460,15 @@ function New-AzureTestVM {
     -registrationKey $registrationKey `
     -nodeConfigurationName "$Configuration.localhost"
 
-    Write-Output 'Issued ARM deployment command'
-
     $Status = Get-AzureRMResourceGroupDeployment -ResourceGroupName "TestAutomation$BuildID" `
-    -Name $BuildID
-
-    Write-Output 'DEBUG: Retreieved status of deployment'
+    -Name $vmName
 
     if ($Status.ProvisioningState -eq 'Succeeded') {
         Write-Output $Status.Outputs
     }
     else {
         $Error = Get-AzureRMDeploymentOperation -ResourceGroupName "TestAutomation$BuildID" `
-        -Name $BuildID
+        -Name $vmName
         $Message = $Error.Properties | Where-Object {$_.ProvisioningState -eq 'Failed'} | `
         ForEach-Object {$_.StatusMessage} | ForEach-Object {$_.Error} | `
         ForEach-Object {$_.Details} | ForEach-Object {$_.Message}
