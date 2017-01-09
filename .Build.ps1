@@ -68,12 +68,14 @@ Enter-Build {
 task LoadModules {
     # Discover required modules from Configuration manifest (TestHelper)
     $script:Modules = Get-RequiredGalleryModules -ManifestData (Import-PowerShellDataFile `
-    -Path "$BuildFolder\$ProjectName.psd1") -Install -Verbose
+    -Path "$BuildFolder\$ProjectName.psd1") -Install
+    Write-Output "Loaded modules:`n$($script:Modules | ForEach-Object -Process {$_.Name})"
 
     # Prep and import Configurations from module (TestHelper)
     Import-ModuleFromSource -Name $ProjectName
     $script:Configurations = Invoke-ConfigurationPrep -Module $ProjectName -Path `
-    "$env:TEMP\$ProjectID"
+    "$env:TEMP\$ProjectID" -Verbose
+    Write-Output "Loaded configurations:`n$($script:Configurations | ForEach-Object -Process {$_.Name})"
 }
 
 # Synopsis: Run Lint and Unit Tests

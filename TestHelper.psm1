@@ -4,6 +4,7 @@ Comments
 
 <##>
 function Invoke-UniquePSModulePath {
+    [CmdletBinding()]     
     try {
         Write-Output 'Verifying there are no duplicates in PSModulePath.'
         # Correct duplicates in environment psmodulepath
@@ -24,6 +25,7 @@ function Invoke-UniquePSModulePath {
 
 <##>
 function Get-DSCConfigurationCommands {
+    [CmdletBinding()]     
     param(
         [string]$Module
     )
@@ -45,7 +47,6 @@ function Get-RequiredGalleryModules {
         # Load module data and create array of objects containing prerequisite details for use 
         # later in Azure Automation
         $ModulesInformation = @()
-        Write-Verbose "The required modules are: `n$($ManifestData.RequiredModules[0])"
         foreach($RequiredModule in $ManifestData.RequiredModules[0])
         {
             # Placeholder object to store module names and locations
@@ -71,7 +72,7 @@ function Get-RequiredGalleryModules {
                 }
                 if ($Install -eq $true)
                 {
-                    Write-Verbose "Installing module:$($RequiredModule.ModuleName)"
+                    Write-Verbose "Installing module: $RequiredModule"
                     Install-Module -Name $RequiredModule -force
                 }
             }
@@ -83,7 +84,7 @@ function Get-RequiredGalleryModules {
                 -Uri "https://www.powershellgallery.com/api/v2/FindPackagesById()?id='$($RequiredModule.ModuleName)'" `
                 -ErrorAction Continue)
                 {
-                    Write-Verbose "Identified module $RequiredModule in the PowerShell Gallery"
+                    Write-Verbose "Identified module $($RequiredModule.ModuleName) in the PowerShell Gallery"
                     $ModuleReference | Add-Member -MemberType NoteProperty -Name 'Name' `
                     -Value $RequiredModule.ModuleName
                     $ModuleReference | Add-Member -MemberType NoteProperty -Name 'URI' `
@@ -92,11 +93,11 @@ function Get-RequiredGalleryModules {
                     $ModulesInformation += $ModuleReference
                 }
                 else {
-                    throw "The module $RequiredModule was not found in the gallery"
+                    throw "The module $($RequiredModule.ModuleName) was not found in the gallery"
                 }
                 if ($Install -eq $true)
                 {
-                    Write-Verbose "Installing module:$($RequiredModule.ModuleName)"
+                    Write-Verbose "Installing module: $($RequiredModule.ModuleName) version $($RequiredModule.ModuleVersion)"
                     Install-Module -Name $RequiredModule.ModuleName `
                     -RequiredVersion $RequiredModule.ModuleVersion -force
                 }
@@ -111,6 +112,7 @@ function Get-RequiredGalleryModules {
 
 <##>
 function Invoke-ConfigurationPrep {
+    [CmdletBinding()]     
     param(
         [string]$Module = "*",
         [string]$Path = "$env:TEMP\DSCConfigurationScripts"
@@ -135,7 +137,7 @@ function Invoke-ConfigurationPrep {
                 "}`n" | Out-File $Configuration.Location -Append
             }
         }
-        Write-Output "Prepared configurations:`n$($Configurations | ForEach-Object `
+        Write-Verbose "Prepared configurations:`n$($Configurations | ForEach-Object `
         -Process {$_.Name})"
         return $Configurations
     }
@@ -146,6 +148,7 @@ function Invoke-ConfigurationPrep {
 
 <##>
 function Import-ModuleFromSource {
+    [CmdletBinding()]     
     param(
         [string]$Name
     )
@@ -302,6 +305,7 @@ function Test-FileInUnicode
 
 <##>
 function Invoke-AzureSPNLogin {
+    [CmdletBinding()]     
     param(
         [string]$ApplicationID,
         [string]$ApplicationPassword,
@@ -339,6 +343,7 @@ function Invoke-AzureSPNLogin {
 
 <##>
 function New-ResourceGroupandAutomationAccount {
+    [CmdletBinding()]     
     param(
         [string]$Location = 'EastUS2',
         [string]$ResourceGroupName = 'TestAutomation'+$env:BuildID,
@@ -371,6 +376,7 @@ function New-ResourceGroupandAutomationAccount {
 
 <##>
 function Remove-AzureTestResources {
+    [CmdletBinding()]     
     param(
         [string]$ResourceGroupName = 'TestAutomation'+$env:BuildID
     )
@@ -386,6 +392,7 @@ function Remove-AzureTestResources {
 TODO should catch issues with import and return to build log
 #>
 function Import-ModuleToAzureAutomation {
+    [CmdletBinding()]     
     param(
         [array]$Module,
         [string]$ResourceGroupName = 'TestAutomation'+$env:BuildID,
@@ -406,6 +413,7 @@ function Import-ModuleToAzureAutomation {
 TODO need timeout based on real expectations
 #>
 function Wait-ModuleExtraction {
+    [CmdletBinding()]     
     param(
         [array]$Module,
         [string]$ResourceGroupName = 'TestAutomation'+$env:BuildID,
@@ -426,6 +434,7 @@ function Wait-ModuleExtraction {
 
 <##>
 function Import-ConfigurationToAzureAutomation {
+    [CmdletBinding()]     
     param(
         [psobject]$Configuration,
         [string]$ResourceGroupName = 'TestAutomation'+$env:BuildID,
@@ -462,6 +471,7 @@ function Import-ConfigurationToAzureAutomation {
 TODO need timeout based on real expectations
 #>
 function Wait-ConfigurationCompilation {
+    [CmdletBinding()]     
     param(
         [psobject]$Configuration,
         [string]$ResourceGroupName = 'TestAutomation'+$env:BuildID,
@@ -481,6 +491,7 @@ function Wait-ConfigurationCompilation {
 
 <##>
 function New-AzureTestVM {
+    [CmdletBinding()]     
     param(
         [string]$BuildID,
         [string]$Configuration,
