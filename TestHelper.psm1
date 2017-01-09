@@ -5,6 +5,7 @@ Comments
 <##>
 function Invoke-UniquePSModulePath {
     try {
+        Write-Output 'Verifying there are no duplicates in PSModulePath.'
         # Correct duplicates in environment psmodulepath
         foreach($path in $env:psmodulepath.split(';').ToUpper().ToLower()) {
             [array]$correctDirFormat += "$path\;"
