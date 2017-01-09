@@ -184,7 +184,7 @@ Describe 'Common Tests - File Parsing' -Tag Lint {
 Describe 'Common Tests - File Formatting' -Tag Lint {
     $textFiles = Get-TextFilesList -FilePath $env:BuildFolder
     
-    Context 'Text files' {
+    Context 'All discovered ext files' {
         It "Should not contain any files with Unicode file encoding" {
             $containsUnicodeFile = $false
 
