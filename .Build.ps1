@@ -143,6 +143,7 @@ task IntegrationTestAzureAutomationDSC {
 # Synopsis: Deploys Azure VM and bootstraps to Azure Automation DSC
 task AzureVM {
     $VMDeployments = @()
+    Write-Output 'Deploying all test virtual machines in parallel'
     ForEach ($Configuration in $script:Configurations) {
       ForEach ($WindowsOSVersion in $Configuration.WindowsOSVersion) {
         Write-Output "Deploying $WindowsOSVersion and bootstrapping configuration $($Configuration.Name)"
