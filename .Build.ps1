@@ -22,7 +22,7 @@ param(
     $ApplicationID = (property ApplicationID),
     $ApplicationPassword = (property ApplicationPassword),
     $TenantID = (property TenantID),
-    $env:BuildFolder = (property BuildFolder),
+    $BuildFolder = (property BuildFolder),
     $ProjectName = (property ProjectName),
     $ProjectID = (property ProjectID),
     $BuildID = (property BuildID)
@@ -30,15 +30,15 @@ param(
 
 <##>
 function Write-Task {
-param(
-    [string]$Name
-)
+    param(
+        [string]$Name
+    )
     Write-Output `n
     Write-Build -Color Cyan -Text "########## $Name ##########"
 }
 
 Enter-BuildTask {
-    $BuildRoot = $env:BuildFolder
+    $BuildRoot = $BuildFolder
     Write-task $task.Name
 }
 Exit-BuildTask {
@@ -48,7 +48,7 @@ Exit-BuildTask {
 # Synopsis: Baseline the environment
 Enter-Build {
     # Load modules from test repo
-    Import-Module -Name $env:BuildFolder\DscConfiguration.Tests\TestHelper.psm1 -Force
+    Import-Module -Name $BuildFolder\DscConfiguration.Tests\TestHelper.psm1 -Force
     
     # Install supporting environment modules from PSGallery
     $EnvironmentModules = @(
@@ -67,33 +67,28 @@ Enter-Build {
 task LoadModules {
     # Discover required modules from Configuration manifest (TestHelper)
     $script:Modules = Get-RequiredGalleryModules -ManifestData (Import-PowerShellDataFile `
-    -Path "$env:BuildFolder\$ProjectName.psd1") -Install
-    Write-Output "Downloaded modules:`n$($Modules | Foreach -Process {$_.Name})"
+    -Path "$BuildFolder\$ProjectName.psd1") -Install
 
     # Prep and import Configurations from module (TestHelper)
     Import-ModuleFromSource -Name $ProjectName
     $script:Configurations = Invoke-ConfigurationPrep -Module $ProjectName -Path `
     "$env:TEMP\$ProjectID"
-    Write-Output "Prepared configurations:`n$($Configurations | Foreach -Process {$_.Name})"
 }
 
 # Synopsis: Run Lint and Unit Tests
 task LintUnitTests {
-    $testResultsFile = "$env:BuildFolder\LintUnitTestsResults.xml"
+    $testResultsFile = "$BuildFolder\LintUnitTestsResults.xml"
 
-    $res = Invoke-Pester -Tag Lint,Unit -OutputFormat NUnitXml -OutputFile $testResultsFile `
+    $Pester = Invoke-Pester -Tag Lint,Unit -OutputFormat NUnitXml -OutputFile $testResultsFile `
     -PassThru
     
-    #TODO Test if results should go to AppVeyor
-    (New-Object 'System.Net.WebClient').UploadFile( `
-    "https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", `
+    (New-Object 'System.Net.WebClient').UploadFile("$env:TestResultsUploadURI", `
     (Resolve-Path $testResultsFile))
 }
 
 # Synopsis: Perform Azure Login
 task AzureLogin {
     # Login to Azure using information from params
-    Write-Output "Logging in to Azure"
     Invoke-AzureSPNLogin -ApplicationID $ApplicationID -ApplicationPassword `
     $ApplicationPassword -TenantID $TenantID
 }
@@ -101,8 +96,6 @@ task AzureLogin {
 # Synopsis: Create Resource Group
 task ResourceGroupAndAutomationAccount {
     # Create Azure Resource Group and Automation account (TestHelper)
-    Write-Output "Creating Resource Group TestAutomation$BuildID"
-    Write-Output "and Automation account DSCValidation$BuildID"
     New-ResourceGroupandAutomationAccount
 }
 
@@ -110,7 +103,6 @@ task ResourceGroupAndAutomationAccount {
 task AzureAutomationModules {
     # Import the modules discovered as requirements to Azure Automation (TestHelper)
     foreach ($ImportModule in $script:Modules) {
-        Write-Output "Importing module $($ImportModule.Name) to Azure Automation"
         Import-ModuleToAzureAutomation -Module $ImportModule
     }
     
@@ -123,7 +115,6 @@ task AzureAutomationModules {
 task AzureAutomationConfigurations {
     # Import and compile the Configurations using Azure Automation (TestHelper)
     foreach ($ImportConfiguration in $script:Configurations) {
-        Write-Output "Importing configuration $($ImportConfiguration.Name) to Azure Automation"
         Import-ConfigurationToAzureAutomation -Configuration $ImportConfiguration
     }
 
@@ -136,14 +127,12 @@ task AzureAutomationConfigurations {
 
 # Synopsis: Integration tests to verify that modules and configurations loaded to Azure Automation DSC successfully
 task IntegrationTestAzureAutomationDSC {
-    $testResultsFile = "$env:BuildFolder\AADSCIntegrationTestsResults.xml"
+    $testResultsFile = "$BuildFolder\AADSCIntegrationTestsResults.xml"
 
-    $res = Invoke-Pester -Tag AADSCIntegration -OutputFormat NUnitXml `
+    $Pester = Invoke-Pester -Tag AADSCIntegration -OutputFormat NUnitXml `
     -OutputFile $testResultsFile -PassThru
     
-    #TODO Test if results should go to AppVeyor
-    (New-Object 'System.Net.WebClient').UploadFile( `
-    "https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", `
+    (New-Object 'System.Net.WebClient').UploadFile("$env:TestResultsUploadURI", `
     (Resolve-Path $testResultsFile))
 }
 
@@ -160,7 +149,7 @@ task AzureVM {
             [string]$Configuration,
             [string]$WindowsOSVersion
         )
-            Import-Module -Name $env:BuildFolder\DscConfiguration.Tests\TestHelper.psm1 -Force
+            Import-Module -Name $BuildFolder\DscConfiguration.Tests\TestHelper.psm1 -Force
             Invoke-AzureSPNLogin -ApplicationID $env:ApplicationID -ApplicationPassword `
             $env:ApplicationPassword -TenantID $env:TenantID
             New-AzureTestVM -BuildID $BuildID -Configuration $Configuration -WindowsOSVersion $WindowsOSVersion
@@ -179,14 +168,12 @@ task AzureVM {
 
 # Synopsis: Integration tests to verify that DSC configuration successfuly applied in virtual machines
 task IntegrationTestAzureVMs {
-    $testResultsFile = "$env:BuildFolder\VMIntegrationTestsResults.xml"
+    $testResultsFile = "$BuildFolder\VMIntegrationTestsResults.xml"
 
-    $res = Invoke-Pester -Tag AzureVMIntegration -OutputFormat NUnitXml -OutputFile $testResultsFile `
+    $Pester = Invoke-Pester -Tag AzureVMIntegration -OutputFormat NUnitXml -OutputFile $testResultsFile `
     -PassThru
     
-    #TODO Test if results should go to AppVeyor
-    (New-Object 'System.Net.WebClient').UploadFile( `
-    "https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", `
+    (New-Object 'System.Net.WebClient').UploadFile("$env:TestResultsUploadURI", `
     (Resolve-Path $testResultsFile))
 }
 
