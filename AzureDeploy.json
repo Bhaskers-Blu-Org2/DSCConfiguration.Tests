@@ -157,7 +157,7 @@
           "vmSize": "Standard_F1"
         },
         "osProfile": {
-          "computerName": "[parameters('dnsLabelPrefix')]",
+          "computerName": "[substring(parameters('dnsLabelPrefix'),0,15)]",
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPassword')]"
         },
