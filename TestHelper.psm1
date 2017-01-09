@@ -55,15 +55,17 @@ function Get-RequiredGalleryModules {
                 -Uri "https://www.powershellgallery.com/api/v2/FindPackagesById()?id='$RequiredModule'" `
                 -ErrorAction Continue)
                 {
-                $ModuleReference | Add-Member -MemberType NoteProperty -Name 'Name' `
-                -Value $RequiredModule
-                $ModuleReference | Add-Member -MemberType NoteProperty -Name 'URI' `
-                -Value ($galleryReference | Where-Object {$_.Properties.IsLatestVersion.'#text' `
-                -eq $true}).content.src
-                $ModulesInformation += $ModuleReference
+                    Write-Output "Identified module $RequiredModule in the PowerShell Gallery"
+                    $ModuleReference | Add-Member -MemberType NoteProperty -Name 'Name' `
+                    -Value $RequiredModule
+                    $ModuleReference | Add-Member -MemberType NoteProperty -Name 'URI' `
+                    -Value ($galleryReference | Where-Object {$_.Properties.IsLatestVersion.'#text' `
+                    -eq $true}).content.src
+                    $ModulesInformation += $ModuleReference
                 }
                 if ($Install -eq $true)
                 {
+                    Write-Output "Installing module:$($RequiredModule.ModuleName)"
                     Install-Module -Name $RequiredModule -force
                 }
             }
@@ -75,22 +77,22 @@ function Get-RequiredGalleryModules {
                 -Uri "https://www.powershellgallery.com/api/v2/FindPackagesById()?id='$($RequiredModule.ModuleName)'" `
                 -ErrorAction Continue)
                 {
-                $ModuleReference | Add-Member -MemberType NoteProperty -Name 'Name' `
-                -Value $RequiredModule.ModuleName
-                $ModuleReference | Add-Member -MemberType NoteProperty -Name 'URI' `
-                -Value ($galleryReference | Where-Object {$_.Properties.Version `
-                -eq $RequiredModule.ModuleVersion}).content.src
-                $ModulesInformation += $ModuleReference
+                    Write-Output "Identified module $RequiredModule in the PowerShell Gallery"
+                    $ModuleReference | Add-Member -MemberType NoteProperty -Name 'Name' `
+                    -Value $RequiredModule.ModuleName
+                    $ModuleReference | Add-Member -MemberType NoteProperty -Name 'URI' `
+                    -Value ($galleryReference | Where-Object {$_.Properties.Version `
+                    -eq $RequiredModule.ModuleVersion}).content.src
+                    $ModulesInformation += $ModuleReference
                 }
                 if ($Install -eq $true)
                 {
+                    Write-Output "Installing module:$($RequiredModule.ModuleName)"
                     Install-Module -Name $RequiredModule.ModuleName `
                     -RequiredVersion $RequiredModule.ModuleVersion -force
                 }
             }
         }
-        Write-Output "Downloaded modules:`n$($ModulesInformation | ForEach-Object `
-        -Process {$_.Name})"
         return $ModulesInformation    
     }
     catch [System.Exception] {
