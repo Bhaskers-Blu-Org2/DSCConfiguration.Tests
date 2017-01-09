@@ -43,6 +43,7 @@ function Get-RequiredGalleryModules {
         # Load module data and create array of objects containing prerequisite details for use 
         # later in Azure Automation
         $ModulesInformation = @()
+        Write-Output "The required modules are: `n$($ManifestData.RequiredModules[0])"
         foreach($RequiredModule in $ManifestData.RequiredModules[0])
         {
             # Placeholder object to store module names and locations
