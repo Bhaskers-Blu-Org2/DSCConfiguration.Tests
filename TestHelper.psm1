@@ -578,7 +578,7 @@ function New-AzureTestVM
         -Name $vmName
 
         if ($Status.ProvisioningState -eq 'Succeeded') {
-            Write-Output $Status.Outputs.Values.Value
+            Write-Output "Virtual machine DNS address: $($Status.Outputs.Values.Value)"
         }
         else {
             $Error = Get-AzureRMResourceGroupDeploymentOperation -ResourceGroupName "TestAutomation$BuildID" `
