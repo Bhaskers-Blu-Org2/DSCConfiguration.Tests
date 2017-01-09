@@ -57,7 +57,7 @@ Enter-Build {
     'PSScriptAnalyzer',
     'AzureRM'
     )
-    Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.205 -Force | Out-Null
+    $Nuget = Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.205 -Force
     Write-Output "Installing modules to support the build environment:`n$EnvironmentModules"
     Install-Module -Name $EnvironmentModules -Repository PSGallery -Force
     
