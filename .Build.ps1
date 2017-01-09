@@ -155,7 +155,7 @@ task AzureVM {
                 [string]$Configuration,
                 [string]$WindowsOSVersion
             )
-            Import-Module -Name $BuildFolder\DscConfiguration.Tests\TestHelper.psm1 -Force
+            Import-Module -Name $env:BuildFolder\DscConfiguration.Tests\TestHelper.psm1 -Force
             Invoke-AzureSPNLogin -ApplicationID $env:ApplicationID -ApplicationPassword `
             $env:ApplicationPassword -TenantID $env:TenantID
             New-AzureTestVM -BuildID $BuildID -Configuration $Configuration -WindowsOSVersion $WindowsOSVersion
