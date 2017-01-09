@@ -2,10 +2,16 @@
 Comments
 #>
 
-<##>
-function Invoke-UniquePSModulePath {
-    [CmdletBinding()]     
-    try {
+<#
+#>
+function Invoke-UniquePSModulePath 
+{
+    [CmdletBinding()]
+    param
+    (
+    ) 
+    try 
+    {
         Write-Output 'Verifying there are no duplicates in PSModulePath.'
         # Correct duplicates in environment psmodulepath
         foreach($path in $env:psmodulepath.split(';').ToUpper().ToLower()) {
@@ -18,15 +24,19 @@ function Invoke-UniquePSModulePath {
         }
         $env:psmodulepath = $fixpath.replace(';;',';')
     }
-    catch [System.Exception] {
+    catch [System.Exception]
+    {
         throw "An error occured while correcting the psmodulepath`n$error"
     }
 }
 
-<##>
-function Get-DSCConfigurationCommands {
+<#
+#>
+function Get-DSCConfigurationCommands
+{
     [CmdletBinding()]     
-    param(
+    param
+    (
         [string]$Module
     )
     $CommandParams = @{
@@ -36,8 +46,10 @@ function Get-DSCConfigurationCommands {
     Get-Command @CommandParams
 }
 
-<##>
-function Get-RequiredGalleryModules {
+<#
+#>
+function Get-RequiredGalleryModules
+{
     [CmdletBinding()] 
     param(
         [hashtable]$ManifestData,
@@ -105,19 +117,24 @@ function Get-RequiredGalleryModules {
         }
         return $ModulesInformation    
     }
-    catch [System.Exception] {
+    catch [System.Exception] 
+    {
         throw "An error occured while getting modules from PowerShellGallery.com`n$error"
     }
 }
 
-<##>
-function Invoke-ConfigurationPrep {
+<#
+#>
+function Invoke-ConfigurationPrep
+{
     [CmdletBinding()]     
-    param(
+    param
+    (
         [string]$Module = "*",
         [string]$Path = "$env:TEMP\DSCConfigurationScripts"
     )
-    try {
+    try 
+    {
         # Get list of configurations loaded from module
         $Configurations = Get-DSCConfigurationCommands -Module $Module
         $Configurations | Add-Member -MemberType NoteProperty -Name Location -Value $null
@@ -141,18 +158,23 @@ function Invoke-ConfigurationPrep {
         -Process {$_.Name})"
         return $Configurations
     }
-    catch [System.Exception] {
+    catch [System.Exception] 
+    {
         throw "An error occured while preparing configurations for import`n$error"
     }
 }
 
-<##>
-function Import-ModuleFromSource {
+<#
+#>
+function Import-ModuleFromSource
+{
     [CmdletBinding()]     
-    param(
+    param
+    (
         [string]$Name
     )
-    try {
+    try 
+    {
         if ($ModuleDir = New-Item -Type Directory `
         -Path $env:ProgramFiles\WindowsPowerShell\Modules\$Name -force) {
             Copy-Item -Path .\$Name.psd1 -Destination $ModuleDir -force
@@ -160,7 +182,8 @@ function Import-ModuleFromSource {
             Import-Module -Name $Name
         }
     }
-    catch [System.Exception] {
+    catch [System.Exception] 
+    {
         throw "An error occured while importing module $Name`n$error"
     }
 }
@@ -304,9 +327,11 @@ function Test-FileInUnicode
 }
 
 <##>
-function Invoke-AzureSPNLogin {
+function Invoke-AzureSPNLogin
+{
     [CmdletBinding()]     
-    param(
+    param
+    (
         [string]$ApplicationID,
         [string]$ApplicationPassword,
         [string]$TenantID
@@ -342,9 +367,11 @@ function Invoke-AzureSPNLogin {
 }
 
 <##>
-function New-ResourceGroupandAutomationAccount {
+function New-ResourceGroupandAutomationAccount
+{
     [CmdletBinding()]     
-    param(
+    param
+    (
         [string]$Location = 'EastUS2',
         [string]$ResourceGroupName = 'TestAutomation'+$env:BuildID,
         [string]$AutomationAccountName = 'AADSC'+$env:BuildID
@@ -375,9 +402,11 @@ function New-ResourceGroupandAutomationAccount {
 }
 
 <##>
-function Remove-AzureTestResources {
-    [CmdletBinding()]     
-    param(
+function Remove-AzureTestResources
+{
+    [CmdletBinding()]
+    param
+    (
         [string]$ResourceGroupName = 'TestAutomation'+$env:BuildID
     )
     try {
@@ -391,14 +420,17 @@ function Remove-AzureTestResources {
 <#
 TODO should catch issues with import and return to build log
 #>
-function Import-ModuleToAzureAutomation {
+function Import-ModuleToAzureAutomation
+{
     [CmdletBinding()]     
-    param(
+    param
+    (
         [array]$Module,
         [string]$ResourceGroupName = 'TestAutomation'+$env:BuildID,
         [string]$AutomationAccountName = 'AADSC'+$env:BuildID
     )
-    try {
+    try
+    {
         Write-Output "Importing module $($Module.Name) to Azure Automation"
         # Import module from custom object
         $ImportedModule = New-AzureRMAutomationModule -ResourceGroupName $ResourceGroupName `
@@ -412,14 +444,17 @@ function Import-ModuleToAzureAutomation {
 <#
 TODO need timeout based on real expectations
 #>
-function Wait-ModuleExtraction {
+function Wait-ModuleExtraction
+{
     [CmdletBinding()]     
-    param(
+    param
+    (
         [array]$Module,
         [string]$ResourceGroupName = 'TestAutomation'+$env:BuildID,
         [string]$AutomationAccountName = 'AADSC'+$env:BuildID
     )
-    try {
+    try
+    {
         # The resource modules must finish the "Creating" stage before the configuration will compile successfully
         while ((Get-AzureRMAutomationModule -ResourceGroupName $ResourceGroupName `
         -AutomationAccountName $AutomationAccountName -Name $Module.Name).ProvisioningState `
@@ -427,20 +462,25 @@ function Wait-ModuleExtraction {
                 Start-Sleep -Seconds 15
         }
     }
-    catch [System.Exception] {
+    catch [System.Exception] 
+    {
         throw "An error occured while waiting for module $($Module.Name) activities to extract in Azure Automation`n$error"        
     }
 }    
 
-<##>
-function Import-ConfigurationToAzureAutomation {
+<#
+#>
+function Import-ConfigurationToAzureAutomation
+{
     [CmdletBinding()]     
-    param(
+    param
+    (
         [psobject]$Configuration,
         [string]$ResourceGroupName = 'TestAutomation'+$env:BuildID,
         [string]$AutomationAccountName = 'AADSC'+$env:BuildID
     )
-    try {
+    try 
+    {
         Write-Output "Importing configuration $($Configuration.Name) to Azure Automation"
         # Import Configuration to Azure Automation DSC
         $ConfigurationImport = Import-AzureRmAutomationDscConfiguration `
@@ -462,7 +502,8 @@ function Import-ConfigurationToAzureAutomation {
     }
         $Compile = Start-AzureRmAutomationDscCompilationJob @CompileParams
     }
-    catch [System.Exception] {
+    catch [System.Exception] 
+    {
         throw "An error occured while importing the configuration $($Configuration.Name) using Azure Automation`n$error"        
     }
 }
@@ -470,34 +511,42 @@ function Import-ConfigurationToAzureAutomation {
 <#
 TODO need timeout based on real expectations
 #>
-function Wait-ConfigurationCompilation {
+function Wait-ConfigurationCompilation
+{
     [CmdletBinding()]     
-    param(
+    param
+    (
         [psobject]$Configuration,
         [string]$ResourceGroupName = 'TestAutomation'+$env:BuildID,
         [string]$AutomationAccountName = 'AADSC'+$env:BuildID
     )
-    try {
+    try 
+    {
         while ((Get-AzureRmAutomationDscCompilationJob -ResourceGroupName $ResourceGroupName `
         -AutomationAccountName $AutomationAccountName -Name $Configuration.Name).Status `
         -ne 'Completed') {
             Start-Sleep -Seconds 15
         }   
     }
-    catch [System.Exception] {
+    catch [System.Exception] 
+    {
         throw "An error occured while waiting for configuration $($Configuration.Name) to compile in Azure Automation`n$error"        
     }
 }
 
-<##>
-function New-AzureTestVM {
+<#
+#>
+function New-AzureTestVM
+{
     [CmdletBinding()]     
-    param(
+    param
+    (
         [string]$BuildID,
         [string]$Configuration,
         [string]$WindowsOSVersion = '2016-Datacenter'
     )
-    try {
+    try 
+    {
         # Retrieve Azure Automation DSC registration information
         $Account = Get-AzureRMAutomationAccount -ResourceGroupName "TestAutomation$BuildID" `
         -Name "AADSC$BuildID"
@@ -544,7 +593,8 @@ function New-AzureTestVM {
             Write-Error $Message
         }
     }
-        catch [System.Exception] {
+        catch [System.Exception] 
+        {
         throw "An error occured during the Azure deployment.`n$error"        
     }
 }
