@@ -69,6 +69,7 @@
     "publicIPAddressName": "[concat(concat(parameters('nodeConfigurationName')), parameters('WindowsOSVersion'), 'pip')]",
     "virtualNetworkName": "[concat(uniquestring(resourceGroup().id), 'net')]",
     "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
+    "nsgName": "[concat(parameters('nodeConfigurationName'), parameters('WindowsOSVersion'), 'nsg')]",
     "modulesUrl": "https://github.com/Microsoft/DSCConfiguration.Tests/raw/master/RegistrationMetaConfigV2.zip",
     "configurationFunction": "RegistrationMetaConfigV2.ps1\\RegistrationMetaConfigV2"
   },
@@ -111,7 +112,10 @@
           {
             "name": "[variables('subnetName')]",
             "properties": {
-              "addressPrefix": "[variables('subnetPrefix')]"
+              "addressPrefix": "[variables('subnetPrefix')]",
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgName'))]"
+              }
             }
           }
         ]
@@ -144,6 +148,30 @@
       }
     },
     {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "[variables('nsgName')]",
+      "apiVersion": "2015-06-15",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "securityRules": [
+        {
+          "name": "WinRM",
+          "properties": {
+            "description": "Allow WinRM ANY",
+            "protocol": "Tcp",
+            "sourcePortRange": "*",
+            "destinationPortRange": "5986",
+            "sourceAddressPrefix": "*",
+            "destinationAddressPrefix": "*",
+            "access": "Allow",
+            "priority": 100,
+            "direction": "Inbound"
+          }
+        }
+      ]
+      }
+    },
+    {
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[parameters('vmName')]",
@@ -157,7 +185,7 @@
           "vmSize": "Standard_F1"
         },
         "osProfile": {
-          "computerName": "[substring(parameters('dnsLabelPrefix'),0,15)]",
+          "computerName": "[substring(parameters('WindowsOSVersion'),0,15)]",
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPassword')]"
         },
