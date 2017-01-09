@@ -562,6 +562,7 @@ function New-AzureTestVM
         # VM Name based on configuration name and OS name
         $vmName = "$Configuration.$($WindowsOSVersion.replace('-',''))"
 
+        # Deploy ARM template
         $AzureVm = New-AzureRMResourceGroupDeployment -Name $vmName `
         -ResourceGroupName "TestAutomation$BuildID" `
         -TemplateFile "$env:BuildFolder\DSCConfiguration.Tests\AzureDeploy.json" `
@@ -574,9 +575,11 @@ function New-AzureTestVM
         -registrationKey $registrationKey `
         -nodeConfigurationName "$Configuration.localhost"
 
+        # Get deployment details
         $Status = Get-AzureRMResourceGroupDeployment -ResourceGroupName "TestAutomation$BuildID" `
         -Name $vmName
 
+        # Write output to build log
         if ($Status.ProvisioningState -eq 'Succeeded') {
             Write-Output "Virtual machine DNS address: $($Status.Outputs.Values.Value)"
         }
