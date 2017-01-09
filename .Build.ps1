@@ -47,6 +47,7 @@ Exit-BuildTask {
 
 # Synopsis: Baseline the environment
 Enter-Build {
+    Write-Output "The build folder is $BuildFolder"
     # Load modules from test repo
     Import-Module -Name $BuildFolder\DscConfiguration.Tests\TestHelper.psm1 -Force
     
