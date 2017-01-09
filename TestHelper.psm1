@@ -63,6 +63,9 @@ function Get-RequiredGalleryModules {
                     -eq $true}).content.src
                     $ModulesInformation += $ModuleReference
                 }
+                else {
+                    throw "The module $RequiredModule was not found in the gallery"
+                }
                 if ($Install -eq $true)
                 {
                     Write-Output "Installing module:$($RequiredModule.ModuleName)"
@@ -84,6 +87,9 @@ function Get-RequiredGalleryModules {
                     -Value ($galleryReference | Where-Object {$_.Properties.Version `
                     -eq $RequiredModule.ModuleVersion}).content.src
                     $ModulesInformation += $ModuleReference
+                }
+                else {
+                    throw "The module $RequiredModule was not found in the gallery"
                 }
                 if ($Install -eq $true)
                 {
