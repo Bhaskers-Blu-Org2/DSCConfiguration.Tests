@@ -136,11 +136,16 @@ function Invoke-ConfigurationPrep
     )
     try 
     {
+        # Discover OS versions, or default to Server 2016 Datacenter Edition
+        $WindowsOSVersion = if ($ModuleData = `
+        (Get-Module -Name $Module).PrivateData.PSData.WindowsOSVersion) {$ModuleData}
+        else {'2016-Datacenter'}
+
         # Get list of configurations loaded from module
         $Configurations = Get-DSCConfigurationCommands -Module $Module
         $Configurations | Add-Member -MemberType NoteProperty -Name Location -Value $null
         $Configurations | Add-Member -MemberType NoteProperty -Name WindowsOSVersion `
-        -Value (Get-Module -Name $Module).PrivateData.PSData.WindowsOSVersion
+        -Value $WindowsOSVersion
 
 
         # Create working folder
@@ -539,7 +544,8 @@ function New-AzureTestVM
         [string]$BuildID,
         [Parameter(Mandatory=$true)]
         [string]$Configuration,
-        [string]$WindowsOSVersion = '2016-Datacenter'
+        [Parameter(Mandatory=$true)]        
+        [string]$WindowsOSVersion
     )
     try 
     {
