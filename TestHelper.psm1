@@ -36,6 +36,7 @@ function Get-DSCConfigurationCommands {
 
 <##>
 function Get-RequiredGalleryModules {
+    [CmdletBinding()] 
     param(
         [hashtable]$ManifestData,
         [switch]$Install
@@ -44,7 +45,7 @@ function Get-RequiredGalleryModules {
         # Load module data and create array of objects containing prerequisite details for use 
         # later in Azure Automation
         $ModulesInformation = @()
-        Write-Output "The required modules are: `n$($ManifestData.RequiredModules[0])"
+        Write-Verbose "The required modules are: `n$($ManifestData.RequiredModules[0])"
         foreach($RequiredModule in $ManifestData.RequiredModules[0])
         {
             # Placeholder object to store module names and locations
@@ -57,7 +58,7 @@ function Get-RequiredGalleryModules {
                 -Uri "https://www.powershellgallery.com/api/v2/FindPackagesById()?id='$RequiredModule'" `
                 -ErrorAction Continue)
                 {
-                    Write-Output "Identified module $RequiredModule in the PowerShell Gallery"
+                    Write-Verbose "Identified module $RequiredModule in the PowerShell Gallery"
                     $ModuleReference | Add-Member -MemberType NoteProperty -Name 'Name' `
                     -Value $RequiredModule
                     $ModuleReference | Add-Member -MemberType NoteProperty -Name 'URI' `
@@ -70,7 +71,7 @@ function Get-RequiredGalleryModules {
                 }
                 if ($Install -eq $true)
                 {
-                    Write-Output "Installing module:$($RequiredModule.ModuleName)"
+                    Write-Verbose "Installing module:$($RequiredModule.ModuleName)"
                     Install-Module -Name $RequiredModule -force
                 }
             }
@@ -82,7 +83,7 @@ function Get-RequiredGalleryModules {
                 -Uri "https://www.powershellgallery.com/api/v2/FindPackagesById()?id='$($RequiredModule.ModuleName)'" `
                 -ErrorAction Continue)
                 {
-                    Write-Output "Identified module $RequiredModule in the PowerShell Gallery"
+                    Write-Verbose "Identified module $RequiredModule in the PowerShell Gallery"
                     $ModuleReference | Add-Member -MemberType NoteProperty -Name 'Name' `
                     -Value $RequiredModule.ModuleName
                     $ModuleReference | Add-Member -MemberType NoteProperty -Name 'URI' `
@@ -95,7 +96,7 @@ function Get-RequiredGalleryModules {
                 }
                 if ($Install -eq $true)
                 {
-                    Write-Output "Installing module:$($RequiredModule.ModuleName)"
+                    Write-Verbose "Installing module:$($RequiredModule.ModuleName)"
                     Install-Module -Name $RequiredModule.ModuleName `
                     -RequiredVersion $RequiredModule.ModuleVersion -force
                 }
