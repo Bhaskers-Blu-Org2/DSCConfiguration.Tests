@@ -590,13 +590,13 @@ function New-AzureTestVM
             Write-Output "Virtual machine DNS address: $($Status.Outputs.Values.Value)"
         }
         else {
+            Write-Output $AzureVm
             $Error = Get-AzureRMResourceGroupDeploymentOperation -ResourceGroupName "TestAutomation$BuildID" `
             -Name $vmName
             $Message = $Error.Properties | Where-Object {$_.ProvisioningState -eq 'Failed'} | `
             ForEach-Object {$_.StatusMessage} | ForEach-Object {$_.Error} | `
             ForEach-Object {$_.Details} | ForEach-Object {$_.Message}
             Write-Error $Message
-            Write-Output $Status
         }
     }
         catch [System.Exception] 
