@@ -596,6 +596,7 @@ function New-AzureTestVM
             ForEach-Object {$_.StatusMessage} | ForEach-Object {$_.Error} | `
             ForEach-Object {$_.Details} | ForEach-Object {$_.Message}
             Write-Error $Message
+            Write-Output $Status
         }
     }
         catch [System.Exception] 
