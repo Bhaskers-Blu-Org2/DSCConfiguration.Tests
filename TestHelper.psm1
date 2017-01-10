@@ -562,7 +562,7 @@ function New-AzureTestVM
         ConvertTo-SecureString -AsPlainText -Force
 
         # DNS name based on random chars followed by first 10 of configuration name
-        $dnsLabelPrefix = Get-Random -Minimum 10000 -Maximum 99999
+        $dnsLabelPrefix = "test$(Get-Random -Minimum 1000 -Maximum 9999)"
 
         # VM Name based on configuration name and OS name
         $vmName = "$Configuration.$($WindowsOSVersion.replace('-',''))"
