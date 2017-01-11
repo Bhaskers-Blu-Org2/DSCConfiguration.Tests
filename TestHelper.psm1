@@ -392,13 +392,13 @@ function New-ResourceGroupandAutomationAccount
         -Name $AutomationAccountName -Location $Location
 
         # Validate provisioning of resource group
-        $ResourceGroupExists = Get-AzureRmResourceGroup -Name $ResourceGroupName -ErrorAction SilentlyContinue
+        $ResourceGroupExists = Get-AzureRmResourceGroup -Name $ResourceGroupName
         If ($Null = $ResourceGroupExists) {
             throw "Resource group $ResourceGroupName was not created!"
         }
         
         # Validate provisioning of resource group
-        $AutomationAccountExists = Get-AzureRmAutomationAccount -ResourceGroupName $ResourceGroupName -Name $AutomationAccountName -ErrorAction SilentlyContinue
+        $AutomationAccountExists = Get-AzureRmAutomationAccount -ResourceGroupName $ResourceGroupName -Name $AutomationAccountName
         If ($Null = $AutomationAccountExists) {
             throw "Automation account $AutomationAccountName was not created!"
         }
