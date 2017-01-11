@@ -390,6 +390,18 @@ function New-ResourceGroupandAutomationAccount
         # Create Azure Automation account
         $AutomationAccount = New-AzureRMAutomationAccount -ResourceGroupName $ResourceGroupName `
         -Name $AutomationAccountName -Location $Location
+
+        # Validate provisioning of resource group
+        $ResourceGroupExists = Get-AzureRmResourceGroup -Name $ResourceGroupName -ErrorAction SilentlyContinue
+        If ($Null = $ResourceGroupExists) {
+            throw "Resource group $ResourceGroupName was not created!"
+        }
+        
+        # Validate provisioning of resource group
+        $AutomationAccountExists = Get-AzureRmAutomationAccount -ResourceGroupName $ResourceGroupName -Name $AutomationAccountName -ErrorAction SilentlyContinue
+        If ($Null = $AutomationAccountExists) {
+            throw "Automation account $AutomationAccountName was not created!"
+        }
     }
     catch [System.Exception] {
         throw "A failure occured while creating the Resource Group $ResourceGroupName or Automation Account $AutomationAccountName`n$error"
