@@ -11,9 +11,13 @@ Describe 'Common Tests - Azure VM' -Tag AzureVMIntegration {
     $Nodes = Get-AzureRMAutomationDSCNode -ResourceGroupName $ResourceGroup -AutomationAccountName $AutomationAccount
     $NodeNames = $Nodes | ForEach-Object {$_.Name}
 
-    Context "Nodes" {
+    Context "AADSC Nodes" {
         It "There are as many nodes as configurations" {
             $NodeNames.Count -eq ($ConfigurationCommands.Count * $OSVersion.Count) | Should Be True
+        }
+        It "All nodes are compliant with configurations" {
+            #TODO
+            $Nodes | Should Not Be Null
         }
     }
 }    
