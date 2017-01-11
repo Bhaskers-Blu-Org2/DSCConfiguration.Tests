@@ -400,8 +400,7 @@ function New-ResourceGroupandAutomationAccount
         # Create Azure Automation account
         $AutomationAccount = New-AzureRMAutomationAccount -ResourceGroupName $ResourceGroupName `
         -Name $AutomationAccountName -Location $Location
-        Write-Output "Provisioning of Automation Account $AutomationAccountName completed"        
-        Write-Output $AutomationAccount.State
+        Write-Output "Provisioning of Automation Account $AutomationAccountName returned $($AutomationAccount.State)"
         # Validate provisioning of resource group
         $AutomationAccountExists = Get-AzureRmAutomationAccount -ResourceGroupName $ResourceGroupName `
         -Name $AutomationAccountName
