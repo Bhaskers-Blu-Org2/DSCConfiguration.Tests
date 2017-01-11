@@ -443,6 +443,13 @@ function Import-ModuleToAzureAutomation
         # Import module from custom object
         $ImportedModule = New-AzureRMAutomationModule -ResourceGroupName $ResourceGroupName `
         -AutomationAccountName $AutomationAccountName -Name $Module.Name -ContentLink $Module.URI
+
+        # Validate module was imported
+        $ImportedModuleExists = Get-AzureRmAutomationModule -ResourceGroupName $ResourceGroupName `
+        -AutomationAccountName $AutomationAccountName -Name $Module.$Name
+        if ($Null -eq $ImportedModuleExists) {
+            throw "The module $($Module.Name) was not imported!"
+        }
     }
     catch [System.Exception] {
         throw "An error occured while importing the module $($Module.Name) to Azure Automation`n$error"
@@ -496,6 +503,14 @@ function Import-ConfigurationToAzureAutomation
         $ConfigurationImport = Import-AzureRmAutomationDscConfiguration `
         -ResourceGroupName $ResourceGroupName -AutomationAccountName $AutomationAccountName `
         -SourcePath $Configuration.Location -Published -Force
+
+        # Validate configuration was imported
+        $ConfigurationImportExists = Get-AzureRmAutomationDscConfiguration `
+        -ResourceGroupName $ResourceGroupName -AutomationAccountName $AutomationAccountName `
+        -Name $Configuration.Name
+        if ($Null -eq $ConfigurationImportExists) {
+            throw "The configuration $($Configuration.Name) was not imported!"
+        }
 
         # Load configdata if it exists
         if (Test-Path "$env:BuildFolder\ConfigurationData\$($Configuration.Name).ConfigData.psd1") {
