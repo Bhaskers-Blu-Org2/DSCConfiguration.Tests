@@ -95,11 +95,6 @@ task AzureLogin {
     # Login to Azure using information from params
     Invoke-AzureSPNLogin -ApplicationID $ApplicationID -ApplicationPassword `
     $ApplicationPassword -TenantID $TenantID
-
-    $LoginSuccessful = Get-AzureRmSubscription
-    if ($Null -eq $LoginSuccessful) {
-        throw 'Login to Azure was unsuccessful!'
-    }
 }
 
 # Synopsis: Create Resource Group

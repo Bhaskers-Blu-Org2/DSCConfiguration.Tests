@@ -361,8 +361,14 @@ function Invoke-AzureSPNLogin
         }
         $AzProfileContent = Set-Content -Value '{"enableAzureDataCollection":true}' -Path (Join-Path $Path 'AzureDataCollectionProfile.json') 
 
-        # Handle Login
+        # Handle login
         $AddAccount = Add-AzureRmAccount -Credential $Credential -ServicePrincipal -TenantID $TenantID -ErrorAction SilentlyContinue
+
+        # Validate login
+        $LoginSuccessful = Get-AzureRmSubscription
+        if ($Null -eq $LoginSuccessful) {
+            throw 'Login to Azure was unsuccessful!'
+        }
     }
     catch [System.Exception] {
         throw "An error occured while logging in to Azure`n$error"    
