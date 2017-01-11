@@ -451,7 +451,7 @@ function Import-ModuleToAzureAutomation
 
         # Validate module was imported
         $ImportedModuleExists = Get-AzureRmAutomationModule -ResourceGroupName $ResourceGroupName `
-        -AutomationAccountName $AutomationAccountName -Name $Module.$Name
+        -AutomationAccountName $AutomationAccountName -Name $Module.Name
         if ($Null -eq $ImportedModuleExists) {
             throw "The module $($Module.Name) could not be validated"
         }
