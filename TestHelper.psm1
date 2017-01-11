@@ -388,24 +388,25 @@ function New-ResourceGroupandAutomationAccount
     try 
     {
         # Create Resource Group
-        Write-Output "Creating Resource Group $ResourceGroupName"    
-        New-AzureRmResourceGroup -Name $ResourceGroupName -Location $Location `
+        $ResourceGroup = New-AzureRmResourceGroup -Name $ResourceGroupName -Location $Location `
         -Force
+        Write-Output "Provisioning of Resource Group $ResourceGroupName returned $($ResourceGroup.ProvisioningState)"
         # Validate provisioning of resource group
         $ResourceGroupExists = Get-AzureRmResourceGroup -Name $ResourceGroupName
-        If ($Null = $ResourceGroupExists) {
-            throw "Resource group $ResourceGroupName was not created!"
+        If ($Null -eq $ResourceGroupExists) {
+            throw "Resource group $ResourceGroupName could not be validated"
         }
 
         # Create Azure Automation account
-        Write-Output "Creating Automation account $AutomationAccountName"
         $AutomationAccount = New-AzureRMAutomationAccount -ResourceGroupName $ResourceGroupName `
         -Name $AutomationAccountName -Location $Location
+        Write-Output "Provisioning of Automation Account $AutomationAccountName completed"        
+        Write-Output $AutomationAccount.State
         # Validate provisioning of resource group
         $AutomationAccountExists = Get-AzureRmAutomationAccount -ResourceGroupName $ResourceGroupName `
         -Name $AutomationAccountName
-        If ($Null = $AutomationAccountExists) {
-            throw "Automation account $AutomationAccountName was not created!"
+        If ($Null -eq $AutomationAccountExists) {
+            throw "Automation account $AutomationAccountName could not be validated"
         }
     }
     catch [System.Exception] {
