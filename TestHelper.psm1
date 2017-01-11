@@ -514,7 +514,7 @@ function Import-ConfigurationToAzureAutomation
         -ResourceGroupName $ResourceGroupName -AutomationAccountName $AutomationAccountName `
         -Name $Configuration.Name
         if ($Null -eq $ConfigurationImportExists) {
-            throw "The configuration $($Configuration.Name) was not imported!"
+            throw "The configuration $($Configuration.Name) could not be validated"
         }
 
         # Load configdata if it exists
