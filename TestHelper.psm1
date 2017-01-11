@@ -410,7 +410,7 @@ function New-ResourceGroupandAutomationAccount
         }
     }
     catch [System.Exception] {
-        write-output "An error occured while creating or validating Azure resources`n$_.exception.message"
+        throw "An error occured while creating or validating Azure resources`n$_.exception.message"
     }
 }
 
