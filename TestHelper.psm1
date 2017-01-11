@@ -25,7 +25,7 @@ function Invoke-UniquePSModulePath
     }
     catch [System.Exception]
     {
-        throw "An error occured while correcting the psmodulepath`n$error"
+        throw "An error occured while correcting the psmodulepath`n$_.exception.message"
     }
 }
 
@@ -120,7 +120,7 @@ function Get-RequiredGalleryModules
     }
     catch [System.Exception] 
     {
-        throw "An error occured while getting modules from PowerShellGallery.com`n$error"
+        throw "An error occured while getting modules from PowerShellGallery.com`n$_.exception.message"
     }
 }
 
@@ -166,7 +166,7 @@ function Invoke-ConfigurationPrep
     }
     catch [System.Exception] 
     {
-        throw "An error occured while preparing configurations for import`n$error"
+        throw "An error occured while preparing configurations for import`n$_.exception.message"
     }
 }
 
@@ -191,7 +191,7 @@ function Import-ModuleFromSource
     }
     catch [System.Exception] 
     {
-        throw "An error occured while importing module $Name`n$error"
+        throw "An error occured while importing module $Name`n$_.exception.message"
     }
 }
 
@@ -371,7 +371,7 @@ function Invoke-AzureSPNLogin
         }
     }
     catch [System.Exception] {
-        throw "An error occured while logging in to Azure`n$error"    
+        write-output "An error occured while logging in to Azure`n$_.exception.message"
     }
 }
 
@@ -385,27 +385,31 @@ function New-ResourceGroupandAutomationAccount
         [string]$ResourceGroupName = 'TestAutomation'+$env:BuildID,
         [string]$AutomationAccountName = 'AADSC'+$env:BuildID
     )
-    # Create Resource Group
-    Write-Output "Creating Resource Group $ResourceGroupName"    
-    $ResourceGroup = New-AzureRmResourceGroup -Name $ResourceGroupName -Location $Location `
-    -Force
+    try 
+    {
+        # Create Resource Group
+        Write-Output "Creating Resource Group $ResourceGroupName"    
+        New-AzureRmResourceGroup -Name $ResourceGroupName -Location $Location `
+        -Force
+        # Validate provisioning of resource group
+        $ResourceGroupExists = Get-AzureRmResourceGroup -Name $ResourceGroupName
+        If ($Null = $ResourceGroupExists) {
+            throw "Resource group $ResourceGroupName was not created!"
+        }
 
-    # Create Azure Automation account
-    Write-Output "Creating Automation account $AutomationAccountName"
-    $AutomationAccount = New-AzureRMAutomationAccount -ResourceGroupName $ResourceGroupName `
-    -Name $AutomationAccountName -Location $Location
-
-    # Validate provisioning of resource group
-    $ResourceGroupExists = Get-AzureRmResourceGroup -Name $ResourceGroupName
-    If ($Null = $ResourceGroupExists) {
-        throw "Resource group $ResourceGroupName was not created!"
+        # Create Azure Automation account
+        Write-Output "Creating Automation account $AutomationAccountName"
+        $AutomationAccount = New-AzureRMAutomationAccount -ResourceGroupName $ResourceGroupName `
+        -Name $AutomationAccountName -Location $Location
+        # Validate provisioning of resource group
+        $AutomationAccountExists = Get-AzureRmAutomationAccount -ResourceGroupName $ResourceGroupName `
+        -Name $AutomationAccountName
+        If ($Null = $AutomationAccountExists) {
+            throw "Automation account $AutomationAccountName was not created!"
+        }
     }
-    
-    # Validate provisioning of resource group
-    $AutomationAccountExists = Get-AzureRmAutomationAccount -ResourceGroupName $ResourceGroupName `
-    -Name $AutomationAccountName
-    If ($Null = $AutomationAccountExists) {
-        throw "Automation account $AutomationAccountName was not created!"
+    catch [System.Exception] {
+        write-output "An error occured while creating or validating Azure resources`n$_.exception.message"
     }
 }
 
@@ -421,7 +425,7 @@ function Remove-AzureTestResources
         $Remove = Remove-AzureRmResourceGroup -Name $ResourceGroupName -Force
     }
     catch [System.Exception] {
-        throw "An error occured while removing the Resource Group $ResourceGroupName`n$error"
+        throw "An error occured while removing the Resource Group $ResourceGroupName`n$_.exception.message"
     }
 }
 
@@ -453,7 +457,7 @@ function Import-ModuleToAzureAutomation
         }
     }
     catch [System.Exception] {
-        throw "An error occured while importing the module $($Module.Name) to Azure Automation`n$error"
+        throw "An error occured while importing the module $($Module.Name) to Azure Automation`n$_.exception.message"
     }
 }
 
@@ -481,7 +485,7 @@ function Wait-ModuleExtraction
     }
     catch [System.Exception] 
     {
-        throw "An error occured while waiting for module $($Module.Name) activities to extract in Azure Automation`n$error"        
+        throw "An error occured while waiting for module $($Module.Name) activities to extract in Azure Automation`n$_.exception.message"        
     }
 }    
 
@@ -530,7 +534,7 @@ function Import-ConfigurationToAzureAutomation
     }
     catch [System.Exception] 
     {
-        throw "An error occured while importing the configuration $($Configuration.Name) using Azure Automation`n$error"        
+        throw "An error occured while importing the configuration $($Configuration.Name) using Azure Automation`n$_.exception.message"        
     }
 }
 
@@ -557,7 +561,7 @@ function Wait-ConfigurationCompilation
     }
     catch [System.Exception] 
     {
-        throw "An error occured while waiting for configuration $($Configuration.Name) to compile in Azure Automation`n$error"        
+        throw "An error occured while waiting for configuration $($Configuration.Name) to compile in Azure Automation`n$_.exception.message"        
     }
 }
 
@@ -628,7 +632,7 @@ function New-AzureTestVM
     }
         catch [System.Exception] 
         {
-        throw "An error occured during the Azure deployment.`n$error"        
+        throw "An error occured during the Azure deployment.`n$_.exception.message"        
     }
 }
 
