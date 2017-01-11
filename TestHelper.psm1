@@ -379,32 +379,27 @@ function New-ResourceGroupandAutomationAccount
         [string]$ResourceGroupName = 'TestAutomation'+$env:BuildID,
         [string]$AutomationAccountName = 'AADSC'+$env:BuildID
     )
-    try {
-        Write-Output "Creating Resource Group $ResourceGroupName"
-        Write-Output "and Automation account $AutomationAccountName"
+    # Create Resource Group
+    Write-Output "Creating Resource Group $ResourceGroupName"    
+    $ResourceGroup = New-AzureRmResourceGroup -Name $ResourceGroupName -Location $Location `
+    -Force
 
-        # Create Resource Group
-        $ResourceGroup = New-AzureRmResourceGroup -Name $ResourceGroupName -Location $Location `
-        -Force
+    # Create Azure Automation account
+    Write-Output "Creating Automation account $AutomationAccountName"
+    $AutomationAccount = New-AzureRMAutomationAccount -ResourceGroupName $ResourceGroupName `
+    -Name $AutomationAccountName -Location $Location
 
-        # Create Azure Automation account
-        $AutomationAccount = New-AzureRMAutomationAccount -ResourceGroupName $ResourceGroupName `
-        -Name $AutomationAccountName -Location $Location
-
-        # Validate provisioning of resource group
-        $ResourceGroupExists = Get-AzureRmResourceGroup -Name $ResourceGroupName
-        If ($Null = $ResourceGroupExists) {
-            throw "Resource group $ResourceGroupName was not created!"
-        }
-        
-        # Validate provisioning of resource group
-        $AutomationAccountExists = Get-AzureRmAutomationAccount -ResourceGroupName $ResourceGroupName -Name $AutomationAccountName
-        If ($Null = $AutomationAccountExists) {
-            throw "Automation account $AutomationAccountName was not created!"
-        }
+    # Validate provisioning of resource group
+    $ResourceGroupExists = Get-AzureRmResourceGroup -Name $ResourceGroupName
+    If ($Null = $ResourceGroupExists) {
+        throw "Resource group $ResourceGroupName was not created!"
     }
-    catch [System.Exception] {
-        throw "A failure occured while creating the Resource Group $ResourceGroupName or Automation Account $AutomationAccountName`n$error"
+    
+    # Validate provisioning of resource group
+    $AutomationAccountExists = Get-AzureRmAutomationAccount -ResourceGroupName $ResourceGroupName `
+    -Name $AutomationAccountName
+    If ($Null = $AutomationAccountExists) {
+        throw "Automation account $AutomationAccountName was not created!"
     }
 }
 

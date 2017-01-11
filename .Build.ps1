@@ -100,7 +100,7 @@ task AzureLogin {
 # Synopsis: Create Resource Group
 task ResourceGroupAndAutomationAccount {
     # Create Azure Resource Group and Automation account (TestHelper)
-    New-ResourceGroupandAutomationAccount
+    New-ResourceGroupandAutomationAccount -Verbose
 }
 
 # Synopsis: Deploys modules to Azure Automation
