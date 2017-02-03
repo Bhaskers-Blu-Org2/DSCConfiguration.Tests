@@ -65,13 +65,16 @@ Enter-Build {
     Invoke-UniquePSModulePath
 }
 
-# Synopsis: Load the Configuration modules and required resources
-task LoadModules {
+# Synopsis: Load the required resources
+task LoadResourceModules {
     # Discover required modules from Configuration manifest (TestHelper)
     $script:Modules = Get-RequiredGalleryModules -ManifestData (Import-PowerShellDataFile `
     -Path "$BuildFolder\$ProjectName.psd1") -Install
     Write-Output "Loaded modules:`n$($script:Modules | ForEach-Object -Process {$_.Name})"
+}
 
+# Synopsis: Load the Configuration modules
+task LoadConfigurationModules {
     # Prep and import Configurations from module (TestHelper)
     Import-ModuleFromSource -Name $ProjectName
     $script:Configurations = Invoke-ConfigurationPrep -Module $ProjectName -Path `
@@ -190,6 +193,6 @@ Exit-Build {
 }
 
 # Synopsis: default build tasks
-task . LoadModules, LintUnitTests, AzureLogin, ResourceGroupAndAutomationAccount, `
+task . LoadResourceModules, LoadConfigurationModules, LintUnitTests, AzureLogin, ResourceGroupAndAutomationAccount, `
 AzureAutomationModules, AzureAutomationConfigurations, IntegrationTestAzureAutomationDSC, `
 AzureVM, IntegrationTestAzureVMs
