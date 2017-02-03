@@ -288,7 +288,7 @@ Describe 'Common Tests - Configuration Module Requirements' -Tag Unit {
             $Files.Name.Contains("README.md") | Should Be True
         }
         It "Manifest $env:BuildFolder\$Name.psd1 should import as a data file" {
-            $Manifest.GetType() | Should Be 'Hashtable'
+            $Manifest | Should BeOfType 'Hashtable'
         }
         It 'Should point to the root module in the manifest' {
             $Manifest.RootModule | Should Be ".\$Name.psm1"
