@@ -9,7 +9,7 @@
       "value": "[concat(uniquestring(resourceGroup().id), 'vm')]"
     },
     "adminUsername": {
-      "value": "dscValidationAdmin"
+      "value": "dscAdmin"
     },
     "WindowsOSVersion": {
       "value": "2016-Datacenter"
