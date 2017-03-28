@@ -337,16 +337,17 @@ Describe 'Common Tests - Configuration Module Requirements' -Tag Unit {
             }
         }
     }
-    Context "$Name module import" {
+    Context "$Name module" {
         It "$Name imports as a module" {
             {Import-Module -Name $Name} | Should Not Throw
         }
     }
-    Context "$Name configurations" {
+    Context "$Name configuration script" {
         It "$env:BuildFolder\$Name.ps1 should execute as a script without error" {
             {. $env:BuildFolder\$Name.ps1} | Should Not Throw
         }
         It "$Name should provide configurations" {
+            & {. $env:BuildFolder\$Name.ps1}
             # this could produce a false positive if the build machine has other known
             # configurations loaded, but scripts are not identified as source
             $Configurations = Get-Command -Type Configuration
