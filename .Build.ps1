@@ -87,8 +87,7 @@ Add-BuildTask LoadConfigurationModules {
 Add-BuildTask LintUnitTests {
     $testResultsFile = "$BuildFolder\LintUnitTestsResults.xml"
 
-    $Pester = Invoke-Pester -Tag Lint,Unit -OutputFormat NUnitXml -OutputFile $testResultsFile `
-    -PassThru
+    Invoke-Pester -Tag Lint,Unit -OutputFormat NUnitXml -OutputFile $testResultsFile -PassThru
     
     (New-Object 'System.Net.WebClient').UploadFile("$env:TestResultsUploadURI", `
     (Resolve-Path $testResultsFile))
