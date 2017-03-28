@@ -237,27 +237,6 @@ function Get-TextFilesList
 
 <#
     .SYNOPSIS
-        Retrieves all .ps1 files under the given file path.
-
-    .PARAMETER FilePath
-        The root file path to gather the .ps1 files from.
-#>
-function Get-ScriptFileList
-{
-    [OutputType([Object[]])]
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(ValueFromPipeline = $true, Mandatory = $true)]
-        [String]
-        $FilePath
-    )
-
-    return Get-ChildItem -Path $FilePath -Filter '*.ps1' -File -Recurse
-}
-
-<#
-    .SYNOPSIS
         Retrieves the list of suppressed PSSA rules in the file at the given path.
 
     .PARAMETER FilePath

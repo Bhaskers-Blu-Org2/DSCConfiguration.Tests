@@ -46,8 +46,8 @@ Describe 'Common Tests - PS Script Analyzer' -Tag Lint {
 
     $ignorePssaRuleNames = @(
         # The following exclusions are required for build platform compatibility
-            'PSAvoidUsingPlainTextForPassword',
-            'PSAvoidUsingConvertToSecureStringWithPlainText',
+        'PSAvoidUsingPlainTextForPassword',
+        'PSAvoidUsingConvertToSecureStringWithPlainText',
         'PSDSCDscExamplesPresent',
         'PSDSCDscTestsPresent',
         'PSUseBOMForUnicodeEncodedFile',
@@ -57,7 +57,7 @@ Describe 'Common Tests - PS Script Analyzer' -Tag Lint {
         'PSUseUTF8EncodingForHelpFile'
     )
 
-    $ScriptFiles = Get-ScriptFileList -FilePath $env:BuildFolder
+    $ScriptFiles = Get-ChildItem -Path $env:BuildFolder -Filter '*.ps1' -File
 
     foreach ($ScriptFile in $ScriptFiles)
     {
@@ -350,16 +350,16 @@ Describe 'Common Tests - Configuration Module Requirements' -Tag Unit {
             . $env:BuildFolder\$Name.ps1
             # this could produce a false positive if the build machine has other known
             # configurations loaded, but scripts are not identified as source
-            $Configurations = Get-Command -Type Configuration
-            write-verbose $Configurations
+            $Configurations = Get-Command -Type Configuration | ForEach-Object Name
+            Write-Verbose $Configurations
             $Configurations.count | Should BeGreaterThan 0
         }
         ForEach ($Configuration in $Configurations) {
-            It "$($Configuration.Name) should compile without error" {
-                {"$($Configuration.Name) -Out c:\dsc\$($Configuration.Name)"} | Should Not Throw
+            It "$Configuration should compile without error" {
+                {"$Configuration -Out c:\dsc\$Configuration"} | Should Not Throw
             }
-            It "$($Configuration.Name) should produce a mof file" {
-                Get-ChildItem -Path "c:\dsc\$($Configuration.Name)\*.mof" | Should Not Be Null
+            It "$Configuration should produce a mof file" {
+                Get-ChildItem -Path "c:\dsc\$Configuration\*.mof" | Should Not Be Null
             }
         }
     }
