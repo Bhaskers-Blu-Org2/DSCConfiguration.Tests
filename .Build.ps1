@@ -66,7 +66,7 @@ Enter-Build {
 }
 
 # Synopsis: Load the required resources
-task LoadResourceModules {
+Add-BuildTask LoadResourceModules {
     # Discover required modules from Configuration manifest (TestHelper)
     $script:Modules = Get-RequiredGalleryModules -ManifestData (Import-PowerShellDataFile `
     -Path "$BuildFolder\$ProjectName\$ProjectName.psd1") -Install
@@ -74,7 +74,7 @@ task LoadResourceModules {
 }
 
 # Synopsis: Load the Configuration modules
-task LoadConfigurationModules {
+Add-BuildTask LoadConfigurationModules {
     # Prep and import Configurations from module (TestHelper)
     Set-Location $BuildFolder\$ProjectName
     Import-ModuleFromSource -Name $ProjectName
@@ -84,7 +84,7 @@ task LoadConfigurationModules {
 }
 
 # Synopsis: Run Lint and Unit Tests
-task LintUnitTests {
+Add-BuildTask LintUnitTests {
     $testResultsFile = "$BuildFolder\LintUnitTestsResults.xml"
 
     $Pester = Invoke-Pester -Tag Lint,Unit -OutputFormat NUnitXml -OutputFile $testResultsFile `
@@ -96,20 +96,20 @@ task LintUnitTests {
 
 <#
 # Synopsis: Perform Azure Login
-task AzureLogin {
+Add-BuildTask AzureLogin {
     # Login to Azure using information from params
     Invoke-AzureSPNLogin -ApplicationID $ApplicationID -ApplicationPassword `
     $ApplicationPassword -TenantID $TenantID
 }
 
 # Synopsis: Create Resource Group
-task ResourceGroupAndAutomationAccount {
+Add-BuildTask ResourceGroupAndAutomationAccount {
     # Create Azure Resource Group and Automation account (TestHelper)
     New-ResourceGroupandAutomationAccount
 }
 
 # Synopsis: Deploys modules to Azure Automation
-task AzureAutomationModules {
+Add-BuildTask AzureAutomationModules {
     # Import the modules discovered as requirements to Azure Automation (TestHelper)
     foreach ($ImportModule in $script:Modules) {
         Import-ModuleToAzureAutomation -Module $ImportModule
@@ -121,7 +121,7 @@ task AzureAutomationModules {
 }
 
 # Synopsis: Deploys configurations to Azure Automation
-task AzureAutomationConfigurations {
+Add-BuildTask AzureAutomationConfigurations {
     # Import and compile the Configurations using Azure Automation (TestHelper)
     foreach ($ImportConfiguration in $script:Configurations) {
         Import-ConfigurationToAzureAutomation -Configuration $ImportConfiguration
@@ -135,7 +135,7 @@ task AzureAutomationConfigurations {
 }
 
 # Synopsis: Integration tests to verify that modules and configurations loaded to Azure Automation DSC successfully
-task IntegrationTestAzureAutomationDSC {
+Add-BuildTask IntegrationTestAzureAutomationDSC {
     $testResultsFile = "$BuildFolder\AADSCIntegrationTestsResults.xml"
 
     $Pester = Invoke-Pester -Tag AADSCIntegration -OutputFormat NUnitXml `
@@ -146,7 +146,7 @@ task IntegrationTestAzureAutomationDSC {
 }
 
 # Synopsis: Deploys Azure VM and bootstraps to Azure Automation DSC
-task AzureVM {
+Add-BuildTask AzureVM {
     $VMDeployments = @()
     Write-Output 'Deploying all test virtual machines in parallel'
     ForEach ($Configuration in $script:Configurations) {
@@ -179,7 +179,7 @@ task AzureVM {
 }
 
 # Synopsis: Integration tests to verify that DSC configuration successfuly applied in virtual machines
-task IntegrationTestAzureVMs {
+Add-BuildTask IntegrationTestAzureVMs {
     $testResultsFile = "$BuildFolder\VMIntegrationTestsResults.xml"
 
     $Pester = Invoke-Pester -Tag AzureVMIntegration -OutputFormat NUnitXml -OutputFile $testResultsFile `
@@ -196,7 +196,7 @@ Exit-Build {
 }
 
 # Synopsis: default build tasks
-task . LoadResourceModules, LoadConfigurationModules, LintUnitTests
+Add-BuildTask . LoadResourceModules, LoadConfigurationModules, LintUnitTests
 <#, AzureLogin, ResourceGroupAndAutomationAccount, `
 AzureAutomationModules, AzureAutomationConfigurations, IntegrationTestAzureAutomationDSC, `
 AzureVM, IntegrationTestAzureVMs #>
