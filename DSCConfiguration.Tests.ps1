@@ -349,6 +349,7 @@ Describe 'Common Tests - Configuration Module Requirements' -Tag Unit {
         It "$Name should provide configurations" {
             # this could produce a false positive if the build machine has other known
             # configurations loaded, but scripts are not identified as source
+            . $env:BuildFolder\$Name.ps1
             $Configurations = Get-Command -Type Configuration | ForEach-Object {$_.Name}
             $Configurations.count | Should BeGreaterThan 0
         }
