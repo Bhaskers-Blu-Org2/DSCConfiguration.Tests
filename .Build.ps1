@@ -91,6 +91,7 @@ Add-BuildTask LintUnitTests {
     
     (New-Object 'System.Net.WebClient').UploadFile("$env:TestResultsUploadURI", `
     (Resolve-Path $testResultsFile))
+    exit $Pester
 }
 
 # Synopsis: Perform Azure Login
@@ -141,6 +142,7 @@ Add-BuildTask IntegrationTestAzureAutomationDSC {
     
     (New-Object 'System.Net.WebClient').UploadFile("$env:TestResultsUploadURI", `
     (Resolve-Path $testResultsFile))
+    exit $Pester
 }
 
 # Synopsis: Deploys Azure VM and bootstraps to Azure Automation DSC
@@ -184,6 +186,7 @@ Add-BuildTask IntegrationTestAzureVMs {
     
     (New-Object 'System.Net.WebClient').UploadFile("$env:TestResultsUploadURI", `
     (Resolve-Path $testResultsFile))
+    exit $Pester
 }
 
 # Synopsis: remove all assets deployed to Azure and any local temporary changes (should be none)
