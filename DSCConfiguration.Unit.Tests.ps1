@@ -347,7 +347,7 @@ Describe 'Common Tests - Configuration Module Requirements' -Tag Unit {
             {. $env:BuildFolder\$Name.ps1} | Should Not Throw
         }
         It "$Name should provide configurations" {
-            & {. $env:BuildFolder\$Name.ps1}
+            . $env:BuildFolder\$Name.ps1
             # this could produce a false positive if the build machine has other known
             # configurations loaded, but scripts are not identified as source
             $Configurations = Get-Command -Type Configuration
