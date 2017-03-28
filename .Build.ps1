@@ -137,7 +137,7 @@ Add-BuildTask IntegrationTestAzureAutomationDSC {
     $testResultsFile = "$BuildFolder\AADSCIntegrationTestsResults.xml"
 
     $Pester = Invoke-Pester -Tag AADSCIntegration -OutputFormat NUnitXml `
-    -OutputFile $testResultsFile -PassThru
+    -OutputFile $testResultsFile -EnableExit
     
     (New-Object 'System.Net.WebClient').UploadFile("$env:TestResultsUploadURI", `
     (Resolve-Path $testResultsFile))
@@ -180,8 +180,7 @@ Add-BuildTask AzureVM {
 Add-BuildTask IntegrationTestAzureVMs {
     $testResultsFile = "$BuildFolder\VMIntegrationTestsResults.xml"
 
-    $Pester = Invoke-Pester -Tag AzureVMIntegration -OutputFormat NUnitXml -OutputFile $testResultsFile `
-    -PassThru
+    $Pester = Invoke-Pester -Tag AzureVMIntegration -OutputFormat NUnitXml -OutputFile $testResultsFile -EnableExit
     
     (New-Object 'System.Net.WebClient').UploadFile("$env:TestResultsUploadURI", `
     (Resolve-Path $testResultsFile))

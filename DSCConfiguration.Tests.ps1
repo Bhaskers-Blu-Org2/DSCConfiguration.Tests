@@ -371,7 +371,7 @@ Describe 'Common Tests - Azure Automation DSC' -Tag AADSCIntegration {
     $ResourceGroup = "TestAutomation$env:BuildID"
     $AutomationAccount = "AADSC$env:BuildID"
 
-    $CurrentModuleManifest = Get-ChildItem -Path $env:BuildFolder -Filter "$env:ProjectName.psd1" | ForEach-Object {$_.FullName}
+    $CurrentModuleManifest = Get-ChildItem -Path $env:BuildFolder\$env:ProjectName -Filter "$env:ProjectName.psd1" | ForEach-Object {$_.FullName}
     $RequiredModules = Get-RequiredGalleryModules (Import-PowerShellDataFile $CurrentModuleManifest)
     $ConfigurationCommands = Get-DSCConfigurationCommands -Module $env:ProjectName
 
@@ -406,8 +406,8 @@ Describe 'Common Tests - Azure VM' -Tag AzureVMIntegration {
     $ResourceGroup = "TestAutomation$env:BuildID"
     $AutomationAccount = "AADSC$env:BuildID"
 
-    $ConfigurationCommands = Get-DSCConfigurationCommands -Module $env:ProjectName
-    $OSVersion = (Import-PowerShellDataFile $env:BuildFolder\$env:ProjectName.psd1).PrivateData.PSData.WindowsOSVersion
+    $ConfigurationCommands = Get-Command -Type Configuration | ForEach-Object {$_.Name}
+    $OSVersion = (Import-PowerShellDataFile $env:BuildFolder\$env:ProjectName\$env:ProjectName.psd1).PrivateData.PSData.WindowsOSVersion
 
     $Nodes = Get-AzureRMAutomationDSCNode -ResourceGroupName $ResourceGroup -AutomationAccountName $AutomationAccount
     $NodeNames = $Nodes | ForEach-Object {$_.Name}
