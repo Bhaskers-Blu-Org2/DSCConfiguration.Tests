@@ -31,22 +31,6 @@ function Invoke-UniquePSModulePath
 
 <#
 #>
-function Get-DSCConfigurationCommands
-{
-    [CmdletBinding()]     
-    param
-    (
-        [string]$Module
-    )
-    $CommandParams = @{
-        CommandType = 'Configuration'
-        Module = $Module
-    }
-    Get-Command @CommandParams
-}
-
-<#
-#>
 function Get-RequiredGalleryModules
 {
     [CmdletBinding()]
@@ -142,7 +126,7 @@ function Invoke-ConfigurationPrep
         else {'2016-Datacenter'}
 
         # Get list of configurations loaded from module
-        $Configurations = Get-DSCConfigurationCommands -Module $Module
+        $Configurations = Get-Command -Type Configuration
         $Configurations | Add-Member -MemberType NoteProperty -Name Location -Value $null
         $Configurations | Add-Member -MemberType NoteProperty -Name WindowsOSVersion `
         -Value $WindowsOSVersion
