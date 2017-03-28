@@ -270,8 +270,7 @@ Describe 'Common Tests - File Formatting' -Tag Lint {
     }
 }
 
-<#
-#>
+<##>
 Describe 'Common Tests - Configuration Module Requirements' -Tag Unit {
     $Name = Get-Item -Path $env:BuildFolder\$Name | ForEach-Object -Process {$_.Name}
     $Files = Get-ChildItem -Path $env:BuildFolder\$Name
@@ -353,7 +352,7 @@ Describe 'Common Tests - Configuration Module Requirements' -Tag Unit {
         }
         ForEach ($Configuration in $Configurations) {
             It "$($Configuration.Name) should compile without error" {
-                {$($Configuration.Name) -Out c:\dsc\$($Configuration.Name)} | Should Not Throw
+                {"$($Configuration.Name) -Out c:\dsc\$($Configuration.Name)"} | Should Not Throw
             }
             It "$($Configuration.Name) should produce a mof file" {
                 Get-ChildItem -Path "c:\dsc\$($Configuration.Name)\*.mof" | Should Not Be Null
