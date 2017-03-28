@@ -19,13 +19,13 @@
     input parameters for Azure authentication, etc.
 #>
 param(
-    $ApplicationID = (property ApplicationID),
-    $ApplicationPassword = (property ApplicationPassword),
-    $TenantID = (property TenantID),
-    $BuildFolder = (property BuildFolder),
-    $ProjectName = (property ProjectName),
-    $ProjectID = (property ProjectID),
-    $BuildID = (property BuildID)
+    $ApplicationID = (Get-BuildProperty ApplicationID),
+    $ApplicationPassword = (Get-BuildProperty ApplicationPassword),
+    $TenantID = (Get-BuildProperty TenantID),
+    $BuildFolder = (Get-BuildProperty BuildFolder),
+    $ProjectName = (Get-BuildProperty ProjectName),
+    $ProjectID = (Get-BuildProperty ProjectID),
+    $BuildID = (Get-BuildProperty BuildID)
 )
 
 <##>
