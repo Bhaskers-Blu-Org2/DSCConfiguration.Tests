@@ -414,6 +414,7 @@ Describe 'Common Tests - Azure VM' -Tag AzureVMIntegration {
 
     Context "AADSC Nodes" {
         It "There are as many nodes as configurations" {
+            $NodeNames.Count | Should BeGreaterThan 0
             $NodeNames.Count -eq ($ConfigurationCommands.Count * $OSVersion.Count) | Should Be True
         }
         It "All nodes are compliant with configurations" {
