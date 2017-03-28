@@ -350,7 +350,7 @@ Describe 'Common Tests - Configuration Module Requirements' -Tag Unit {
             # this could produce a false positive if the build machine has other known
             # configurations loaded, but scripts are not identified as source
             . $env:BuildFolder\$Name.ps1
-            $Configurations = Get-Command -Type Configuration | ForEach-Object {$_.Name}
+            $Configurations = Get-Command -Type Configuration | Where-Object {$_.Source -eq ''} | ForEach-Object {$_.Name}
             $Configurations.count | Should BeGreaterThan 0
         }
         if (!(Test-Path $env:TEMP\mof)) {
@@ -379,7 +379,7 @@ Describe 'Common Tests - Azure Automation DSC' -Tag AADSCIntegration {
 
     $CurrentModuleManifest = Get-ChildItem -Path $env:BuildFolder\$env:ProjectName -Filter "$env:ProjectName.psd1" | ForEach-Object {$_.FullName}
     $RequiredModules = Get-RequiredGalleryModules (Import-PowerShellDataFile $CurrentModuleManifest)
-    $ConfigurationCommands = Get-Command -Type Configuration | ForEach-Object {$_.Name}
+    $ConfigurationCommands = Get-Command -Type Configuration | Where-Object {$_.Source -eq ''} | ForEach-Object {$_.Name}
 
     # Get AADSC Modules
     $AADSCModules = Get-AzureRmAutomationModule -ResourceGroupName $ResourceGroup -AutomationAccountName $AutomationAccount
@@ -387,7 +387,7 @@ Describe 'Common Tests - Azure Automation DSC' -Tag AADSCIntegration {
 
     # Get AADSC Configurations
     $AADSCConfigurations = Get-AzureRmAutomationDscConfiguration -ResourceGroupName $ResourceGroup -AutomationAccountName $AutomationAccount
-    $AADSCConfigurationNames = $AADSCCOnfigurations | ForEach-Object {$_.Name}
+    $AADSCConfigurationNames = $AADSCConfigurations | ForEach-Object {$_.Name}
 
     Context "Modules" {
         ForEach ($RequiredModule in $RequiredModules) {
@@ -412,7 +412,7 @@ Describe 'Common Tests - Azure VM' -Tag AzureVMIntegration {
     $ResourceGroup = "TestAutomation$env:BuildID"
     $AutomationAccount = "AADSC$env:BuildID"
 
-    $ConfigurationCommands = Get-Command -Type Configuration | ForEach-Object {$_.Name}
+    $ConfigurationCommands = Get-Command -Type Configuration | Where-Object {$_.Source -eq ''} | ForEach-Object {$_.Name}
     $OSVersion = (Import-PowerShellDataFile $env:BuildFolder\$env:ProjectName\$env:ProjectName.psd1).PrivateData.PSData.WindowsOSVersion
 
     $Nodes = Get-AzureRMAutomationDSCNode -ResourceGroupName $ResourceGroup -AutomationAccountName $AutomationAccount
