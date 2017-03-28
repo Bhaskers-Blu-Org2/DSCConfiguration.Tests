@@ -353,6 +353,9 @@ Describe 'Common Tests - Configuration Module Requirements' -Tag Unit {
             $Configurations = Get-Command -Type Configuration | ForEach-Object {$_.Name}
             $Configurations.count | Should BeGreaterThan 0
         }
+        if (!(Test-Path c:\dsc)) {
+            New-Item -Path c:\dsc -ItemType Directory
+        }
         ForEach ($Configuration in $Configurations) {
             It "$Configuration should compile without error" {
                 {"$Configuration -Out c:\dsc\$Configuration"} | Should Not Throw
