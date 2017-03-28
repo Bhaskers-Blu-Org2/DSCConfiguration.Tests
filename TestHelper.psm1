@@ -126,6 +126,7 @@ function Invoke-ConfigurationPrep
         else {'2016-Datacenter'}
 
         # Get list of configurations loaded from module
+        . $env:BuildFolder\$env:ProjectName.ps1
         $Configurations = Get-Command -Type Configuration
         $Configurations | Add-Member -MemberType NoteProperty -Name Location -Value $null
         $Configurations | Add-Member -MemberType NoteProperty -Name WindowsOSVersion `
