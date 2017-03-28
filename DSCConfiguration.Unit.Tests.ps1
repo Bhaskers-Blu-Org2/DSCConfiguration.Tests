@@ -345,7 +345,7 @@ Describe 'Common Tests - Configuration Module Requirements' -Tag Unit {
     }
     Context "$Name configurations" {
         It "should execute as a script without error" {
-            & {. .\$Name.ps1} | Should Not Throw
+            {. .\$Name.ps1} | Should Not Throw
         }
         It "$Name should provide configurations" {
             $Configurations = Get-Command -Type Configuration -Module $Name
@@ -353,7 +353,7 @@ Describe 'Common Tests - Configuration Module Requirements' -Tag Unit {
         }
         ForEach ($Configuration in $Configurations) {
             It "$($Configuration.Name) should compile without error" {
-                & {$($Configuration.Name) -Out c:\dsc\$($Configuration.Name)} | Should Not Throw
+                {$($Configuration.Name) -Out c:\dsc\$($Configuration.Name)} | Should Not Throw
             }
             It "$($Configuration.Name) should produce a mof file" {
                 Get-ChildItem -Path "c:\dsc\$($Configuration.Name)\*.mof" | Should Not Be Null
