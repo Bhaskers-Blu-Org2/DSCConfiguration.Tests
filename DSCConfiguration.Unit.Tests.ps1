@@ -283,7 +283,7 @@ Describe 'Common Tests - Configuration Module Requirements' -Tag Unit {
         It 'Contains a readme' {
             $Files.Name.Contains("README.md") | Should Be True
         }
-        It "Manifest $env:BuildFolder\$Name.psd1 should import as a data file" {
+        It "Manifest $env:BuildFolder\$Name\$Name.psd1 should import as a data file" {
             $Manifest | Should BeOfType 'Hashtable'
         }
         It 'Should have a GUID in the manifest' {
@@ -343,8 +343,8 @@ Describe 'Common Tests - Configuration Module Requirements' -Tag Unit {
         }
     }
     Context "$Name configurations" {
-        It "should execute as a script without error" {
-            {. .\$Name.ps1} | Should Not Throw
+        It "$env:BuildFolder\$Name.ps1 should execute as a script without error" {
+            {. $env:BuildFolder\$Name.ps1} | Should Not Throw
         }
         It "$Name should provide configurations" {
             # this could produce a false positive if the build machine has other known
