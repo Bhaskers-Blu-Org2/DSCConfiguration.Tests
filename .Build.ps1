@@ -83,7 +83,6 @@ task LoadConfigurationModules {
     Write-Output "Loaded configurations:`n$($script:Configurations | ForEach-Object -Process {$_.Name})"
 }
 
-<#
 # Synopsis: Run Lint and Unit Tests
 task LintUnitTests {
     $testResultsFile = "$BuildFolder\LintUnitTestsResults.xml"
@@ -95,6 +94,7 @@ task LintUnitTests {
     (Resolve-Path $testResultsFile))
 }
 
+<#
 # Synopsis: Perform Azure Login
 task AzureLogin {
     # Login to Azure using information from params

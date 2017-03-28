@@ -253,12 +253,12 @@ function Get-TextFilesList
 
 <#
     .SYNOPSIS
-        Retrieves all .psm1 files under the given file path.
+        Retrieves all .ps1 files under the given file path.
 
     .PARAMETER FilePath
-        The root file path to gather the .psm1 files from.
+        The root file path to gather the .ps1 files from.
 #>
-function Get-Psm1FileList
+function Get-ScriptFileList
 {
     [OutputType([Object[]])]
     [CmdletBinding()]
@@ -269,7 +269,7 @@ function Get-Psm1FileList
         $FilePath
     )
 
-    return Get-ChildItem -Path $FilePath -Filter '*.psm1' -File -Recurse
+    return Get-ChildItem -Path $FilePath -Filter '*.ps1' -File -Recurse
 }
 
 <#

@@ -57,17 +57,17 @@ Describe 'Common Tests - PS Script Analyzer' -Tag Lint {
         'PSUseUTF8EncodingForHelpFile'
     )
 
-    $Psm1Files = Get-Psm1FileList -FilePath $env:BuildFolder
+    $ScriptFiles = Get-ScriptFileList -FilePath $env:BuildFolder
 
-    foreach ($Psm1File in $Psm1Files)
+    foreach ($ScriptFile in $ScriptFiles)
     {
         $invokeScriptAnalyzerParameters = @{
-            Path = $Psm1File.FullName
+            Path = $ScriptFile.FullName
             ErrorAction = 'SilentlyContinue'
             Recurse = $true
         }
 
-        Context $Psm1File.Name {
+        Context $ScriptFile.Name {
             It 'Should pass all error-level PS Script Analyzer rules' {
                 $errorPssaRulesOutput = Invoke-ScriptAnalyzer @invokeScriptAnalyzerParameters -ExcludeRule $ignorePssaRuleNames -Severity 'Error'
 
@@ -135,7 +135,7 @@ Describe 'Common Tests - PS Script Analyzer' -Tag Lint {
             It 'Should not suppress any required PS Script Analyzer rules' {
                 $requiredRuleIsSuppressed = $false
 
-                $suppressedRuleNames = Get-SuppressedPSSARuleNameList -FilePath $Psm1File.FullName
+                $suppressedRuleNames = Get-SuppressedPSSARuleNameList -FilePath $ScriptFile.FullName
 
                 foreach ($suppressedRuleName in $suppressedRuleNames)
                 {
@@ -143,7 +143,7 @@ Describe 'Common Tests - PS Script Analyzer' -Tag Lint {
 
                     if ($requiredPssaRuleNames -icontains $suppressedRuleNameNoQuotes)
                     {
-                        Write-Warning -Message "The file $($Psm1File.Name) contains a suppression of the required PS Script Analyser rule $suppressedRuleNameNoQuotes. Please remove the rule suppression."
+                        Write-Warning -Message "The file $($ScriptFile.Name) contains a suppression of the required PS Script Analyser rule $suppressedRuleNameNoQuotes. Please remove the rule suppression."
                         $requiredRuleIsSuppressed = $true
                     }
                 }
@@ -156,19 +156,19 @@ Describe 'Common Tests - PS Script Analyzer' -Tag Lint {
 
 <##>
 Describe 'Common Tests - File Parsing' -Tag Lint {
-    $psm1Files = Get-Psm1FileList -FilePath $env:BuildFolder
+    $ScriptFiles = Get-ScriptFileList -FilePath $env:BuildFolder
 
-    foreach ($psm1File in $psm1Files)
+    foreach ($ScriptFile in $ScriptFiles)
     {
-        Context $psm1File.Name {   
+        Context $ScriptFile.Name {   
             It 'Should not contain parse errors' {
                 $containsParseErrors = $false
 
-                $parseErrors = Get-FileParseErrors -FilePath $psm1File.FullName
+                $parseErrors = Get-FileParseErrors -FilePath $ScriptFile.FullName
 
                 if ($null -ne $parseErrors)
                 {
-                    Write-Warning -Message "There are parse errors in $($psm1File.FullName):"
+                    Write-Warning -Message "There are parse errors in $($ScriptFile.FullName):"
                     Write-Warning -Message ($parseErrors | Format-List | Out-String)
 
                     $containsParseErrors = $true
@@ -273,14 +273,11 @@ Describe 'Common Tests - File Formatting' -Tag Lint {
 <#
 #>
 Describe 'Common Tests - Configuration Module Requirements' -Tag Unit {
-    $Name = Get-Item -Path $env:BuildFolder | ForEach-Object -Process {$_.Name}
-    $Files = Get-ChildItem -Path $env:BuildFolder
-    $Manifest = Import-PowerShellDataFile -Path "$env:BuildFolder\$Name.psd1"
+    $Name = Get-Item -Path $env:BuildFolder\$Name | ForEach-Object -Process {$_.Name}
+    $Files = Get-ChildItem -Path $env:BuildFolder\$Name
+    $Manifest = Import-PowerShellDataFile -Path "$env:BuildFolder\$Name\$Name.psd1"
 
     Context "$Name module manifest properties" {
-        It 'Contains a module file that aligns to the folder name' {
-            $Files.Name.Contains("$Name.psm1") | Should Be True
-        }
         It 'Contains a module manifest that aligns to the folder and module names' {
             $Files.Name.Contains("$Name.psd1") | Should Be True
         }
@@ -289,9 +286,6 @@ Describe 'Common Tests - Configuration Module Requirements' -Tag Unit {
         }
         It "Manifest $env:BuildFolder\$Name.psd1 should import as a data file" {
             $Manifest | Should BeOfType 'Hashtable'
-        }
-        It 'Should point to the root module in the manifest' {
-            $Manifest.RootModule | Should Be ".\$Name.psm1"
         }
         It 'Should have a GUID in the manifest' {
             $Manifest.GUID | Should Match '[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}'
@@ -348,6 +342,7 @@ Describe 'Common Tests - Configuration Module Requirements' -Tag Unit {
         It "$Name imports as a module" {
             {Import-Module -Name $Name} | Should Not Throw
         }
+        <# will move to script test
         It "$Name should provide configurations" {
             $Configurations = Get-Command -Type Configuration -Module $Name
             $Configurations | Should Not Be Null
@@ -360,5 +355,6 @@ Describe 'Common Tests - Configuration Module Requirements' -Tag Unit {
                 Get-ChildItem -Path "c:\dsc\$($Configuration.Name)\*.mof" | Should Not Be Null
             }
         }
+        #>
     }
 }
