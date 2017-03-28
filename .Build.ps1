@@ -54,8 +54,7 @@ Enter-Build {
     # Install supporting environment modules from PSGallery
     $EnvironmentModules = @(
     'Pester',
-    'PSScriptAnalyzer',
-    'AzureRM'
+    'PSScriptAnalyzer'
     )
     $Nuget = Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.205 -Force
     Write-Output "Installing modules to support the build environment:`n$EnvironmentModules"
@@ -92,6 +91,11 @@ Add-BuildTask LintUnitTests {
     (New-Object 'System.Net.WebClient').UploadFile("$env:TestResultsUploadURI", `
     (Resolve-Path $testResultsFile))
     exit $Pester
+}
+
+# Synopsis: Install AzureRM Module (waiting until required)
+Add-BuildTask InstallAzureRM {
+    Install-Module -Name AzureRM -Repository PSGallery -Force    
 }
 
 # Synopsis: Perform Azure Login
