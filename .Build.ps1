@@ -69,19 +69,21 @@ Enter-Build {
 task LoadResourceModules {
     # Discover required modules from Configuration manifest (TestHelper)
     $script:Modules = Get-RequiredGalleryModules -ManifestData (Import-PowerShellDataFile `
-    -Path "$BuildFolder\$ProjectName.psd1") -Install
+    -Path "$BuildFolder\$ProjectName\$ProjectName.psd1") -Install
     Write-Output "Loaded modules:`n$($script:Modules | ForEach-Object -Process {$_.Name})"
 }
 
 # Synopsis: Load the Configuration modules
 task LoadConfigurationModules {
     # Prep and import Configurations from module (TestHelper)
+    Set-Location $BuildFolder\$ProjectName
     Import-ModuleFromSource -Name $ProjectName
     $script:Configurations = Invoke-ConfigurationPrep -Module $ProjectName -Path `
     "$env:TEMP\$ProjectID"
     Write-Output "Loaded configurations:`n$($script:Configurations | ForEach-Object -Process {$_.Name})"
 }
 
+<#
 # Synopsis: Run Lint and Unit Tests
 task LintUnitTests {
     $testResultsFile = "$BuildFolder\LintUnitTestsResults.xml"
@@ -186,6 +188,7 @@ task IntegrationTestAzureVMs {
     (New-Object 'System.Net.WebClient').UploadFile("$env:TestResultsUploadURI", `
     (Resolve-Path $testResultsFile))
 }
+#>
 
 # Synopsis: remove all assets deployed to Azure and any local temporary changes (should be none)
 Exit-Build {
