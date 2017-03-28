@@ -185,7 +185,9 @@ function Import-ModuleFromSource
         if ($ModuleDir = New-Item -Type Directory `
         -Path $env:ProgramFiles\WindowsPowerShell\Modules\$Name -force) {
             Copy-Item -Path .\$Name.psd1 -Destination $ModuleDir -force
-            Copy-Item -Path .\$Name.psm1 -Destination $ModuleDir -force
+            if (Test-Path .\$Name.psm1) {
+                Copy-Item -Path .\$Name.psm1 -Destination $ModuleDir -force
+            }
             Import-Module -Name $Name
         }
     }
