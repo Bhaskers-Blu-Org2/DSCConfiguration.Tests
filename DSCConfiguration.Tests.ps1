@@ -358,7 +358,7 @@ Describe 'Common Tests - Configuration Module Requirements' -Tag Unit {
         }
         ForEach ($Configuration in $Configurations) {
             It "$Configuration should compile without error" {
-                & {$Configuration -Out $env:TEMP\mof\$Configuration} | Should Not Throw
+                & $Configuration -Out $env:TEMP\mof\$Configuration | Should Not Throw
             }
             It "$Configuration should produce a mof file" {
                 if (Test-Path $env:TEMP\mof\$Configuration) {
