@@ -362,8 +362,9 @@ Describe 'Common Tests - Configuration Module Requirements' -Tag Unit {
             }
             It "$Configuration should produce a mof file" {
                 if (Test-Path $env:TEMP\mof\$Configuration) {
-                    Get-ChildItem -Path "$env:TEMP\mof\$Configuration\*.mof"
-                 } | Should Not Be Null
+                    $Mof = Get-ChildItem -Path "$env:TEMP\mof\$Configuration\*.mof"
+                 }
+                 $Mof | Should Not Be Null
             }
         }
     }
