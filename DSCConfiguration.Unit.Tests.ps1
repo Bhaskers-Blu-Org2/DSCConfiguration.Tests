@@ -345,7 +345,7 @@ Describe 'Common Tests - Configuration Module Requirements' -Tag Unit {
     }
     Context "$Name configurations" {
         It "should execute as a script without error" {
-            & . .\$Name.ps1 | Should Not Throw
+            . .\$Name.ps1 | Should Not Throw
         }
         It "$Name should provide configurations" {
             $Configurations = Get-Command -Type Configuration -Module $Name
