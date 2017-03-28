@@ -338,11 +338,15 @@ Describe 'Common Tests - Configuration Module Requirements' -Tag Unit {
             }
         }
     }
-    Context "$Name configurations" {
+    Context "$Name module import" {
         It "$Name imports as a module" {
             {Import-Module -Name $Name} | Should Not Throw
         }
-        <# will move to script test
+    }
+    Context "$Name configurations" {
+        It "should execute as a script without error" {
+            & . .\$Name.ps1 | Should Not Throw
+        }
         It "$Name should provide configurations" {
             $Configurations = Get-Command -Type Configuration -Module $Name
             $Configurations | Should Not Be Null
@@ -355,6 +359,5 @@ Describe 'Common Tests - Configuration Module Requirements' -Tag Unit {
                 Get-ChildItem -Path "c:\dsc\$($Configuration.Name)\*.mof" | Should Not Be Null
             }
         }
-        #>
     }
 }

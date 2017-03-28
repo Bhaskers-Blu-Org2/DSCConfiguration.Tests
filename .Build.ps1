@@ -94,7 +94,6 @@ Add-BuildTask LintUnitTests {
     (Resolve-Path $testResultsFile))
 }
 
-<#
 # Synopsis: Perform Azure Login
 Add-BuildTask AzureLogin {
     # Login to Azure using information from params
@@ -188,7 +187,6 @@ Add-BuildTask IntegrationTestAzureVMs {
     (New-Object 'System.Net.WebClient').UploadFile("$env:TestResultsUploadURI", `
     (Resolve-Path $testResultsFile))
 }
-#>
 
 # Synopsis: remove all assets deployed to Azure and any local temporary changes (should be none)
 Exit-Build {
@@ -196,7 +194,7 @@ Exit-Build {
 }
 
 # Synopsis: default build tasks
-Add-BuildTask . LoadResourceModules, LoadConfigurationModules, LintUnitTests
-<#, AzureLogin, ResourceGroupAndAutomationAccount, `
-AzureAutomationModules, AzureAutomationConfigurations, IntegrationTestAzureAutomationDSC, `
+Add-BuildTask . LoadResourceModules, LoadConfigurationModules, LintUnitTests, AzureLogin, `
+ResourceGroupAndAutomationAccount, AzureAutomationModules 
+<#, AzureAutomationConfigurations, IntegrationTestAzureAutomationDSC, `
 AzureVM, IntegrationTestAzureVMs #>
