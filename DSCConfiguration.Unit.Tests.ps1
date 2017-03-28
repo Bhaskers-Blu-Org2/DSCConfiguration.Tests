@@ -156,7 +156,7 @@ Describe 'Common Tests - PS Script Analyzer' -Tag Lint {
 
 <##>
 Describe 'Common Tests - File Parsing' -Tag Lint {
-    $ScriptFiles = Get-ScriptFileList -FilePath $env:BuildFolder
+    $ScriptFiles = Get-ChildItem -Path $env:BuildFolder -Filter '*.ps1' -File
 
     foreach ($ScriptFile in $ScriptFiles)
     {
@@ -350,8 +350,8 @@ Describe 'Common Tests - Configuration Module Requirements' -Tag Unit {
             . $env:BuildFolder\$Name.ps1
             # this could produce a false positive if the build machine has other known
             # configurations loaded, but scripts are not identified as source
-            $Configurations = Get-Command -Type Configuration | ForEach-Object Name
-            Write-Verbose $Configurations
+            $Configurations = Get-Command -Type Configuration | ForEach-Object {$_.Name}
+            $Configurations | ForEach-Object {Write-Verbose $_}
             $Configurations.count | Should BeGreaterThan 0
         }
         ForEach ($Configuration in $Configurations) {
