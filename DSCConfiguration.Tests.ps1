@@ -364,3 +364,62 @@ Describe 'Common Tests - Configuration Module Requirements' -Tag Unit {
         }
     }
 }
+
+<#
+#>
+Describe 'Common Tests - Azure Automation DSC' -Tag AADSCIntegration {
+
+    $ResourceGroup = "TestAutomation$env:BuildID"
+    $AutomationAccount = "AADSC$env:BuildID"
+
+    $CurrentModuleManifest = Get-ChildItem -Path $env:BuildFolder -Filter "$env:ProjectName.psd1" | ForEach-Object {$_.FullName}
+    $RequiredModules = Get-RequiredGalleryModules (Import-PowerShellDataFile $CurrentModuleManifest)
+    $ConfigurationCommands = Get-DSCConfigurationCommands -Module $env:ProjectName
+
+    # Get AADSC Modules
+    $AADSCModules = Get-AzureRmAutomationModule -ResourceGroupName $ResourceGroup -AutomationAccountName $AutomationAccount
+    $AADSCModuleNames = $AADSCModules | ForEach-Object {$_.Name}
+
+    # Get AADSC Configurations
+    $AADSCConfigurations = Get-AzureRmAutomationDscConfiguration -ResourceGroupName $ResourceGroup -AutomationAccountName $AutomationAccount
+    $AADSCConfigurationNames = $AADSCCOnfigurations | ForEach-Object {$_.Name}
+
+    Context "Modules" {
+        ForEach ($RequiredModule in $RequiredModules) {
+            It "$($RequiredModule.Name) should be present in AADSC" {
+                $AADSCModuleNames.Contains("$($RequiredModule.Name)") | Should Be True
+            }
+        }
+    }
+    Context "Configurations" {
+        ForEach ($ConfigurationCommand in $ConfigurationCommands) {
+            It "$ConfigurationCommand should be present in AADSC" {
+                $AADSCConfigurationNames.Contains("$ConfigurationCommand") | Should Be True
+            }
+        }
+    }
+}
+
+<#
+#>
+Describe 'Common Tests - Azure VM' -Tag AzureVMIntegration {
+
+    $ResourceGroup = "TestAutomation$env:BuildID"
+    $AutomationAccount = "AADSC$env:BuildID"
+
+    $ConfigurationCommands = Get-DSCConfigurationCommands -Module $env:ProjectName
+    $OSVersion = (Import-PowerShellDataFile $env:BuildFolder\$env:ProjectName.psd1).PrivateData.PSData.WindowsOSVersion
+
+    $Nodes = Get-AzureRMAutomationDSCNode -ResourceGroupName $ResourceGroup -AutomationAccountName $AutomationAccount
+    $NodeNames = $Nodes | ForEach-Object {$_.Name}
+
+    Context "AADSC Nodes" {
+        It "There are as many nodes as configurations" {
+            $NodeNames.Count -eq ($ConfigurationCommands.Count * $OSVersion.Count) | Should Be True
+        }
+        It "All nodes are compliant with configurations" {
+            #TODO
+            $Nodes | Should Not Be Null
+        }
+    }
+}    
