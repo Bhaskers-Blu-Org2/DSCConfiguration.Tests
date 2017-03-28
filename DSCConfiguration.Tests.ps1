@@ -353,15 +353,15 @@ Describe 'Common Tests - Configuration Module Requirements' -Tag Unit {
             $Configurations = Get-Command -Type Configuration | ForEach-Object {$_.Name}
             $Configurations.count | Should BeGreaterThan 0
         }
-        if (!(Test-Path c:\dsc)) {
-            New-Item -Path c:\dsc -ItemType Directory
+        if (!(Test-Path $env:TEMP\mof)) {
+            New-Item -Path $env:TEMP\mof -ItemType Directory
         }
         ForEach ($Configuration in $Configurations) {
             It "$Configuration should compile without error" {
-                {"$Configuration -Out c:\dsc\$Configuration"} | Should Not Throw
+                {"$Configuration -Out $env:TEMP\mof\$Configuration"} | Should Not Throw
             }
             It "$Configuration should produce a mof file" {
-                Get-ChildItem -Path "c:\dsc\$Configuration\*.mof" | Should Not Be Null
+                Get-ChildItem -Path "$env:TEMP\mof\$Configuration\*.mof" | Should Not Be Null
             }
         }
     }
