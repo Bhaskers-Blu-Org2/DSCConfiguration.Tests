@@ -531,6 +531,37 @@ function Wait-ConfigurationCompilation
     }
 }
 
+
+<#
+TODO need timeout based on real expectations
+#>
+function Wait-NodeCompliance
+{
+    [CmdletBinding()]     
+    param
+    (
+        [string]$ResourceGroupName = 'TestAutomation'+$env:BuildID,
+        [string]$AutomationAccountName = 'AADSC'+$env:BuildID
+    )
+    try 
+    {
+        $Nodes = Get-AzureRMAutomationDSCNode -ResourceGroupName $ResourceGroupName `
+        -AutomationAccountName $AutomationAccountName
+
+        foreach ($Node in $Nodes) {
+            while ((Get-AzureRMAutomationDSCNode -ResourceGroupName $ResourceGroupName `
+            -AutomationAccountName $AutomationAccountName -Name $Node.Name).Status `
+            -eq 'InProgress') {
+                Start-Sleep -Seconds 15
+            }
+        }
+    }
+    catch [System.Exception] 
+    {
+        throw "An error occured while waiting nodes to report compliance status in Azure Automation`n$($_.exception.message)"        
+    }
+}
+
 <#
 #>
 function New-AzureTestVM

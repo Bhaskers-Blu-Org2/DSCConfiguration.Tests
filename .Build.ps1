@@ -182,6 +182,11 @@ Add-BuildTask AzureVM {
     }
 }
 
+# Synopsis: Wait for all nodes to report compliance
+Add-BuildTask WaitForNodeCompliance {
+    Wait-NodeCompliance
+}
+
 # Synopsis: Integration tests to verify that DSC configuration successfuly applied in virtual machines
 Add-BuildTask IntegrationTestAzureVMs {
     $testResultsFile = "$BuildFolder\VMIntegrationTestsResults.xml"
@@ -202,4 +207,4 @@ Exit-Build {
 # Synopsis: default build tasks
 Add-BuildTask . LoadResourceModules, LoadConfigurationModules, LintUnitTests, InstallAzureRM, AzureLogin, `
 ResourceGroupAndAutomationAccount, AzureAutomationModules, AzureAutomationConfigurations, IntegrationTestAzureAutomationDSC, `
-AzureVM, IntegrationTestAzureVMs
+AzureVM, WaitForNodeCompliance, IntegrationTestAzureVMs
