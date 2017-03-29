@@ -596,26 +596,35 @@ function New-AzureTestVM
         # VM Name based on configuration name and OS name
         $vmName = "$Configuration.$($WindowsOSVersion.replace('-',''))"
 
+        # Build hashtable of deployment parameters
+        $DeploymentParameters = @{
+            Name = $vmName
+            ResourceGroupName = "TestAutomation$BuildID"
+            TemplateFile = "$env:BuildFolder\DSCConfiguration.Tests\AzureDeploy.json"
+            TemplateParameterFile = "$env:BuildFolder\DSCConfiguration.Tests\AzureDeploy.parameters.json"
+            dnsLabelPrefix = $dnsLabelPrefix
+            vmName = $vmName
+            WindowsOSVersion = $WindowsOSVersion
+            adminPassword = $adminPassword
+            registrationUrl = $registrationUrl
+            registrationKey = $registrationKey
+            nodeConfigurationName = "$Configuration.localhost"
+            DeploymentDebugSetting = 'All'
+        }
+
         # Deploy ARM template
-        $AzureVm = New-AzureRMResourceGroupDeployment -Name $vmName `
-        -ResourceGroupName "TestAutomation$BuildID" `
-        -TemplateFile "$env:BuildFolder\DSCConfiguration.Tests\AzureDeploy.json" `
-        -TemplateParameterFile "$env:BuildFolder\DSCConfiguration.Tests\AzureDeploy.parameters.json" `
-        -dnsLabelPrefix $dnsLabelPrefix `
-        -vmName $vmName `
-        -WindowsOSVersion $WindowsOSVersion `
-        -adminPassword $adminPassword `
-        -registrationUrl $registrationUrl `
-        -registrationKey $registrationKey `
-        -nodeConfigurationName "$Configuration.localhost"
+        $AzureVm = New-AzureRMResourceGroupDeployment @DeploymentParameters
 
         # Get deployment details
         $Status = Get-AzureRMResourceGroupDeployment -ResourceGroupName "TestAutomation$BuildID" `
         -Name $vmName
 
+        # DEBUGGING
         # If the deployment fails as Cancelled (?), invoke a retry one time
         if ($Status.ProvisioningState -eq 'Cancelled') {
-            
+            $AzureVm = New-AzureRMResourceGroupDeployment @DeploymentParameters
+            $Status = Get-AzureRMResourceGroupDeployment -ResourceGroupName "TestAutomation$BuildID" `
+            -Name $vmName
         }
 
         # Write output to build log
