@@ -621,7 +621,7 @@ function New-AzureTestVM
 
         # DEBUGGING
         # If the deployment fails as Cancelled (?), invoke a retry one time
-        if ($Status.ProvisioningState -eq 'Cancelled') {
+        if ($Status.ProvisioningState -eq 'Canceled') {
             $AzureVm = New-AzureRMResourceGroupDeployment @DeploymentParameters
             $Status = Get-AzureRMResourceGroupDeployment -ResourceGroupName "TestAutomation$BuildID" `
             -Name $vmName
