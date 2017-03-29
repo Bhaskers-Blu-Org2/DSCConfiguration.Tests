@@ -200,6 +200,6 @@ Exit-Build {
 }
 
 # Synopsis: default build tasks
-Add-BuildTask . LoadResourceModules, LoadConfigurationModules, LintUnitTests, AzureLogin, `
+Add-BuildTask . LoadResourceModules, LoadConfigurationModules, LintUnitTests, InstallAzureRM, AzureLogin, `
 ResourceGroupAndAutomationAccount, AzureAutomationModules, AzureAutomationConfigurations, IntegrationTestAzureAutomationDSC, `
 AzureVM, IntegrationTestAzureVMs
