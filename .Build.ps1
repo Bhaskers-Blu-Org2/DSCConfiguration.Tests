@@ -152,9 +152,12 @@ Add-BuildTask IntegrationTestAzureAutomationDSC {
 # Synopsis: Deploys Azure VM and bootstraps to Azure Automation DSC
 Add-BuildTask AzureVM {
     $VMDeployments = @()
-    Write-Output 'Deploying all test virtual machines in parallel'
+    Write-Output 'Deploying all test virtual machines in parallel (10 second stagger)'
+    $stagger = 0
     ForEach ($Configuration in $script:Configurations) {
       ForEach ($WindowsOSVersion in $Configuration.WindowsOSVersion) {
+        Start-Sleep -Seconds $stagger
+        $stagger = $stagger + 10
         If ($null -eq $WindowsOSVersion) {throw "No OS version was provided for deployment of $($Configuration.Name)"}
         Write-Output "Deploying $WindowsOSVersion and bootstrapping configuration $($Configuration.Name)"
         $JobName = "$($Configuration.Name).$($WindowsOSVersion.replace('-',''))"
