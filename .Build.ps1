@@ -86,11 +86,11 @@ Add-BuildTask LoadConfigurationModules {
 Add-BuildTask LintUnitTests {
     $testResultsFile = "$BuildFolder\LintUnitTestsResults.xml"
 
-    $Pester = Invoke-Pester -Tag Lint,Unit -OutputFormat NUnitXml -OutputFile $testResultsFile -EnableExit
+    $Pester = Invoke-Pester -Tag Lint,Unit -OutputFormat NUnitXml -OutputFile $testResultsFile -PassThru
     
     (New-Object 'System.Net.WebClient').UploadFile("$env:TestResultsUploadURI", `
     (Resolve-Path $testResultsFile))
-    $host.SetShouldExit($Pester)
+    $host.SetShouldExit($Pester.FailedCount)
 }
 
 # Synopsis: Install AzureRM Module (waiting until required)
@@ -142,11 +142,11 @@ Add-BuildTask IntegrationTestAzureAutomationDSC {
     $testResultsFile = "$BuildFolder\AADSCIntegrationTestsResults.xml"
 
     $Pester = Invoke-Pester -Tag AADSCIntegration -OutputFormat NUnitXml `
-    -OutputFile $testResultsFile -EnableExit
+    -OutputFile $testResultsFile -PassThru
     
     (New-Object 'System.Net.WebClient').UploadFile("$env:TestResultsUploadURI", `
     (Resolve-Path $testResultsFile))
-    $host.SetShouldExit($Pester)
+    $host.SetShouldExit($Pester.FailedCount)
 }
 
 # Synopsis: Deploys Azure VM and bootstraps to Azure Automation DSC
@@ -186,11 +186,12 @@ Add-BuildTask AzureVM {
 Add-BuildTask IntegrationTestAzureVMs {
     $testResultsFile = "$BuildFolder\VMIntegrationTestsResults.xml"
 
-    $Pester = Invoke-Pester -Tag AzureVMIntegration -OutputFormat NUnitXml -OutputFile $testResultsFile -EnableExit
+    $Pester = Invoke-Pester -Tag AzureVMIntegration -OutputFormat NUnitXml `
+    -OutputFile $testResultsFile -PassThru
     
     (New-Object 'System.Net.WebClient').UploadFile("$env:TestResultsUploadURI", `
     (Resolve-Path $testResultsFile))
-    $host.SetShouldExit($Pester)
+    $host.SetShouldExit($Pester.FailedCount)
 }
 
 # Synopsis: remove all assets deployed to Azure and any local temporary changes (should be none)
