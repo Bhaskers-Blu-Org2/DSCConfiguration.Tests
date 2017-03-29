@@ -609,7 +609,7 @@ function New-AzureTestVM
             registrationUrl = $registrationUrl
             registrationKey = $registrationKey
             nodeConfigurationName = "$Configuration.localhost"
-            DeploymentDebugSetting = 'All'
+            DeploymentDebugLogLevel = 'All'
         }
 
         # Deploy ARM template
