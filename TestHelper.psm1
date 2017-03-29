@@ -613,6 +613,11 @@ function New-AzureTestVM
         $Status = Get-AzureRMResourceGroupDeployment -ResourceGroupName "TestAutomation$BuildID" `
         -Name $vmName
 
+        # If the deployment fails as Cancelled (?), invoke a retry one time
+        if ($Status.ProvisioningState -eq 'Cancelled') {
+            
+        }
+
         # Write output to build log
         if ($Status.ProvisioningState -eq 'Succeeded') {
             Write-Output "Virtual machine DNS address: $($Status.Outputs.Values.Value)"
