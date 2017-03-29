@@ -428,7 +428,7 @@ Describe 'Common Tests - Azure VM' -Tag AzureVMIntegration {
             $NodeNames.Count -eq ($ConfigurationCommands.Count * $OSVersion.Count) | Should Be True
         }
         foreach ($Node in $Nodes) {
-            It "Node $($Node.Name) is compliant with $(Node.NodeConfigurationName)" {
+            It "Node $($Node.Name) is compliant with $($Node.NodeConfigurationName)" {
                 $Node.Status | Should Be 'Compliant'
             }
         }
