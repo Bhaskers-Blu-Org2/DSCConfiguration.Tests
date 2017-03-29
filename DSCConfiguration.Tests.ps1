@@ -379,6 +379,8 @@ Describe 'Common Tests - Azure Automation DSC' -Tag AADSCIntegration {
 
     $CurrentModuleManifest = Get-ChildItem -Path $env:BuildFolder\$env:ProjectName -Filter "$env:ProjectName.psd1" | ForEach-Object {$_.FullName}
     $RequiredModules = Get-RequiredGalleryModules (Import-PowerShellDataFile $CurrentModuleManifest)
+
+    . $env:BuildFolder\$Name.ps1
     $ConfigurationCommands = Get-Command -Type Configuration | Where-Object {$_.Source -eq ''} | ForEach-Object {$_.Name}
 
     # Get AADSC Modules
@@ -412,7 +414,9 @@ Describe 'Common Tests - Azure VM' -Tag AzureVMIntegration {
     $ResourceGroup = "TestAutomation$env:BuildID"
     $AutomationAccount = "AADSC$env:BuildID"
 
+    . $env:BuildFolder\$Name.ps1
     $ConfigurationCommands = Get-Command -Type Configuration | Where-Object {$_.Source -eq ''} | ForEach-Object {$_.Name}
+    
     $OSVersion = (Import-PowerShellDataFile $env:BuildFolder\$env:ProjectName\$env:ProjectName.psd1).PrivateData.PSData.WindowsOSVersion
 
     $Nodes = Get-AzureRMAutomationDSCNode -ResourceGroupName $ResourceGroup -AutomationAccountName $AutomationAccount
