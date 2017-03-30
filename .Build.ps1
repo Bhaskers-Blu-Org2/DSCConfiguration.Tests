@@ -59,9 +59,9 @@ Enter-Build {
     )
     $Nuget = Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.205 -Force
     Write-Output "Installing modules to support the build environment:`n$EnvironmentModules"
-    $ARM = Install-Module -Name $EnvironmentModules -Repository PSGallery -Force
+    Install-Module -Name $EnvironmentModules -Repository PSGallery -Force
     Write-Output "Installing AzureRM module as background job"
-    Start-Job {Install-Module AzureRM -force}
+    $ARM = Start-Job {Install-Module AzureRM -force}
     
     # Fix module path if duplicates exist (TestHelper)
     Invoke-UniquePSModulePath
