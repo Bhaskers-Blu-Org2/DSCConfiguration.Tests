@@ -41,6 +41,7 @@ Enter-BuildTask {
     $BuildRoot = $BuildFolder
     Write-task $task.Name
 }
+
 Exit-BuildTask {
     # PLACEHOLDER
 }
@@ -59,6 +60,8 @@ Enter-Build {
     $Nuget = Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.205 -Force
     Write-Output "Installing modules to support the build environment:`n$EnvironmentModules"
     Install-Module -Name $EnvironmentModules -Repository PSGallery -Force
+    Write-Output "Installing AzureRM module as background job"
+    Start-Job {Install-Module AzureRM -force}
     
     # Fix module path if duplicates exist (TestHelper)
     Invoke-UniquePSModulePath
@@ -91,11 +94,6 @@ Add-BuildTask LintUnitTests {
     (New-Object 'System.Net.WebClient').UploadFile("$env:TestResultsUploadURI", `
     (Resolve-Path $testResultsFile))
     $host.SetShouldExit($Pester.FailedCount)
-}
-
-# Synopsis: Install AzureRM Module (waiting until required)
-Add-BuildTask InstallAzureRM {
-    Install-Module -Name AzureRM -Repository PSGallery -Force    
 }
 
 # Synopsis: Perform Azure Login
@@ -205,6 +203,6 @@ Exit-Build {
 }
 
 # Synopsis: default build tasks
-Add-BuildTask . LoadResourceModules, LoadConfigurationScriptandModule, LintUnitTests, InstallAzureRM, AzureLogin, `
+Add-BuildTask . LoadResourceModules, LoadConfigurationScriptandModule, LintUnitTests, AzureLogin, `
 ResourceGroupAndAutomationAccount, AzureAutomationModules, AzureAutomationConfigurations, IntegrationTestAzureAutomationDSC, `
 AzureVM, WaitForNodeCompliance, IntegrationTestAzureVMs
