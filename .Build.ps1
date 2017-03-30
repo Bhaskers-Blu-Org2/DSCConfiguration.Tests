@@ -49,6 +49,9 @@ Exit-BuildTask {
 # Synopsis: Baseline the environment
 Enter-Build {
     Write-Output "The build folder is $BuildFolder"
+    # Optimize timing for AzureRM module to install
+    Write-Output "Installing latest AzureRM module as background job"
+    $ARM = Start-Job {Install-Module AzureRM -force}
     # Load modules from test repo
     Import-Module -Name $BuildFolder\DscConfiguration.Tests\TestHelper.psm1 -Force
     
@@ -60,8 +63,6 @@ Enter-Build {
     $Nuget = Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.205 -Force
     Write-Output "Installing modules to support the build environment:`n$EnvironmentModules"
     Install-Module -Name $EnvironmentModules -Repository PSGallery -Force
-    Write-Output "Installing AzureRM module as background job"
-    $ARM = Start-Job {Install-Module AzureRM -force}
     
     # Fix module path if duplicates exist (TestHelper)
     Invoke-UniquePSModulePath
