@@ -604,7 +604,7 @@ function New-AzureTestVM
             TemplateParameterFile = "$env:BuildFolder\DSCConfiguration.Tests\AzureDeploy.parameters.json"
             dnsLabelPrefix = $dnsLabelPrefix
             vmName = $vmName
-            storageAccountName = "$BuildID$($WindowsOSVersion.replace('-','')).ToLower()"
+            storageAccountName = "$BuildID$($WindowsOSVersion.replace('-','').ToLower())"
             WindowsOSVersion = $WindowsOSVersion
             adminPassword = $adminPassword
             registrationUrl = $registrationUrl
