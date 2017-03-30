@@ -59,7 +59,7 @@ Enter-Build {
     )
     $Nuget = Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.205 -Force
     Write-Output "Installing modules to support the build environment:`n$EnvironmentModules"
-    Install-Module -Name $EnvironmentModules -Repository PSGallery -Force
+    $ARM = Install-Module -Name $EnvironmentModules -Repository PSGallery -Force
     Write-Output "Installing AzureRM module as background job"
     Start-Job {Install-Module AzureRM -force}
     
