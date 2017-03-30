@@ -174,9 +174,7 @@ Add-BuildTask AzureVM {
         $VMDeployments += $VMDeployment
       }
     }
-}
 
-Add-BuildTask WaitForAzureVM {    
     # Wait for all VM deployments to finish (asynch)
     ForEach ($Job in $VMDeployments) {
         $Wait = Wait-Job -Job $Job
@@ -210,5 +208,5 @@ Exit-Build {
 
 # Synopsis: default build tasks
 Add-BuildTask . LoadResourceModules, LoadConfigurationScriptandModule, LintUnitTests, AzureLogin, `
-ResourceGroupAndAutomationAccount, AzureVM, WaitForAzureVM, AzureAutomationModules, AzureAutomationConfigurations, IntegrationTestAzureAutomationDSC, `
+ResourceGroupAndAutomationAccount, AzureVM, AzureAutomationModules, AzureAutomationConfigurations, IntegrationTestAzureAutomationDSC, `
 WaitForNodeCompliance, IntegrationTestAzureVMs
