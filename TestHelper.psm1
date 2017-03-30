@@ -550,7 +550,7 @@ function Wait-NodeCompliance
 
         foreach ($Node in $Nodes) {
             while ((Get-AzureRMAutomationDSCNodeReport -ResourceGroupName $ResourceGroupName `
-            -AutomationAccountName $AutomationAccountName -ID $Node.ID) `
+            -AutomationAccountName $AutomationAccountName -NodeID $Node.ID) `
             -eq $null) {
                 Start-Sleep -Seconds 15
             }
