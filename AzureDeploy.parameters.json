@@ -6,7 +6,10 @@
       "value": "[concat(uniquestring(resourceGroup().id)]"
     },
     "vmName": {
-      "value": "[concat(uniquestring(resourceGroup().id), 'vm')]"
+      "value": "[concat(uniquestring(resourceGroup().id), "vm")]"
+    },
+    "storageAccountName": {
+      "value": "[concat( uniquestring(resourceGroup().id, "sa")]",
     },
     "adminUsername": {
       "value": "dscAdmin"

@@ -41,6 +41,12 @@
         "description": "The Windows version for the VM. This will pick a fully patched image of this given Windows version."
       }
     },
+    "storageAccountName": {
+      "type": "string",
+        "metadata": {
+            "description": "Name for the storage account."
+        }
+    },
     "registrationKey": {
         "type": "securestring",
         "metadata": {
@@ -61,7 +67,6 @@
     }
   },
   "variables": {
-    "storageAccountName": "[concat( uniquestring( resourceGroup().id ), substring( tolower( parameters('WindowsOSVersion') ) ,0,5 ) )]",
     "nicName": "[concat( parameters('nodeConfigurationName'), parameters('WindowsOSVersion'), 'nic')]",
     "addressPrefix": "10.0.0.0/16",
     "subnetName": "subnet",
@@ -76,7 +81,7 @@
   "resources": [
     {
       "type": "Microsoft.Storage/storageAccounts",
-      "name": "[variables('storageAccountName')]",
+      "name": "[parameters('storageAccountName')]",
       "apiVersion": "2016-01-01",
       "location": "[resourceGroup().location]",
       "sku": {
@@ -222,7 +227,7 @@
       "name": "[parameters('vmName')]",
       "location": "[resourceGroup().location]",
       "dependsOn": [
-        "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))]",
         "[resourceId('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
       ],
       "properties": {
@@ -244,7 +249,7 @@
           "osDisk": {
             "name": "osdisk",
             "vhd": {
-              "uri": "[concat(reference(resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))).primaryEndpoints.blob, 'vhds/', parameters('dnsLabelPrefix'), 'osdisk.vhd')]"
+              "uri": "[concat(reference(resourceId('Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))).primaryEndpoints.blob, 'vhds/', parameters('dnsLabelPrefix'), 'osdisk.vhd')]"
             },
             "caching": "ReadWrite",
             "createOption": "FromImage"
