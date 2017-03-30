@@ -61,15 +61,15 @@
     }
   },
   "variables": {
-    "storageAccountName": "[uniquestring(resourceGroup().id)]",
-    "nicName": "[concat(parameters('nodeConfigurationName'), parameters('WindowsOSVersion'), 'nic')]",
+    "storageAccountName": "[tolower( concat( uniquestring( resourceGroup().id ), parameters('WindowsOSVersion') ) )]",
+    "nicName": "[concat( parameters('nodeConfigurationName'), parameters('WindowsOSVersion'), 'nic')]",
     "addressPrefix": "10.0.0.0/16",
     "subnetName": "subnet",
     "subnetPrefix": "10.0.0.0/24",
-    "publicIPAddressName": "[concat(concat(parameters('nodeConfigurationName')), parameters('WindowsOSVersion'), 'pip')]",
-    "virtualNetworkName": "[concat(concat(parameters('nodeConfigurationName')), parameters('WindowsOSVersion'), 'net')]",
+    "publicIPAddressName": "[concat( parameters('nodeConfigurationName')), parameters('WindowsOSVersion'), 'pip')]",
+    "virtualNetworkName": "[concat( parameters('nodeConfigurationName')), parameters('WindowsOSVersion'), 'net')]",
     "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
-    "nsgName": "[concat(parameters('nodeConfigurationName'), parameters('WindowsOSVersion'), 'nsg')]",
+    "nsgName": "[concat( parameters('nodeConfigurationName'), parameters('WindowsOSVersion'), 'nsg')]",
     "modulesUrl": "https://github.com/Microsoft/DSCConfiguration.Tests/raw/master/RegistrationMetaConfigV2.zip",
     "configurationFunction": "RegistrationMetaConfigV2.ps1\\RegistrationMetaConfigV2"
   },
