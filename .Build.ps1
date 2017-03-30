@@ -98,8 +98,8 @@ Add-BuildTask LintUnitTests {
 
 # Synopsis: Perform Azure Login
 Add-BuildTask AzureLogin {
-    Wait-Job -Job $ARM
-    Import-Module AzureRM
+    Write-Output "Waiting for AzureRM module to finish installing"
+    $ARM = Wait-Job -Job $ARM
     # Login to Azure using information from params
     Invoke-AzureSPNLogin -ApplicationID $ApplicationID -ApplicationPassword `
     $ApplicationPassword -TenantID $TenantID
