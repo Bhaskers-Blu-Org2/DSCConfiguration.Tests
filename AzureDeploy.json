@@ -61,13 +61,13 @@
     }
   },
   "variables": {
-    "storageAccountName": "[concat(uniquestring(resourceGroup().id), substring(parameters('WindowsOSVersion')),0,4)]",
+    "storageAccountName": "[concat(uniquestring(resourceGroup().id), substring(parameters('WindowsOSVersion'),0,4)]",
     "nicName": "[concat(parameters('nodeConfigurationName'), parameters('WindowsOSVersion'), 'nic')]",
     "addressPrefix": "10.0.0.0/16",
     "subnetName": "subnet",
     "subnetPrefix": "10.0.0.0/24",
     "publicIPAddressName": "[concat(concat(parameters('nodeConfigurationName')), parameters('WindowsOSVersion'), 'pip')]",
-    "virtualNetworkName": "[concat(uniquestring(resourceGroup().id), substring(parameters('WindowsOSVersion')),0,4)]",
+    "virtualNetworkName": "[concat(uniquestring(resourceGroup().id), substring(parameters('WindowsOSVersion'),0,4)]",
     "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
     "nsgName": "[concat(parameters('nodeConfigurationName'), parameters('WindowsOSVersion'), 'nsg')]",
     "modulesUrl": "https://github.com/Microsoft/DSCConfiguration.Tests/raw/master/RegistrationMetaConfigV2.zip",
