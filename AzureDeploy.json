@@ -61,7 +61,7 @@
     }
   },
   "variables": {
-    "storageAccountName": "[concat(substring(uniquestring(resourceGroup().id),0,5)), tolower(substring(parameters('WindowsOSVersion'),0,5)))]",
+    "storageAccountName": "[concat(substring(uniquestring(resourceGroup().id),0,5), substring(tolower(parameters('WindowsOSVersion'))),0,5)]",
     "nicName": "[concat(parameters('nodeConfigurationName'), parameters('WindowsOSVersion'), 'nic')]",
     "addressPrefix": "10.0.0.0/16",
     "subnetName": "subnet",
