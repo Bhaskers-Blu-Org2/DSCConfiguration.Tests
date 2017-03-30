@@ -73,7 +73,7 @@ Add-BuildTask LoadResourceModules {
 }
 
 # Synopsis: Load the Configuration modules
-Add-BuildTask LoadConfigurationModules {
+Add-BuildTask LoadConfigurationScriptandModule {
     # Prep and import Configurations from module (TestHelper)
     Set-Location $BuildFolder\$ProjectName
     Import-ModuleFromSource -Name $ProjectName
@@ -205,6 +205,6 @@ Exit-Build {
 }
 
 # Synopsis: default build tasks
-Add-BuildTask . LoadResourceModules, LoadConfigurationModules, LintUnitTests, InstallAzureRM, AzureLogin, `
+Add-BuildTask . LoadResourceModules, LoadConfigurationScriptandModule, LintUnitTests, InstallAzureRM, AzureLogin, `
 ResourceGroupAndAutomationAccount, AzureAutomationModules, AzureAutomationConfigurations, IntegrationTestAzureAutomationDSC, `
 AzureVM, WaitForNodeCompliance, IntegrationTestAzureVMs
