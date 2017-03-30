@@ -152,7 +152,7 @@ Add-BuildTask IntegrationTestAzureAutomationDSC {
 # Synopsis: Deploys Azure VM and bootstraps to Azure Automation DSC
 Add-BuildTask AzureVM {
     $VMDeployments = @()
-    Write-Output 'Deploying all test virtual machines in parallel (10 second stagger)'
+    Write-Output 'Deploying all test virtual machines in parallel (15 second stagger)'
     $stagger = 0
     ForEach ($Configuration in $script:Configurations) {
       ForEach ($WindowsOSVersion in $Configuration.WindowsOSVersion) {
