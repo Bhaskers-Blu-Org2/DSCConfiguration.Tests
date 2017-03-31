@@ -115,7 +115,7 @@ Add-BuildTask ResourceGroupAndAutomationAccount {
 # Synopsis: Deploys modules to Azure Automation
 Add-BuildTask AzureAutomationAssets {
     Write-Output "Starting background task to load assets to Azure Automation"
-    $AzureAutomationJobScript = {
+    $AzureAutomationJob = Start-Job -ScriptBlock {
         Import-Module -Name $env:BuildFolder\DscConfiguration.Tests\TestHelper.psm1 -Force
         Invoke-AzureSPNLogin -ApplicationID $env:ApplicationID -ApplicationPassword `
         $env:ApplicationPassword -TenantID $env:TenantID
@@ -136,7 +136,6 @@ Add-BuildTask AzureAutomationAssets {
             Wait-ConfigurationCompilation -Configuration $WaitForConfiguration
         }
     }
-    $AzureAutomationJob = Start-Job -ScriptBlock $AzureAutomationJobScript
 }
 
 # Synopsis: Deploys Azure VM and bootstraps to Azure Automation DSC
@@ -164,10 +163,11 @@ Add-BuildTask AzureVM {
             Invoke-AzureSPNLogin -ApplicationID $env:ApplicationID -ApplicationPassword `
             $env:ApplicationPassword -TenantID $env:TenantID
             
-            New-AzureTestVM -BuildID $BuildID -Configuration $Configuration -WindowsOSVersion $WindowsOSVersion
+            New-AzureTestVM -BuildID $BuildID -Configuration $Configuration -WindowsOSVersion `
+            $WindowsOSVersion
 
         } -ArgumentList @($BuildID,$Configuration.Name,$WindowsOSVersion) -Name $JobName
-        Script:$VMDeployments += $VMDeployment
+        $Script:VMDeployments += $VMDeployment
         
         Start-Sleep 15
       }
@@ -195,7 +195,7 @@ Add-BuildTask IntegrationTestAzureAutomationDSC {
 # Synopsis: Integration tests to verify that DSC configuration successfuly applied in virtual machines
 Add-BuildTask IntegrationTestAzureVMs {
     # Wait for all VM deployments to finish (asynch)
-    ForEach ($VMDeploymentJob in Script:$VMDeployments) {
+    ForEach ($VMDeploymentJob in $Script:VMDeployments) {
         $Wait = Wait-Job -Job $VMDeploymentJob
         Write-Output `n
         Write-Output "########## Output from $($VMDeploymentJob.Name) ##########"
