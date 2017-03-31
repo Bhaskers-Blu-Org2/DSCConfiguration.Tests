@@ -118,12 +118,15 @@ Add-BuildTask ResourceGroupAndAutomationAccount {
 Add-BuildTask AzureAutomationAssets {
     Write-Output "Starting background task to load assets to Azure Automation"
     $Script:AzureAutomationJob = Start-Job -ScriptBlock {
+    param (
+        $Script:Modules
+    )
         Import-Module -Name $env:BuildFolder\DscConfiguration.Tests\TestHelper.psm1 -Force
         Invoke-AzureSPNLogin -ApplicationID $env:ApplicationID -ApplicationPassword `
         $env:ApplicationPassword -TenantID $env:TenantID
 
         # Import the modules discovered as requirements to Azure Automation (TestHelper)
-        foreach ($ImportModule in $script:Modules) {
+        foreach ($ImportModule in $Script:Modules) {
             Import-ModuleToAzureAutomation -Module $ImportModule
         }    
         # Allow module activities to extract before importing configuration (TestHelper)
@@ -137,7 +140,7 @@ Add-BuildTask AzureAutomationAssets {
         foreach ($WaitForConfiguration in $script:Configurations) {
             Wait-ConfigurationCompilation -Configuration $WaitForConfiguration
         }
-    }
+    } -ArgumentList @($Script:Modules)
 }
 
 # Synopsis: Deploys Azure VM and bootstraps to Azure Automation DSC
