@@ -77,7 +77,7 @@ Add-BuildTask LoadResourceModules {
 }
 
 # Synopsis: Load the Configuration modules
-Add-BuildTask LoadConfigurationScriptandModule {
+Add-BuildTask LoadConfigurationScript {
     # Prep and import Configurations from module (TestHelper)
     Set-Location $BuildFolder\$ProjectName
     Import-ModuleFromSource -Name $ProjectName
@@ -113,52 +113,45 @@ Add-BuildTask ResourceGroupAndAutomationAccount {
 }
 
 # Synopsis: Deploys modules to Azure Automation
-Add-BuildTask AzureAutomationModules {
-    # Import the modules discovered as requirements to Azure Automation (TestHelper)
-    foreach ($ImportModule in $script:Modules) {
-        Import-ModuleToAzureAutomation -Module $ImportModule
+Add-BuildTask AzureAutomationAssets {
+    Write-Output "Starting background task to load assets to Azure Automation"
+    $AzureAutomationJobScript = {
+        Import-Module -Name $env:BuildFolder\DscConfiguration.Tests\TestHelper.psm1 -Force
+        Invoke-AzureSPNLogin -ApplicationID $env:ApplicationID -ApplicationPassword `
+        $env:ApplicationPassword -TenantID $env:TenantID
+
+        # Import the modules discovered as requirements to Azure Automation (TestHelper)
+        foreach ($ImportModule in $script:Modules) {
+            Import-ModuleToAzureAutomation -Module $ImportModule
+        }    
+        # Allow module activities to extract before importing configuration (TestHelper)
+        foreach ($WaitForModule in $script:Modules) {Wait-ModuleExtraction -Module $WaitForModule}
+
+        # Import and compile the Configurations using Azure Automation (TestHelper)
+        foreach ($ImportConfiguration in $script:Configurations) {
+            Import-ConfigurationToAzureAutomation -Configuration $ImportConfiguration
+        }
+        # Wait for Configurations to compile
+        foreach ($WaitForConfiguration in $script:Configurations) {
+            Wait-ConfigurationCompilation -Configuration $WaitForConfiguration
+        }
     }
-    
-    # Allow module activities to extract before importing configuration (TestHelper)
-    Write-Output 'Waiting for all modules to finish extracting activities'
-    foreach ($WaitForModule in $script:Modules) {Wait-ModuleExtraction -Module $WaitForModule}
-}
-
-# Synopsis: Deploys configurations to Azure Automation
-Add-BuildTask AzureAutomationConfigurations {
-    # Import and compile the Configurations using Azure Automation (TestHelper)
-    foreach ($ImportConfiguration in $script:Configurations) {
-        Import-ConfigurationToAzureAutomation -Configuration $ImportConfiguration
-    }
-
-    # Wait for Configurations to compile
-    Write-Output 'Waiting for configurations to finish compiling in Azure Automation'              
-    foreach ($WaitForConfiguration in $script:Configurations) {
-        Wait-ConfigurationCompilation -Configuration $WaitForConfiguration
-    }
-}
-
-# Synopsis: Integration tests to verify that modules and configurations loaded to Azure Automation DSC successfully
-Add-BuildTask IntegrationTestAzureAutomationDSC {
-    $testResultsFile = "$BuildFolder\AADSCIntegrationTestsResults.xml"
-
-    $Pester = Invoke-Pester -Tag AADSCIntegration -OutputFormat NUnitXml `
-    -OutputFile $testResultsFile -PassThru
-    
-    (New-Object 'System.Net.WebClient').UploadFile("$env:TestResultsUploadURI", `
-    (Resolve-Path $testResultsFile))
-    $host.SetShouldExit($Pester.FailedCount)
+    $AzureAutomationJob = Start-Job -ScriptBlock $AzureAutomationJobScript
 }
 
 # Synopsis: Deploys Azure VM and bootstraps to Azure Automation DSC
 Add-BuildTask AzureVM {
     $VMDeployments = @()
     Write-Output 'Deploying all test virtual machines in parallel'
+    
     ForEach ($Configuration in $script:Configurations) {
       ForEach ($WindowsOSVersion in $Configuration.WindowsOSVersion) {
+        
         If ($null -eq $WindowsOSVersion) {throw "No OS version was provided for deployment of $($Configuration.Name)"}
         Write-Output "Deploying $WindowsOSVersion and bootstrapping configuration $($Configuration.Name)"
+        
         $JobName = "$($Configuration.Name).$($WindowsOSVersion.replace('-',''))"
+        
         $VMDeployment = Start-Job -ScriptBlock {
             param
             (
@@ -167,32 +160,51 @@ Add-BuildTask AzureVM {
                 [string]$WindowsOSVersion
             )
             Import-Module -Name $env:BuildFolder\DscConfiguration.Tests\TestHelper.psm1 -Force
+            
             Invoke-AzureSPNLogin -ApplicationID $env:ApplicationID -ApplicationPassword `
             $env:ApplicationPassword -TenantID $env:TenantID
+            
             New-AzureTestVM -BuildID $BuildID -Configuration $Configuration -WindowsOSVersion $WindowsOSVersion
+
         } -ArgumentList @($BuildID,$Configuration.Name,$WindowsOSVersion) -Name $JobName
-        $VMDeployments += $VMDeployment
+        Script:$VMDeployments += $VMDeployment
+        
         Start-Sleep 15
       }
-      Start-Sleep 75
-    }
 
-    # Wait for all VM deployments to finish (asynch)
-    ForEach ($Job in $VMDeployments) {
-        $Wait = Wait-Job -Job $Job
-        Write-Output `n
-        Write-Output "########## Output from $($Job.Name) ##########"
-        Receive-Job -Job $Job
+      Start-Sleep 75
     }
 }
 
-# Synopsis: Wait for all nodes to report compliance
-Add-BuildTask WaitForNodeCompliance {
-    Wait-NodeCompliance
+# Synopsis: Integration tests to verify that modules and configurations loaded to Azure Automation DSC successfully
+Add-BuildTask IntegrationTestAzureAutomationDSC {
+    $AzureAutomationJobWait = Wait-Job $AzureAutomationJob
+    Receive-Job $AzureAutomationJob
+
+    $testResultsFile = "$BuildFolder\AADSCIntegrationTestsResults.xml"
+
+    $Pester = Invoke-Pester -Tag AADSCIntegration -OutputFormat NUnitXml `
+    -OutputFile $testResultsFile -PassThru
+    
+    (New-Object 'System.Net.WebClient').UploadFile("$env:TestResultsUploadURI", `
+    (Resolve-Path $testResultsFile))
+
+    $host.SetShouldExit($Pester.FailedCount)
 }
 
 # Synopsis: Integration tests to verify that DSC configuration successfuly applied in virtual machines
 Add-BuildTask IntegrationTestAzureVMs {
+    # Wait for all VM deployments to finish (asynch)
+    ForEach ($VMDeploymentJob in Script:$VMDeployments) {
+        $Wait = Wait-Job -Job $VMDeploymentJob
+        Write-Output `n
+        Write-Output "########## Output from $($VMDeploymentJob.Name) ##########"
+        Receive-Job -Job $VMDeploymentJob
+    }
+
+    # Also waiting for all nodes to upload their first status reports to Azure Automation
+    Wait-NodeCompliance
+
     $testResultsFile = "$BuildFolder\VMIntegrationTestsResults.xml"
 
     $Pester = Invoke-Pester -Tag AzureVMIntegration -OutputFormat NUnitXml `
@@ -200,6 +212,7 @@ Add-BuildTask IntegrationTestAzureVMs {
     
     (New-Object 'System.Net.WebClient').UploadFile("$env:TestResultsUploadURI", `
     (Resolve-Path $testResultsFile))
+
     $host.SetShouldExit($Pester.FailedCount)
 }
 
@@ -209,6 +222,6 @@ Exit-Build {
 }
 
 # Synopsis: default build tasks
-Add-BuildTask . LoadResourceModules, LoadConfigurationScriptandModule, LintUnitTests, AzureLogin, `
-ResourceGroupAndAutomationAccount, AzureAutomationModules, AzureAutomationConfigurations, IntegrationTestAzureAutomationDSC, `
-AzureVM, WaitForNodeCompliance, IntegrationTestAzureVMs
+Add-BuildTask . LoadResourceModules, LoadConfigurationScript, LintUnitTests, AzureLogin, `
+ResourceGroupAndAutomationAccount, AzureAutomationAssets, AzureVM, `
+IntegrationTestAzureAutomationDSC, IntegrationTestAzureVMs
