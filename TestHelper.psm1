@@ -604,7 +604,7 @@ function New-AzureTestVM
             TemplateParameterFile = "$env:BuildFolder\DSCConfiguration.Tests\AzureDeploy.parameters.json"
             dnsLabelPrefix = $dnsLabelPrefix
             vmName = $vmName
-            storageAccountName = "sa$BuildID$($WindowsOSVersion.replace('-','').ToLower())"
+            storageAccountName = "sa$BuildID$($WindowsOSVersion.replace('-','').ToLower().subString(0,6))"
             nicName = "nic$Configuration$BuildID$($WindowsOSVersion.replace('-','').ToLower())"
             publicIPAddressName = "pip$Configuration$BuildID$($WindowsOSVersion.replace('-','').ToLower())"
             virtualNetworkName = "net$Configuration$BuildID$($WindowsOSVersion.replace('-','').ToLower())"
