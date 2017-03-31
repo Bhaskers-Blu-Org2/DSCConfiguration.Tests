@@ -158,7 +158,7 @@ Add-BuildTask AzureVM {
         
         $JobName = "$($Configuration.Name).$($WindowsOSVersion.replace('-',''))"
         
-        $VMDeployment = Start-Job -ScriptBlock {
+        $Script:VMDeployment = Start-Job -ScriptBlock {
             param
             (
                 [string]$BuildID,
@@ -174,7 +174,7 @@ Add-BuildTask AzureVM {
             $WindowsOSVersion
 
         } -ArgumentList @($BuildID,$Configuration.Name,$WindowsOSVersion) -Name $JobName
-        $Script:VMDeployments += $VMDeployment
+        $Script:VMDeployments += Script:$VMDeployment
         
         Start-Sleep 15
       }
