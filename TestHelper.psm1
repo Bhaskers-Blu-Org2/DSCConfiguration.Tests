@@ -593,9 +593,7 @@ function New-AzureTestVM
         # DNS name based on random chars followed by first 10 of configuration name
         $dnsLabelPrefix = "test$(Get-Random -Minimum 1000 -Maximum 9999)"
 
-        # VM Name based on configuration name and OS name
-        $vmName = "$Configuration.$($WindowsOSVersion.replace('-',''))"
-
+        
         # Build hashtable of deployment parameters
         $DeploymentParameters = @{
             Name = $vmName
@@ -603,12 +601,12 @@ function New-AzureTestVM
             TemplateFile = "$env:BuildFolder\DSCConfiguration.Tests\AzureDeploy.json"
             TemplateParameterFile = "$env:BuildFolder\DSCConfiguration.Tests\AzureDeploy.parameters.json"
             dnsLabelPrefix = $dnsLabelPrefix
-            vmName = $vmName
-            storageAccountName = "sa$BuildID$($WindowsOSVersion.replace('-','').ToLower())"
-            nicName = "nic$BuildID$($WindowsOSVersion.replace('-','').ToLower())"
-            publicIPAddressName = "pip$BuildID$($WindowsOSVersion.replace('-','').ToLower())"
-            virtualNetworkName = "net$BuildID$($WindowsOSVersion.replace('-','').ToLower())"
-            nsgName = "nsg$BuildID$($WindowsOSVersion.replace('-','').ToLower())"
+            vmName = "$Configuration.$($WindowsOSVersion.replace('-',''))"
+            storageAccountName = "sa$($Configuration).ToLower()$BuildID$($WindowsOSVersion.replace('-','').ToLower())"
+            nicName = "nic.$Configuration.$BuildID$($WindowsOSVersion.replace('-','').ToLower())"
+            publicIPAddressName = "pip.$Configuration.$BuildID$($WindowsOSVersion.replace('-','').ToLower())"
+            virtualNetworkName = "net.$Configuration.$BuildID$($WindowsOSVersion.replace('-','').ToLower())"
+            nsgName = "nsg.$Configuration.$BuildID$($WindowsOSVersion.replace('-','').ToLower())"
             WindowsOSVersion = $WindowsOSVersion
             adminPassword = $adminPassword
             registrationUrl = $registrationUrl
