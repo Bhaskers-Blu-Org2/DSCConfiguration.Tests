@@ -117,7 +117,7 @@ Add-BuildTask ResourceGroupAndAutomationAccount {
 # Synopsis: Deploys modules to Azure Automation
 Add-BuildTask AzureAutomationAssets {
     Write-Output "Starting background task to load assets to Azure Automation"
-    $AzureAutomationJob = Start-Job -ScriptBlock {
+    $Script:AzureAutomationJob = Start-Job -ScriptBlock {
         Import-Module -Name $env:BuildFolder\DscConfiguration.Tests\TestHelper.psm1 -Force
         Invoke-AzureSPNLogin -ApplicationID $env:ApplicationID -ApplicationPassword `
         $env:ApplicationPassword -TenantID $env:TenantID
@@ -180,8 +180,8 @@ Add-BuildTask AzureVM {
 
 # Synopsis: Integration tests to verify that modules and configurations loaded to Azure Automation DSC successfully
 Add-BuildTask IntegrationTestAzureAutomationDSC {
-    $AzureAutomationJobWait = Wait-Job $AzureAutomationJob
-    Receive-Job $AzureAutomationJob
+    $AzureAutomationJobWait = Wait-Job $Script:AzureAutomationJob
+    Receive-Job $Script:AzureAutomationJob
 
     $testResultsFile = "$BuildFolder\AADSCIntegrationTestsResults.xml"
 
