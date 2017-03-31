@@ -47,6 +47,30 @@
             "description": "Name for the storage account."
         }
     },
+    "nicName": {
+      "type": "string",
+        "metadata": {
+            "description": "Name for the storage account."
+        }
+    },
+    "publicIPAddressName": {
+      "type": "string",
+        "metadata": {
+            "description": "Name for the public ip address."
+        }
+    },
+    "virtualNetworkName": {
+      "type": "string",
+        "metadata": {
+            "description": "Name for the virtual network."
+        }
+    },
+    "nsgName": {
+      "type": "string",
+        "metadata": {
+            "description": "Name for the network security group."
+        }
+    },
     "registrationKey": {
         "type": "securestring",
         "metadata": {
@@ -67,14 +91,10 @@
     }
   },
   "variables": {
-    "nicName": "[concat( parameters('nodeConfigurationName'), parameters('WindowsOSVersion'), 'nic')]",
     "addressPrefix": "10.0.0.0/16",
     "subnetName": "subnet",
     "subnetPrefix": "10.0.0.0/24",
-    "publicIPAddressName": "[concat( parameters('nodeConfigurationName'), parameters('WindowsOSVersion'), 'pip')]",
-    "virtualNetworkName": "[concat( parameters('nodeConfigurationName'), parameters('WindowsOSVersion'), 'net')]",
-    "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
-    "nsgName": "[concat( parameters('nodeConfigurationName'), parameters('WindowsOSVersion'), 'nsg')]",
+    "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), variables('subnetName'))]",
     "modulesUrl": "https://github.com/Microsoft/DSCConfiguration.Tests/raw/master/RegistrationMetaConfigV2.zip",
     "configurationFunction": "RegistrationMetaConfigV2.ps1\\RegistrationMetaConfigV2"
   },
@@ -93,7 +113,7 @@
     {
       "apiVersion": "2016-03-30",
       "type": "Microsoft.Network/publicIPAddresses",
-      "name": "[variables('publicIPAddressName')]",
+      "name": "[parameters('publicIPAddressName')]",
       "location": "[resourceGroup().location]",
       "properties": {
         "publicIPAllocationMethod": "Dynamic",
@@ -104,7 +124,7 @@
     },
     {
       "type": "Microsoft.Network/networkSecurityGroups",
-      "name": "[variables('nsgName')]",
+      "name": "[parameters('nsgName')]",
       "apiVersion": "2015-06-15",
       "location": "[resourceGroup().location]",
       "properties": {
@@ -171,10 +191,10 @@
     {
       "apiVersion": "2016-03-30",
       "type": "Microsoft.Network/virtualNetworks",
-      "name": "[variables('virtualNetworkName')]",
+      "name": "[parameters('virtualNetworkName')]",
       "location": "[resourceGroup().location]",
            "dependsOn": [
-        "[concat('Microsoft.Network/networkSecurityGroups/', variables('nsgName'))]"
+        "[concat('Microsoft.Network/networkSecurityGroups/', parameters('nsgName'))]"
       ],
       "properties": {
         "addressSpace": {
@@ -188,7 +208,7 @@
             "properties": {
               "addressPrefix": "[variables('subnetPrefix')]",
               "networkSecurityGroup": {
-                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgName'))]"
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsgName'))]"
               }
             }
           }
@@ -198,11 +218,11 @@
     {
       "apiVersion": "2016-03-30",
       "type": "Microsoft.Network/networkInterfaces",
-      "name": "[variables('nicName')]",
+      "name": "[parameters('nicName')]",
       "location": "[resourceGroup().location]",
       "dependsOn": [
-        "[resourceId('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'))]",
-        "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
+        "[resourceId('Microsoft.Network/publicIPAddresses/', parameters('publicIPAddressName'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]"
       ],
       "properties": {
         "ipConfigurations": [
@@ -211,7 +231,7 @@
             "properties": {
               "privateIPAllocationMethod": "Dynamic",
               "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName'))]"
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses',parameters('publicIPAddressName'))]"
               },
               "subnet": {
                 "id": "[variables('subnetRef')]"
@@ -228,7 +248,7 @@
       "location": "[resourceGroup().location]",
       "dependsOn": [
         "[resourceId('Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))]",
-        "[resourceId('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
+        "[resourceId('Microsoft.Network/networkInterfaces/', parameters('nicName'))]"
       ],
       "properties": {
         "hardwareProfile": {
@@ -258,7 +278,7 @@
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]"
+              "id": "[resourceId('Microsoft.Network/networkInterfaces',parameters('nicName'))]"
             }
           ]
         }
@@ -313,7 +333,7 @@
   "outputs": {
     "hostname": {
       "type": "string",
-      "value": "[reference(variables('publicIPAddressName')).dnsSettings.fqdn]"
+      "value": "[reference(parameters('publicIPAddressName')).dnsSettings.fqdn]"
     }
   }
 }
