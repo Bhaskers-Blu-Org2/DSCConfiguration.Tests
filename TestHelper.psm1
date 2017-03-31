@@ -608,7 +608,7 @@ function New-AzureTestVM
             nicName = "nic$Configuration$BuildID$($WindowsOSVersion.replace('-','').ToLower())"
             publicIPAddressName = "pip$Configuration$BuildID$($WindowsOSVersion.replace('-','').ToLower())"
             virtualNetworkName = "net$BuildID$($WindowsOSVersion.replace('-','').ToLower())"
-            nsgName = "nsg$Configuration$BuildID$($WindowsOSVersion.replace('-','').ToLower())"
+            nsgName = "nsg$BuildID"
             WindowsOSVersion = $WindowsOSVersion
             adminPassword = $adminPassword
             registrationUrl = $registrationUrl
