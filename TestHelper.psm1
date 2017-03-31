@@ -603,12 +603,12 @@ function New-AzureTestVM
             TemplateFile = "$env:BuildFolder\DSCConfiguration.Tests\AzureDeploy.json"
             TemplateParameterFile = "$env:BuildFolder\DSCConfiguration.Tests\AzureDeploy.parameters.json"
             dnsLabelPrefix = $dnsLabelPrefix
-            vmName = "$Configuration.$($WindowsOSVersion.replace('-',''))"
+            vmName = $vmName
             storageAccountName = "sa$BuildID$($WindowsOSVersion.replace('-','').ToLower())"
-            nicName = "nic.$Configuration.$BuildID$($WindowsOSVersion.replace('-','').ToLower())"
-            publicIPAddressName = "pip.$Configuration.$BuildID$($WindowsOSVersion.replace('-','').ToLower())"
-            virtualNetworkName = "net.$Configuration.$BuildID$($WindowsOSVersion.replace('-','').ToLower())"
-            nsgName = "nsg.$Configuration.$BuildID$($WindowsOSVersion.replace('-','').ToLower())"
+            nicName = "nic$Configuration$BuildID$($WindowsOSVersion.replace('-','').ToLower())"
+            publicIPAddressName = "pip$Configuration$BuildID$($WindowsOSVersion.replace('-','').ToLower())"
+            virtualNetworkName = "net$Configuration$BuildID$($WindowsOSVersion.replace('-','').ToLower())"
+            nsgName = "nsg$Configuration$BuildID$($WindowsOSVersion.replace('-','').ToLower())"
             WindowsOSVersion = $WindowsOSVersion
             adminPassword = $adminPassword
             registrationUrl = $registrationUrl
