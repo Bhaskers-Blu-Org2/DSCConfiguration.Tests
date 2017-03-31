@@ -52,7 +52,7 @@ Enter-Build {
     # Optimize timing for AzureRM module to install
     Write-Output "Installing latest AzureRM module as background job"
     $ARM = Start-Job -ScriptBlock {
-        Install-Module AzureRM.Automation -force
+        Install-Module "AzureRm.Resources","AzureRM.Automation" -force
     }
     # Load modules from test repo
     Import-Module -Name $BuildFolder\DscConfiguration.Tests\TestHelper.psm1 -Force
