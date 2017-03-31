@@ -155,7 +155,6 @@ Add-BuildTask AzureVM {
     $VMDeployments = @()
     Write-Output 'Deploying all test virtual machines in parallel'
     ForEach ($Configuration in $script:Configurations) {
-      Start-Sleep $s; $s = $s + 60
       ForEach ($WindowsOSVersion in $Configuration.WindowsOSVersion) {
         If ($null -eq $WindowsOSVersion) {throw "No OS version was provided for deployment of $($Configuration.Name)"}
         Write-Output "Deploying $WindowsOSVersion and bootstrapping configuration $($Configuration.Name)"
@@ -175,6 +174,7 @@ Add-BuildTask AzureVM {
         $VMDeployments += $VMDeployment
         Start-Sleep 15
       }
+      Start-Sleep 75
     }
 
     # Wait for all VM deployments to finish (asynch)
