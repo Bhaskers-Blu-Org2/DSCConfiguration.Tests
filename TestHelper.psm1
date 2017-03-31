@@ -607,7 +607,7 @@ function New-AzureTestVM
             storageAccountName = "sa$BuildID$($WindowsOSVersion.replace('-','').ToLower())"
             nicName = "nic$BuildID$($WindowsOSVersion.replace('-','').ToLower())"
             publicIPAddressName = "pip$BuildID$($WindowsOSVersion.replace('-','').ToLower())"
-            networkName = "net$BuildID$($WindowsOSVersion.replace('-','').ToLower())"
+            virtualNetworkName = "net$BuildID$($WindowsOSVersion.replace('-','').ToLower())"
             nsgName = "nsg$BuildID$($WindowsOSVersion.replace('-','').ToLower())"
             WindowsOSVersion = $WindowsOSVersion
             adminPassword = $adminPassword
