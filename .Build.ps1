@@ -155,9 +155,8 @@ Add-BuildTask AzureVM {
     $VMDeployments = @()
     Write-Output 'Deploying all test virtual machines in parallel'
     ForEach ($Configuration in $script:Configurations) {
-      Start-Sleep 60
+      Start-Sleep $s; $s = $s + 60
       ForEach ($WindowsOSVersion in $Configuration.WindowsOSVersion) {
-        Start-Sleep 15
         If ($null -eq $WindowsOSVersion) {throw "No OS version was provided for deployment of $($Configuration.Name)"}
         Write-Output "Deploying $WindowsOSVersion and bootstrapping configuration $($Configuration.Name)"
         $JobName = "$($Configuration.Name).$($WindowsOSVersion.replace('-',''))"
@@ -174,6 +173,7 @@ Add-BuildTask AzureVM {
             New-AzureTestVM -BuildID $BuildID -Configuration $Configuration -WindowsOSVersion $WindowsOSVersion
         } -ArgumentList @($BuildID,$Configuration.Name,$WindowsOSVersion) -Name $JobName
         $VMDeployments += $VMDeployment
+        Start-Sleep 15
       }
     }
 
