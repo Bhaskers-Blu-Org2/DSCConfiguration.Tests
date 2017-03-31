@@ -52,12 +52,7 @@ Enter-Build {
     # Optimize timing for AzureRM module to install
     Write-Output "Installing latest AzureRM module as background job"
     $ARM = Start-Job -ScriptBlock {
-        if ((Get-Module AzureRM -listavailable) -ne $null) {
-            Update-Module AzureRM -force
-        }
-        else {
-            Install-Module AzureRM -force
-        }
+        Install-Module AzureRM.Automation -force
     }
     # Load modules from test repo
     Import-Module -Name $BuildFolder\DscConfiguration.Tests\TestHelper.psm1 -Force
@@ -147,7 +142,7 @@ Add-BuildTask AzureAutomationAssets {
 
 # Synopsis: Deploys Azure VM and bootstraps to Azure Automation DSC
 Add-BuildTask AzureVM {
-    $VMDeployments = @()
+    $Script:VMDeployments = @()
     Write-Output 'Deploying all test virtual machines in parallel'
     
     ForEach ($Configuration in $script:Configurations) {
