@@ -51,7 +51,14 @@ Enter-Build {
     Write-Output "The build folder is $BuildFolder"
     # Optimize timing for AzureRM module to install
     Write-Output "Installing latest AzureRM module as background job"
-    $ARM = Start-Job {Install-Module AzureRM -force}
+    $ARM = Start-Job -ScriptBlock {
+        if ((Get-Module AzureRM -listavailable) -ne $null) {
+            Update-Module AzureRM -force
+        }
+        else {
+            Install-Module AzureRM -force
+        }
+    }
     # Load modules from test repo
     Import-Module -Name $BuildFolder\DscConfiguration.Tests\TestHelper.psm1 -Force
     
