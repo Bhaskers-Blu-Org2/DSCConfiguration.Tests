@@ -174,7 +174,7 @@ Add-BuildTask AzureVM {
             $WindowsOSVersion
 
         } -ArgumentList @($BuildID,$Configuration.Name,$WindowsOSVersion) -Name $JobName
-        $Script:VMDeployments += Script:$VMDeployment
+        $Script:VMDeployments += $Script:VMDeployment
         
         Start-Sleep 15
       }
