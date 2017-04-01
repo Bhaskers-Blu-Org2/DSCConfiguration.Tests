@@ -252,7 +252,7 @@
       ],
       "properties": {
         "hardwareProfile": {
-          "vmSize": "DS2"
+          "vmSize": "Standard_DS2_v2"
         },
         "osProfile": {
           "computerName": "[substring(parameters('WindowsOSVersion'),0,7)]",
