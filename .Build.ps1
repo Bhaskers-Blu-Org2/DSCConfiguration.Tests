@@ -184,6 +184,7 @@ Add-BuildTask AzureVM {
 
 # Synopsis: Integration tests to verify that modules and configurations loaded to Azure Automation DSC successfully
 Add-BuildTask IntegrationTestAzureAutomationDSC {
+    Write-Host "Waiting for Azure Automation module extraction and configuration compile jobs actions to finish"
     $AzureAutomationJobWait = Wait-Job $Script:AzureAutomationJob
     Receive-Job $Script:AzureAutomationJob
 
