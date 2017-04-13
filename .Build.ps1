@@ -21,6 +21,7 @@
 param(
     $ApplicationID = (Get-BuildProperty ApplicationID),
     $ApplicationPassword = (Get-BuildProperty ApplicationPassword),
+    $SubscriptionID = (Get-BuildProperty SubscriptionID),
     $TenantID = (Get-BuildProperty TenantID),
     $BuildFolder = (Get-BuildProperty BuildFolder),
     $ProjectName = (Get-BuildProperty ProjectName),
@@ -105,7 +106,7 @@ Add-BuildTask AzureLogin {
     $ARM = Wait-Job -Job $ARM
     # Login to Azure using information from params
     Invoke-AzureSPNLogin -ApplicationID $ApplicationID -ApplicationPassword `
-    $ApplicationPassword -TenantID $TenantID
+    $ApplicationPassword -TenantID $TenantID -SubscriptionID $SubscriptionID
 }
 
 # Synopsis: Create Resource Group

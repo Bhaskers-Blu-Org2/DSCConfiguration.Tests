@@ -347,14 +347,19 @@ function New-ResourceGroupandAutomationAccount
     [CmdletBinding()]
     param
     (
+        [string]$SubscriptionID = $env:SubscriptionID,
+        [string]$TenantID = $env:TenantID,
         [string]$Location = 'EastUS2',
         [string]$ResourceGroupName = 'TestAutomation'+$env:BuildID,
         [string]$AutomationAccountName = 'AADSC'+$env:BuildID
     )
     try 
     {
+        # Make sure subscription is selected
+        $Subscription = Select-AzureRMSubscription -SubscriptionID $SubscriptionID -TenantID $TenantID
+
         # Create Resource Group
-        $ResourceGroup = New-AzureRmResourceGroup -Name $ResourceGroupName -Location $Location `
+        $ResourceGroup = New-AzureRmResourceGroup -Name $ResourceGroupName - -Location $Location `
         -Force
         Write-Output "Provisioning of Resource Group $ResourceGroupName returned $($ResourceGroup.ProvisioningState)"
         # Validate provisioning of resource group
