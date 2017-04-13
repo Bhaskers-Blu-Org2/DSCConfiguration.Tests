@@ -486,7 +486,7 @@ function Import-ConfigurationToAzureAutomation
         # Load configdata if it exists
         if (Test-Path "$env:BuildFolder\ConfigurationData\$($Configuration.Name).ConfigData.psd1") {
             $ConfigurationData = Import-PowerShellDataFile `
-            ".\ConfigurationData\$($Configuration.Name).ConfigData.psd1"
+            "$env:BuildFolder\ConfigurationData\$($Configuration.Name).ConfigData.psd1"
         }
 
         # Splate params to compile in Azure Automation DSC
