@@ -307,6 +307,10 @@ function Invoke-AzureSPNLogin
     param
     (
         [Parameter(Mandatory=$true)]
+        [string]$SubscriptionID,
+        [Parameter(Mandatory=$true)]
+        [string]$TenantID,
+        [Parameter(Mandatory=$true)]
         [string]$ApplicationID,
         [Parameter(Mandatory=$true)]
         [string]$ApplicationPassword,
@@ -328,10 +332,10 @@ function Invoke-AzureSPNLogin
         $AzProfileContent = Set-Content -Value '{"enableAzureDataCollection":true}' -Path (Join-Path $Path 'AzureDataCollectionProfile.json') 
 
         # Handle login
-        $AddAccount = Add-AzureRmAccount -Credential $Credential -ServicePrincipal -TenantID $TenantID -ErrorAction SilentlyContinue
+        $AddAccount = Add-AzureRmAccount -ServicePrincipal -SubscriptionID $SubscriptionID -TenantID $TenantID -Credential $Credential -ErrorAction SilentlyContinue
 
         # Validate login
-        $LoginSuccessful = Get-AzureRmSubscription
+        $LoginSuccessful = Get-AzureRmSubscription -SubscriptionID $SubscriptionID
         if ($Null -eq $LoginSuccessful) {
             throw 'Login to Azure was unsuccessful!'
         }
