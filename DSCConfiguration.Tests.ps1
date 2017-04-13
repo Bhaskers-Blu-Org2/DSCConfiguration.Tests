@@ -403,6 +403,9 @@ Describe 'Common Tests - Azure Automation DSC' -Tag AADSCIntegration {
             It "$ConfigurationCommand should be present in AADSC" {
                 $AADSCConfigurationNames.Contains("$ConfigurationCommand") | Should Be True
             }
+            It "$ConfigurationCommand status should be Complete in AADSC" {
+                $ConfigurationCommand.Status | Should Be "Complete"
+            }
         }
     }
 }
