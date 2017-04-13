@@ -309,8 +309,6 @@ function Invoke-AzureSPNLogin
         [Parameter(Mandatory=$true)]
         [string]$SubscriptionID,
         [Parameter(Mandatory=$true)]
-        [string]$TenantID,
-        [Parameter(Mandatory=$true)]
         [string]$ApplicationID,
         [Parameter(Mandatory=$true)]
         [string]$ApplicationPassword,
