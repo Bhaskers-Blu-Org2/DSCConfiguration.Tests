@@ -19,10 +19,6 @@
     input parameters for Azure authentication, etc.
 #>
 param(
-    $ApplicationID = (Get-BuildProperty ApplicationID),
-    $ApplicationPassword = (Get-BuildProperty ApplicationPassword),
-    $SubscriptionID = (Get-BuildProperty SubscriptionID),
-    $TenantID = (Get-BuildProperty TenantID),
     $BuildFolder = (Get-BuildProperty BuildFolder),
     $ProjectName = (Get-BuildProperty ProjectName),
     $ProjectID = (Get-BuildProperty ProjectID),
