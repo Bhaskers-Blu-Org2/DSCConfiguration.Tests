@@ -150,7 +150,7 @@ Add-BuildTask AzureVM {
       ForEach ($WindowsOSVersion in $Configuration.WindowsOSVersion) {
         
         If ($null -eq $WindowsOSVersion) {throw "No OS version was provided for deployment of $($Configuration.Name)"}
-        Write-Output "Initiating deployment of $WindowsOSVersion and bootstrapping configuration $($Configuration.Name)"
+        Write-Output "Initiating background deployment of $WindowsOSVersion and bootstrapping configuration $($Configuration.Name)"
         
         $JobName = "$($Configuration.Name).$($WindowsOSVersion.replace('-',''))"
         
