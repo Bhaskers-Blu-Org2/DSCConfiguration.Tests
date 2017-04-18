@@ -49,15 +49,15 @@ Enter-Build {
     # Optimize timing for AzureRM module to install
     Write-Output "Installing latest AzureRM module as background job"
     $ARM = Start-Job -ScriptBlock {
-        Install-Module "AzureRm.Resources","AzureRM.Automation" -force
+        Install-Module "AzureRm.Resources", "AzureRM.Automation" -force
     }
     # Load modules from test repo
     Import-Module -Name $BuildFolder\DscConfiguration.Tests\TestHelper.psm1 -Force
     
     # Install supporting environment modules from PSGallery
     $EnvironmentModules = @(
-    'Pester',
-    'PSScriptAnalyzer'
+        'Pester',
+        'PSScriptAnalyzer'
     )
     $Nuget = Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.205 -Force
     Write-Output "Installing modules to support the build environment:`n$EnvironmentModules"
@@ -89,7 +89,7 @@ Add-BuildTask LoadConfigurationScript {
 Add-BuildTask LintUnitTests {
     $testResultsFile = "$BuildFolder\LintUnitTestsResults.xml"
 
-    $Pester = Invoke-Pester -Tag Lint,Unit -OutputFormat NUnitXml -OutputFile $testResultsFile -PassThru
+    $Pester = Invoke-Pester -Tag Lint, Unit -OutputFormat NUnitXml -OutputFile $testResultsFile -PassThru
     
     (New-Object 'System.Net.WebClient').UploadFile("$env:TestResultsUploadURI", `
     (Resolve-Path $testResultsFile))
@@ -115,10 +115,10 @@ Add-BuildTask ResourceGroupAndAutomationAccount {
 Add-BuildTask AzureAutomationAssets {
     Write-Output "Starting background task to load assets to Azure Automation"
     $Script:AzureAutomationJob = Start-Job -ScriptBlock {
-    param (
-        $Modules,
-        $Configurations
-    )
+        param (
+            $Modules,
+            $Configurations
+        )
         Import-Module -Name $env:BuildFolder\DscConfiguration.Tests\TestHelper.psm1 -Force
         Invoke-AzureSPNLogin -ApplicationID $env:ApplicationID -ApplicationPassword `
         $env:ApplicationPassword -TenantID $env:TenantID -SubscriptionID $env:SubscriptionID
@@ -128,7 +128,9 @@ Add-BuildTask AzureAutomationAssets {
             Import-ModuleToAzureAutomation -Module $ImportModule
         }    
         # Allow module activities to extract before importing configuration (TestHelper)
-        foreach ($WaitForModule in $Modules) {Wait-ModuleExtraction -Module $WaitForModule}
+        foreach ($WaitForModule in $Modules) {
+            Wait-ModuleExtraction -Module $WaitForModule
+        }
 
         # Import and compile the Configurations using Azure Automation (TestHelper)
         foreach ($ImportConfiguration in $Configurations) {
@@ -147,31 +149,31 @@ Add-BuildTask AzureVM {
     Write-Output 'Deploying all test virtual machines in parallel'
     
     ForEach ($Configuration in $script:Configurations) {
-      ForEach ($WindowsOSVersion in $Configuration.WindowsOSVersion) {
+        ForEach ($WindowsOSVersion in $Configuration.WindowsOSVersion) {
         
-        If ($null -eq $WindowsOSVersion) {throw "No OS version was provided for deployment of $($Configuration.Name)"}
-        Write-Output "Initiating background deployment of $WindowsOSVersion and bootstrapping configuration $($Configuration.Name)"
+            If ($null -eq $WindowsOSVersion) {throw "No OS version was provided for deployment of $($Configuration.Name)"}
+            Write-Output "Initiating background deployment of $WindowsOSVersion and bootstrapping configuration $($Configuration.Name)"
         
-        $JobName = "$($Configuration.Name).$($WindowsOSVersion.replace('-',''))"
+            $JobName = "$($Configuration.Name).$($WindowsOSVersion.replace('-',''))"
         
-        $Script:VMDeployment = Start-Job -ScriptBlock {
-            param
-            (
-                [string]$BuildID,
-                [string]$Configuration,
-                [string]$WindowsOSVersion
-            )
-            Import-Module -Name $env:BuildFolder\DscConfiguration.Tests\TestHelper.psm1 -Force
+            $Script:VMDeployment = Start-Job -ScriptBlock {
+                param
+                (
+                    [string]$BuildID,
+                    [string]$Configuration,
+                    [string]$WindowsOSVersion
+                )
+                Import-Module -Name $env:BuildFolder\DscConfiguration.Tests\TestHelper.psm1 -Force
             
-            Invoke-AzureSPNLogin -ApplicationID $env:ApplicationID -ApplicationPassword `
+                Invoke-AzureSPNLogin -ApplicationID $env:ApplicationID -ApplicationPassword `
             $env:ApplicationPassword -TenantID $env:TenantID -SubscriptionID $env:SubscriptionID
             
-            New-AzureTestVM -BuildID $BuildID -Configuration $Configuration -WindowsOSVersion `
+                New-AzureTestVM -BuildID $BuildID -Configuration $Configuration -WindowsOSVersion `
             $WindowsOSVersion
 
-        } -ArgumentList @($BuildID,$Configuration.Name,$WindowsOSVersion) -Name $JobName
-        $Script:VMDeployments += $Script:VMDeployment
-      }
+            } -ArgumentList @($BuildID, $Configuration.Name, $WindowsOSVersion) -Name $JobName
+            $Script:VMDeployments += $Script:VMDeployment
+        }
     }
 }
 
