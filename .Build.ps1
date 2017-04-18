@@ -125,7 +125,7 @@ Add-BuildTask AzureAutomationAssets {
     )
         Import-Module -Name $env:BuildFolder\DscConfiguration.Tests\TestHelper.psm1 -Force
         Invoke-AzureSPNLogin -ApplicationID $env:ApplicationID -ApplicationPassword `
-        $env:ApplicationPassword -TenantID $env:TenantID
+        $env:ApplicationPassword -TenantID $env:TenantID -SubscriptionID $SubscriptionID
 
         # Import the modules discovered as requirements to Azure Automation (TestHelper)
         foreach ($ImportModule in $Modules) {
@@ -168,7 +168,7 @@ Add-BuildTask AzureVM {
             Import-Module -Name $env:BuildFolder\DscConfiguration.Tests\TestHelper.psm1 -Force
             
             Invoke-AzureSPNLogin -ApplicationID $env:ApplicationID -ApplicationPassword `
-            $env:ApplicationPassword -TenantID $env:TenantID
+            $env:ApplicationPassword -TenantID $env:TenantID -SubscriptionID $SubscriptionID
             
             New-AzureTestVM -BuildID $BuildID -Configuration $Configuration -WindowsOSVersion `
             $WindowsOSVersion
