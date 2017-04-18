@@ -105,8 +105,8 @@ Add-BuildTask AzureLogin {
     Write-Output "Waiting for AzureRM module to finish installing"
     $ARM = Wait-Job -Job $ARM
     # Login to Azure using information from params
-    Invoke-AzureSPNLogin -ApplicationID $ApplicationID -ApplicationPassword `
-    $ApplicationPassword -TenantID $TenantID -SubscriptionID $SubscriptionID
+    Invoke-AzureSPNLogin -ApplicationID $env:ApplicationID -ApplicationPassword `
+    $env:ApplicationPassword -TenantID $env:TenantID -SubscriptionID $env:SubscriptionID
 }
 
 # Synopsis: Create Resource Group
@@ -125,7 +125,7 @@ Add-BuildTask AzureAutomationAssets {
     )
         Import-Module -Name $env:BuildFolder\DscConfiguration.Tests\TestHelper.psm1 -Force
         Invoke-AzureSPNLogin -ApplicationID $env:ApplicationID -ApplicationPassword `
-        $env:ApplicationPassword -TenantID $env:TenantID -SubscriptionID $SubscriptionID
+        $env:ApplicationPassword -TenantID $env:TenantID -SubscriptionID $env:SubscriptionID
 
         # Import the modules discovered as requirements to Azure Automation (TestHelper)
         foreach ($ImportModule in $Modules) {
@@ -168,7 +168,7 @@ Add-BuildTask AzureVM {
             Import-Module -Name $env:BuildFolder\DscConfiguration.Tests\TestHelper.psm1 -Force
             
             Invoke-AzureSPNLogin -ApplicationID $env:ApplicationID -ApplicationPassword `
-            $env:ApplicationPassword -TenantID $env:TenantID -SubscriptionID $SubscriptionID
+            $env:ApplicationPassword -TenantID $env:TenantID -SubscriptionID $env:SubscriptionID
             
             New-AzureTestVM -BuildID $BuildID -Configuration $Configuration -WindowsOSVersion `
             $WindowsOSVersion
