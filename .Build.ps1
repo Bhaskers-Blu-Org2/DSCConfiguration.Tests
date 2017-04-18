@@ -196,7 +196,7 @@ Add-BuildTask IntegrationTestAzureAutomationDSC {
 
 # Synopsis: Integration tests to verify that DSC configuration successfuly applied in virtual machines
 Add-BuildTask IntegrationTestAzureVMs {
-    Write-Host "Waiting for all nodes to report status to Azure Automation"    
+    Write-Host "Waiting for all nodes to finish deployment"
     ForEach ($VMDeploymentJob in $Script:VMDeployments) {
         $Wait = Wait-Job -Job $VMDeploymentJob
         Write-Output `n
@@ -205,6 +205,7 @@ Add-BuildTask IntegrationTestAzureVMs {
     }
 
     # Also waiting for all nodes to upload their first status reports to Azure Automation
+    Write-Host "Waiting for all nodes to report status to Azure Automation"
     Wait-NodeCompliance
 
     $testResultsFile = "$BuildFolder\VMIntegrationTestsResults.xml"
