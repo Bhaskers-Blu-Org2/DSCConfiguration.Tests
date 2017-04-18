@@ -358,10 +358,11 @@ function New-ResourceGroupandAutomationAccount
     try 
     {
         # Make sure subscription is selected
-        $Subscription = Select-AzureRMSubscription -SubscriptionID $SubscriptionID -TenantID $TenantID
+        $Subscription = Select-AzureRMSubscription -SubscriptionID $SubscriptionID `
+        -TenantID $TenantID
 
         # Create Resource Group
-        $ResourceGroup = New-AzureRmResourceGroup -Name $ResourceGroupName - -Location $Location `
+        $ResourceGroup = New-AzureRmResourceGroup -Name $ResourceGroupName -Location $Location `
         -Force
         Write-Output "Provisioning of Resource Group $ResourceGroupName returned $($ResourceGroup.ProvisioningState)"
         # Validate provisioning of resource group
