@@ -404,7 +404,7 @@ Describe 'Common Tests - Azure Automation DSC' -Tag AADSCIntegration {
                 $AADSCConfigurationNames.Contains("$ConfigurationCommand") | Should Be True
             }
             It "$ConfigurationCommand status should be Complete in AADSC" {
-                $AADSCConfiguration | Where-Object {$_.Name -eq $ConfigurationCommand} | ForEach-Object {$_.Status} | Should Be "Complete"
+                $AADSCConfigurations | Where-Object {$_.Name -eq $ConfigurationCommand} | ForEach-Object {$_.Status} | Should Be "Complete"
             }
         }
     }
