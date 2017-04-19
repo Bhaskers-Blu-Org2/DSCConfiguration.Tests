@@ -525,7 +525,7 @@ function Wait-ConfigurationCompilation
     )
     try 
     {
-        while (@('Completed','Suspended') -notcontains (Get-AzureRmAutomationDscCompilationJob -ResourceGroupName $ResourceGroupName `
+        while (@('Completed','Suspended','Published') -notcontains (Get-AzureRmAutomationDscCompilationJob -ResourceGroupName $ResourceGroupName `
         -AutomationAccountName $AutomationAccountName -Name $Configuration.Name).Status) {
             Start-Sleep -Seconds 15
         }   
