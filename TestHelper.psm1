@@ -333,7 +333,7 @@ function Invoke-AzureSPNLogin
         $AddAccount = Add-AzureRmAccount -ServicePrincipal -SubscriptionID $SubscriptionID -TenantID $TenantID -Credential $Credential -ErrorAction SilentlyContinue
 
         # Validate login
-        $LoginSuccessful = Get-AzureRmSubscription -SubscriptionID $SubscriptionID
+        $LoginSuccessful = Get-AzureRmSubscription -SubscriptionID $SubscriptionID -TenantID $TenantID
         if ($Null -eq $LoginSuccessful) {
             throw 'Login to Azure was unsuccessful!'
         }
